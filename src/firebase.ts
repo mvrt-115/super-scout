@@ -1,17 +1,19 @@
 import firebase from 'firebase/app';
 import 'firebase/firestore';
+import 'firebase/auth';
 
 const firebaseConfig = {
-    apiKey: 'AIzaSyDRUqrPOkZThzbkquxEtVPTJLiHECqU3qU',
-    authDomain: 'mvrt-super-scout.firebaseapp.com',
-    projectId: 'mvrt-super-scout',
-    storageBucket: 'mvrt-super-scout.appspot.com',
-    messagingSenderId: '815801961451',
-    appId: '1:815801961451:web:d62ca1612492aeae30e7ae',
-    measurementId: 'G-M2ZNQKJ44V',
+    apiKey: 'AIzaSyAXhBrr_cmU3udV4NEtmJmGAUt_wAxQ3b8',
+    authDomain: 'mvrt115-scout.firebaseapp.com',
+    projectId: 'mvrt115-scout',
+    storageBucket: 'mvrt115-scout.appspot.com',
+    messagingSenderId: '161834372741',
+    appId: '1:161834372741:web:d3d2cab7e92df8209323ec',
 };
 const app = firebase.initializeApp(firebaseConfig);
 
 export const db = app.firestore();
+
+export const auth = app.auth();
 
 export default firebase;
