@@ -12,7 +12,6 @@ import {
     Table,
     Tbody,
     Td,
-    Th,
     Tr,
     VStack,
 } from '@chakra-ui/react';

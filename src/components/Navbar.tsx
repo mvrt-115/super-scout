@@ -9,7 +9,6 @@ import {
     Stack,
     Heading,
     Collapse,
-    Button,
     Avatar,
     Icon,
     Menu,
@@ -41,6 +40,10 @@ const Links: LinkType[] = [
     {
         href: '/qr-code-generator',
         label: 'Match QR Code',
+    },
+    {
+        href: '/scouting-data',
+        label: 'Scouting Data',
     },
 ];
 

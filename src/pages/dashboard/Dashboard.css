@@ -1,0 +1,95 @@
+body {
+    background-color: white;
+    font-family: 'Roboto';
+}
+
+h1 {
+    font-size: 40px;
+    text-transform: uppercase;
+}
+.team-button {
+    background-color: #550575;
+    margin-left: 0;
+    color: white;
+    font-size: 1.5rem;
+    text-decoration: none;
+    border-radius: 10px;
+    position: relative;
+    transition: all 0.2s;
+    margin: 8px;
+    width: 18.5%;
+    text-align: center;
+}
+
+.team-button:hover {
+    transform: scale(1.1);
+}
+
+.team-button a {
+    color: inherit;
+    text-decoration: inherit;
+    width: 100%;
+    display: inline-block;
+    padding: 15px;
+}
+
+.team-button a:after {
+    opacity: 1;
+    /* transition: all 0.2s; */
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 30px;
+    padding: 13px 0px;
+}
+.recharts-wrapper {
+    margin: 0 auto;
+}
+.link {
+    list-style-type: none;
+    background-color: #773791;
+    padding: 10px 30px;
+    margin: 10px 0px;
+    margin-left: 0;
+    color: white;
+    font-size: 25px;
+    text-decoration: none;
+    border-radius: 10px;
+    position: relative;
+    transition: all 0.2s;
+}
+.link a {
+    color: inherit;
+    text-decoration: inherit;
+    width: 100%;
+    display: inline-block;
+    padding: 15px 0px;
+}
+
+.link:hover {
+    transform: scale(1.005);
+}
+.link:hover a:after {
+    opacity: 1;
+}
+ul {
+    padding: 0;
+    list-style-type: none;
+}
+.btn,
+.dropdown-toggle {
+    color: white;
+    background-color: #7300b5;
+    border: none;
+}
+.btn:hover,
+.dropdown-toggle:hover {
+    background-color: #64029c;
+}
+.btn:disabled,
+.dropdown-toggle:disabled {
+    background-color: #7300b5;
+}
+.btn:focus {
+    background-color: #8b04da;
+}

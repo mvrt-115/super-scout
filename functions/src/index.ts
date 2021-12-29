@@ -52,15 +52,35 @@ export const matchUpdate = functions.firestore
                     newTeamData[key] = matchData[key];
                 }
             }
-            let endgamePoints = 5;
-            if (!matchData.hangFail) endgamePoints += 20;
-            if (!matchData.levelFail) endgamePoints += 15;
+            let endgamePoints = calcEndgamePoints(
+                matchData,
+                context.params.year,
+            );
+            let autonPoints = calcAutonPoints(matchData, context.params.year);
+            let teleopPoints = calcTeleopPoints(matchData, context.params.year);
+
             if (teamData.endgamePoints) {
                 newTeamData.endgamePoints =
                     (teamData.endgamePoints * (matches - 1) + endgamePoints) /
                     matches;
             } else {
                 newTeamData.endgamePoints = endgamePoints;
+            }
+
+            if (teamData.autonPoints) {
+                newTeamData.autonPoints =
+                    (teamData.autonPoints * (matches - 1) + autonPoints) /
+                    matches;
+            } else {
+                newTeamData.autonPoints = autonPoints;
+            }
+
+            if (teamData.teleopPoints) {
+                newTeamData.teleopPoints =
+                    (teamData.teleopPoints * (matches - 1) + teleopPoints) /
+                    matches;
+            } else {
+                newTeamData.teleopPoints = teleopPoints;
             }
         });
         newTeamData.matches = matches;
@@ -73,3 +93,60 @@ export const matchUpdate = functions.firestore
             .doc(context.params.team)
             .set(newTeamData);
     });
+
+const calcAutonPoints = (matchData: any, year: number | string) => {
+    if (year == '2019') {
+        return matchData.autonBottom * 2 +
+            matchData.autonUpper * 4 +
+            matchData.autonInner * 6 +
+            matchData.crossedInitLine
+            ? 5
+            : 0;
+    }
+    return -1;
+};
+
+const calcTeleopPoints = (matchData: any, year: number | string) => {
+    if (year == '2019') {
+        return (
+            matchData.teleopBottom +
+            matchData.teleopUpper * 2 +
+            matchData.teleopInner * 4
+        );
+    }
+    return -1;
+};
+
+const calcEndgamePoints = (matchData: any, year: number | string) => {
+    if (year == '2019') {
+        let endgamePoints = 5;
+        if (!matchData.hangFail) endgamePoints += 20;
+        if (!matchData.levelFail) endgamePoints += 15;
+        return endgamePoints;
+    }
+    return -1;
+};
+
+export const calculatePoints = functions.https.onCall(async (data, context) => {
+    const { year, regional, team, match } = data;
+
+    let matchRef = await db
+        .collection('years')
+        .doc(year)
+        .collection('regionals')
+        .doc(regional)
+        .collection('teams')
+        .doc(team)
+        .collection('matches')
+        .doc(match)
+        .get();
+    let matchData = matchRef.data();
+    let autonPoints = calcAutonPoints(matchData, year);
+    let teleopPoints = calcTeleopPoints(matchData, year);
+    let endgamePoints = calcEndgamePoints(matchData, year);
+    return {
+        autonPoints,
+        teleopPoints,
+        endgamePoints,
+    };
+});
