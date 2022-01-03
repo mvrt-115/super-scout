@@ -101,7 +101,7 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
     if (!teams || !teams.length) return null;
     if (loading) return <Spinner />;
     return (
-        <div style={{ width: '60%' }}>
+        <div style={{ width: '70%', display: 'flex', flexDirection:'column', alignItems: 'center', justifyContent: 'center', padding: '5%'}}>
             <Heading textAlign={'center'} fontSize={'1.5em'} marginBottom="3%">
                 {regional.toUpperCase()} {year}
             </Heading>

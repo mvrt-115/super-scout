@@ -11,7 +11,7 @@ import {
     YAxis,
 } from 'recharts';
 import { ComposedChart } from 'recharts';
-
+import { Box } from '@chakra-ui/react'
 interface GraphProps {
     graphInfo: GraphData;
     data: any[];
@@ -35,29 +35,31 @@ const Graph: FC<GraphProps> = ({ graphInfo, data }) => {
         setGraphingData(graphingData);
     }, [graphInfo, data]);
     return (
-        <ResponsiveContainer width="100%" height={250}>
-            <ComposedChart data={graphingData}>
-                <CartesianGrid stroke="#f5f5f5" />
-                <XAxis dataKey="x" />
-                <YAxis />
-                <Tooltip />
-                {graphInfo.y.map((data, index) => {
-                    const props = {
-                        dataKey: data,
-                        stroke: colors[index],
-                        fill: colors[index],
-                        fillOpacity: 0.3,
-                        key: `y${index}`,
-                    };
-                    if (graphInfo.type === 'Bar') return <Bar {...props} />;
-                    else if (graphInfo.type === 'Line')
-                        return <Line {...props} />;
-                    else if (graphInfo.type === 'Area')
-                        return <Area {...props} />;
-                    else return <Scatter {...props} />;
-                })}
-            </ComposedChart>
-        </ResponsiveContainer>
+        <Box m='0' resize='both' width='100%' height='250px' overflow='auto' >
+            <ResponsiveContainer width="100%" height="100%">
+                <ComposedChart data={graphingData}>
+                    <CartesianGrid stroke="#f5f5f5" />
+                    <XAxis dataKey="x" />
+                    <YAxis />
+                    <Tooltip />
+                    {graphInfo.y.map((data, index) => {
+                        const props = {
+                            dataKey: data,
+                            stroke: colors[index],
+                            fill: colors[index],
+                            fillOpacity: 0.3,
+                            key: `y${index}`,
+                        };
+                        if (graphInfo.type === 'Bar') return <Bar {...props} />;
+                        else if (graphInfo.type === 'Line')
+                            return <Line {...props} />;
+                        else if (graphInfo.type === 'Area')
+                            return <Area {...props} />;
+                        else return <Scatter {...props} />;
+                    })}
+                </ComposedChart>
+            </ResponsiveContainer>
+        </Box>
     );
 };
 
