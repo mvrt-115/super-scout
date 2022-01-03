@@ -193,7 +193,7 @@ const ScoutingInputs: FC<ScoutingInputsProps> = () => {
                 p={8}
                 color={'gray.700'}
                 shadow="base"
-                width={['100%', '100%', '50%', '50%']}
+                width={['100%', '100%', '25%', '25%']}
             >
                 <VStack>
                     <Heading>Match QR Code Data</Heading>
