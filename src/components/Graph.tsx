@@ -54,8 +54,7 @@ const Graph: FC<GraphProps> = ({ graphInfo, data }) => {
                         return <Line {...props} />;
                     else if (graphInfo.type === 'Area')
                         return <Area {...props} />;
-                    else if (graphInfo.type === 'Scatter')
-                        return <Scatter {...props} />;
+                    else return <Scatter {...props} />;
                 })}
             </ComposedChart>
         </ResponsiveContainer>

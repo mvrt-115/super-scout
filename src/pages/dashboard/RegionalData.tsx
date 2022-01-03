@@ -97,7 +97,7 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
             console.log(teams);
         };
         fetchData().then(() => setLoading(false));
-    }, [regional]);
+    }, [regional, year]);
     if (!teams || !teams.length) return null;
     if (loading) return <Spinner />;
     return (

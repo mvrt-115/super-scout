@@ -28,7 +28,7 @@ const Scanner: FC<ScannerProps> = () => {
     const [qrVisible, setQrVisible] = useState<boolean>(false);
     const [data, setData] = useState<any[]>([]);
     const { currentUser } = useAuth();
-    const year = 2019; //new Date().getFullYear();
+    const year = new Date().getFullYear();
 
     useEffect(() => {
         setData(JSON.parse(localStorage.getItem('matches') || '[]'));

@@ -12,7 +12,7 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import { AuthProvider } from './contexts/AuthContext';
 import Dashboard from './pages/dashboard/Dashboard';
-import ScoutingData from './pages/ScoutingData';
+import ScoutingInputs from './pages/ScoutingInputs';
 
 function App() {
     return (
@@ -39,8 +39,8 @@ function App() {
                                 />
                                 <Route
                                     exact
-                                    path="/scouting-data"
-                                    component={ScoutingData}
+                                    path="/scouting-inputs"
+                                    component={ScoutingInputs}
                                 />
                                 <Route
                                     exact

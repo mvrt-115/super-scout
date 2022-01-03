@@ -5,3 +5,9 @@ declare interface GraphData {
     y: [string, string, string];
     type: 'Bar' | 'Area' | 'Line' | 'Scatter' | 'Pie';
 }
+
+declare interface ScoutInputData {
+    key: string;
+    type: string;
+    choices?: string[];
+}

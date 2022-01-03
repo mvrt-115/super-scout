@@ -23,7 +23,7 @@ import QRCode from 'react-qr-code';
 interface QRCodeGeneratorProps {}
 
 const QRCodeGenerator: FC<QRCodeGeneratorProps> = () => {
-    const year = '2019'; //new Date().getFullYear();
+    const year = new Date().getFullYear();
     const [regionals, setRegionals] = useState<string[]>([]);
     const [qrcode, setQRCode] = useState<string>();
     const [regional, setRegional] = useState<string>('');
@@ -37,7 +37,7 @@ const QRCodeGenerator: FC<QRCodeGeneratorProps> = () => {
         const fetchData = async () => {
             const res = await db
                 .collection('years')
-                .doc(year)
+                .doc(`${year}`)
                 .collection('regionals')
                 .get();
             setRegionals(res.docs.map((doc) => doc.id));

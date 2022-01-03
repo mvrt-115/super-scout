@@ -42,8 +42,8 @@ const Links: LinkType[] = [
         label: 'Match QR Code',
     },
     {
-        href: '/scouting-data',
-        label: 'Scouting Data',
+        href: '/scouting-inputs',
+        label: 'Scouting Inputs',
     },
 ];
 
