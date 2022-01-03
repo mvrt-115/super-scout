@@ -43,7 +43,7 @@ const QRCodeGenerator: FC<QRCodeGeneratorProps> = () => {
             setRegionals(res.docs.map((doc) => doc.id));
         };
         fetchData();
-    }, []);
+    }, [year]);
 
     const handleSubmit = (event: SyntheticEvent) => {
         event.preventDefault();

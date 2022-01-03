@@ -23,7 +23,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
     const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
-        const teamDisplay = localStorage.getItem('teamDisplay');
+        const teamDisplay = localStorage.getItem('teamDisplay' + year);
         if (teamDisplay) setGraphs(JSON.parse(teamDisplay));
         else
             setGraphs([
@@ -33,7 +33,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                     type: 'Bar',
                 },
             ]);
-    }, []);
+    }, [year]);
 
     useEffect(() => {
         let matches: any[] = [];
@@ -142,8 +142,8 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
             setMatches(matches);
         };
         fetchData()
-            .then(fetchStupidData)
-            .then(() => setLoading(false));
+            .then(() => setLoading(false))
+            .then(fetchStupidData);
     }, [year, regional, team]);
 
     if (!matches || !matches.length) return null;
@@ -169,7 +169,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                 newGraphs[index] = graphData;
                                 setGraphs(newGraphs);
                                 localStorage.setItem(
-                                    'teamDisplay',
+                                    'teamDisplay' + year,
                                     JSON.stringify(newGraphs),
                                 );
                                 console.log(newGraphs);
@@ -179,7 +179,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                 newGraphs.splice(index, 1);
                                 setGraphs(newGraphs);
                                 localStorage.setItem(
-                                    'teamDisplay',
+                                    'teamDisplay' + year,
                                     JSON.stringify(newGraphs),
                                 );
                             }}

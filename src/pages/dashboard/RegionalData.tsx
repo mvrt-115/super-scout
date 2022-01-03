@@ -24,7 +24,7 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
     const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
-        const regionalDisplay = localStorage.getItem('regionalDisplay');
+        const regionalDisplay = localStorage.getItem('regionalDisplay' + year);
         if (regionalDisplay) setGraphs(JSON.parse(regionalDisplay));
         else
             setGraphs([
@@ -34,7 +34,7 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                     type: 'Bar',
                 },
             ]);
-    }, []);
+    }, [year]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -116,7 +116,7 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                 newGraphs[index] = graphData;
                                 setGraphs(newGraphs);
                                 localStorage.setItem(
-                                    'regionalDisplay',
+                                    'regionalDisplay' + year,
                                     JSON.stringify(newGraphs),
                                 );
                             }}
@@ -125,7 +125,7 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                 newGraphs.splice(index, 1);
                                 setGraphs(newGraphs);
                                 localStorage.setItem(
-                                    'regionalDisplay',
+                                    'regionalDisplay' + year,
                                     JSON.stringify(newGraphs),
                                 );
                             }}
