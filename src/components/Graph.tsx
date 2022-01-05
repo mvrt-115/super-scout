@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useState, useLayoutEffect } from 'react';
 import {
     Area,
     Bar,
@@ -12,6 +12,8 @@ import {
 } from 'recharts';
 import { ComposedChart } from 'recharts';
 import { Box } from '@chakra-ui/react'
+import { useResizeDetector } from 'react-resize-detector';
+
 interface GraphProps {
     graphInfo: GraphData;
     data: any[];
@@ -20,6 +22,9 @@ interface GraphProps {
 const Graph: FC<GraphProps> = ({ graphInfo, data }) => {
     const [graphingData, setGraphingData] = useState<any[]>([]);
     const colors = ['#260245', '#ffc410', '#dab0ec', '#550575'];
+    //create ref of box for box sizing
+    const { width, height, ref } = useResizeDetector();
+    // const [ticks, setTicks] = useState<number>(5);
 
     useEffect(() => {
         let graphingData: any[] = [];
@@ -35,14 +40,24 @@ const Graph: FC<GraphProps> = ({ graphInfo, data }) => {
         setGraphingData(graphingData);
     }, [graphInfo, data]);
 
-    console.log(graphInfo);
+    const getTickCount = () => {
+        if (height) {
+            if (height < 300) return 5;
+            if (height < 500) return 10;
+            if (height < 700) return 15;
+            if (height < 900) return 20;
+            if (height < 1100) return 25;
+        }
+        return 0;
+    }
+
     return (
-        <Box m='0' resize='both' width='100%' height='250px' overflow='auto' >
+        <Box m='0' resize='both' width='100%' height='250px' overflow='auto' ref={ref}  >
             <ResponsiveContainer width="100%" height="100%">
                 <ComposedChart data={graphingData}>
                     <CartesianGrid stroke="#f5f5f5" />
                     <XAxis dataKey="x" />
-                    <YAxis />
+                    <YAxis tickCount={getTickCount()} />
                     <Tooltip />
                     {graphInfo.y.map((data, index) => {
                         if(data === 'none') return null;
