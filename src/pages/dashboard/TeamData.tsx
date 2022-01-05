@@ -5,11 +5,18 @@ import { RouteComponentProps } from 'react-router-dom';
 import Graph from '../../components/Graph';
 import GraphInput from '../../components/GraphInput';
 import { db, functions } from '../../firebase';
+import { RadarChart, Radar, PolarAngleAxis, PolarGrid, PolarRadiusAxis, Tooltip as REToolTip } from 'recharts';
 
 interface RouteParams {
     year: string;
     regional: string;
     team: string;
+}
+
+interface RadarChartStat {
+    value: number;
+    percentile: number;
+    max: number;
 }
 
 const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
@@ -19,6 +26,9 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
     const [oprInfo, setOprInfo] = useState<string>();
     const [dprInfo, setDprInfo] = useState<string>();
     const [ccwmInfo, setCcwmInfo] = useState<string>();
+    const [oprStat, setOprStat] = useState<RadarChartStat>({ value: 0, percentile: 0, max: 0 });
+    const [dprStat, setDprStat] = useState<RadarChartStat>({ value: 0, percentile: 0, max: 0 });
+    const [ccwmStat, setCcwmStat] = useState<RadarChartStat>({ value: 0, percentile: 0, max: 0 });
     const [ranking, setRanking] = useState<string>();
     const [loading, setLoading] = useState<boolean>(true);
 
@@ -94,6 +104,22 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
             dprsList.sort((a, b) => a - b);
             ccwmsList.sort((a, b) => a - b);
 
+            setOprStat({
+                value: opr,
+                percentile: oprsList.indexOf(opr) / oprsList.length * 100,
+                max: oprsList[oprsList.length - 1],
+            })
+            setDprStat({
+                value: dpr,
+                percentile: dprsList.indexOf(dpr) / dprsList.length * 100,
+                max: dprsList[dprsList.length - 1],
+            })
+            setCcwmStat({
+                value: ccwm,
+                percentile: ccwmsList.indexOf(ccwm) / ccwmsList.length * 100,
+                max: ccwmsList[ccwmsList.length - 1],
+            })
+
             setOprInfo(
                 `OPR (Offensive Power Rating): ${
                     Math.round(opr * 100) / 100
@@ -157,6 +183,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
             <Text>{dprInfo}</Text>
             <Text marginBottom={'3%'}>{ccwmInfo}</Text>
             <div style={{ width: '90%', justifyContent: 'center' }}>
+                <TeamRadarChartWrapper team={team} opr={oprStat} dpr={dprStat} ccwm={ccwmStat}/>
                 {graphs.map((graph, index) => (
                     <>
                         <GraphInput
@@ -223,5 +250,35 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
         </div>
     );
 };
+
+interface RadarDataStruct {
+    stat: string,
+    value: number,
+    max: number,
+}
+//create radar chart for team with props opr dpr ccwm
+const TeamRadarChartWrapper: React.FC<{ team: string, opr: RadarChartStat; dpr: RadarChartStat; ccwm: RadarChartStat}> = ({ team, opr, dpr, ccwm}) => {
+    const radarData : RadarDataStruct[] = [ {stat: 'OPR', value: opr.value, max: opr.max}, 
+                                            {stat: 'DPR', value: dpr.value, max: dpr.max}, 
+                                            {stat: 'CCWM', value: ccwm.value, max: ccwm.max} ];
+    const getToolTip = (stat: string) => {
+        return {
+            name: stat,
+            value: `${stat}: ${radarData.find((data) => data.stat === stat)?.value}`
+        };
+    }
+
+    console.log(['opr', 'dpr', 'ccwm'].map((val) => getToolTip(val)))
+    
+    return (<RadarChart width={400} height={300} data={radarData} cx="50%" cy="50%">
+    <PolarGrid />
+    <PolarAngleAxis dataKey="stat" />
+    <PolarRadiusAxis angle={30} domain={[0, Math.ceil(Math.max(opr.max, dpr.max, ccwm.max))]} />
+    <Radar name={team} dataKey="value" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
+    <REToolTip />
+  </RadarChart>)
+}
+
+
 
 export default TeamData;
