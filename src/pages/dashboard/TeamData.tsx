@@ -175,15 +175,15 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
     if (!matches || !matches.length) return null;
     if (loading) return <Spinner />;
     return (
-        <div style={{ width: '60%', alignItems: 'start' }}>
+        <div style={{ width: '70%', display: 'flex', flexDirection:'column', alignItems: 'center', justifyContent: 'center', padding: '5%'}}>
             <Heading textAlign={'center'} fontSize={'1.5em'}>
                 Team # {team} Rank # {ranking}
             </Heading>
             <Text>{oprInfo}</Text>
             <Text>{dprInfo}</Text>
-            <Text marginBottom={'3%'}>{ccwmInfo}</Text>
-            <div style={{ width: '90%', justifyContent: 'center' }}>
+            <Text>{ccwmInfo}</Text>
                 <TeamRadarChartWrapper team={team} opr={oprStat} dpr={dprStat} ccwm={ccwmStat}/>
+            <div>
                 {graphs.map((graph, index) => (
                     <>
                         <GraphInput

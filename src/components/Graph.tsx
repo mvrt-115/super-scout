@@ -34,6 +34,8 @@ const Graph: FC<GraphProps> = ({ graphInfo, data }) => {
 
         setGraphingData(graphingData);
     }, [graphInfo, data]);
+
+    console.log(graphInfo);
     return (
         <Box m='0' resize='both' width='100%' height='250px' overflow='auto' >
             <ResponsiveContainer width="100%" height="100%">
@@ -43,6 +45,7 @@ const Graph: FC<GraphProps> = ({ graphInfo, data }) => {
                     <YAxis />
                     <Tooltip />
                     {graphInfo.y.map((data, index) => {
+                        if(data === 'none') return null;
                         const props = {
                             dataKey: data,
                             stroke: colors[index],
