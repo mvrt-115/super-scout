@@ -13,6 +13,7 @@ import {
 import { ComposedChart } from 'recharts';
 import { Box } from '@chakra-ui/react'
 import { useResizeDetector } from 'react-resize-detector';
+import { sortAndDeduplicateDiagnostics } from 'typescript';
 
 interface GraphProps {
     graphInfo: GraphData;
@@ -36,9 +37,18 @@ const Graph: FC<GraphProps> = ({ graphInfo, data }) => {
             });
             graphingData.push(newData);
         });
-
+        sortData(graphingData);
+        //alert(JSON.stringify(graphingData));
         setGraphingData(graphingData);
     }, [graphInfo, data]);
+
+
+    const sortData = (data : any[]) => {
+        data.sort((a, b) => {
+            return -a['ccwm'] + b['ccwm'];
+        });
+
+    }
 
     const getTickCount = () => {
         if (height) {

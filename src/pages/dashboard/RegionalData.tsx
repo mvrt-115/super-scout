@@ -12,6 +12,7 @@ interface RouteParams {
 }
 
 const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
+    const [sortBy, setSortBy] = useState<GraphData>();
     const [teams, setTeams] = useState<any[]>([]);
     const [graphs, setGraphs] = useState<any[]>([
         {
@@ -120,6 +121,7 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                     'regionalDisplay' + year,
                                     JSON.stringify(newGraphs),
                                 );
+                                setSortBy(graphData);
                             }}
                             onDelete={() => {
                                 let newGraphs = [...graphs];
