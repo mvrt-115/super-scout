@@ -31,6 +31,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
     const [ccwmStat, setCcwmStat] = useState<RadarChartStat>({ value: 0, percentile: 0, max: 0 });
     const [ranking, setRanking] = useState<string>();
     const [loading, setLoading] = useState<boolean>(true);
+    const [sortBy, setSortBy] = useState<string>();
 
     useEffect(() => {
         const teamDisplay = localStorage.getItem('teamDisplay' + year);
@@ -224,6 +225,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                     type: 'Bar',
                                 }
                             }
+                            sortBy='ccwm' // temporary fix for now, will add state and stuff later
                         />
                     </>
                 ))}

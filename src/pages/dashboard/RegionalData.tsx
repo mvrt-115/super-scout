@@ -1,5 +1,5 @@
 import { AddIcon } from '@chakra-ui/icons';
-import { Heading, IconButton, Spinner, Tooltip, Text } from '@chakra-ui/react';
+import { Heading, IconButton, Spinner, Tooltip, Text, Select } from '@chakra-ui/react';
 import React, { FC, useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import Graph from '../../components/Graph';
@@ -12,7 +12,7 @@ interface RouteParams {
 }
 
 const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
-    const [sortBy, setSortBy] = useState<GraphData>();
+    const [sortBy, setSortBy] = useState<string>();
     const [teams, setTeams] = useState<any[]>([]);
     const [graphs, setGraphs] = useState<any[]>([
         {
@@ -106,7 +106,6 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
             <Heading textAlign={'center'} fontSize={'1.5em'} marginBottom="3%">
                 {regional.toUpperCase()} {year}
             </Heading>
-            <Text>Hello</Text>
             <div>
                 {graphs.map((graph, index) => (
                     <>
@@ -121,7 +120,7 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                     'regionalDisplay' + year,
                                     JSON.stringify(newGraphs),
                                 );
-                                setSortBy(graphData);
+                                setSortBy(graphData.y[0])
                             }}
                             onDelete={() => {
                                 let newGraphs = [...graphs];
@@ -143,9 +142,11 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                         'teleopPoints',
                                         'endgamePoints',
                                     ],
+                                    sortBy: 'ccwm',
                                     type: 'Bar',
                                 }
                             }
+                            sortBy = { sortBy ? sortBy : ''}
                         />
                     </>
                 ))}

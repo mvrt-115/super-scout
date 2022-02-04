@@ -13,14 +13,14 @@ import {
 import { ComposedChart } from 'recharts';
 import { Box } from '@chakra-ui/react'
 import { useResizeDetector } from 'react-resize-detector';
-import { sortAndDeduplicateDiagnostics } from 'typescript';
 
 interface GraphProps {
     graphInfo: GraphData;
     data: any[];
+    sortBy : string;
 }
 
-const Graph: FC<GraphProps> = ({ graphInfo, data }) => {
+const Graph: FC<GraphProps> = ({ graphInfo, data, sortBy }) => {
     const [graphingData, setGraphingData] = useState<any[]>([]);
     const colors = ['#260245', '#ffc410', '#dab0ec', '#550575'];
     //create ref of box for box sizing
@@ -28,6 +28,7 @@ const Graph: FC<GraphProps> = ({ graphInfo, data }) => {
     // const [ticks, setTicks] = useState<number>(5);
 
     useEffect(() => {
+        console.log(sortBy);
         let graphingData: any[] = [];
         data.forEach((data) => {
             const newData: any = {};
@@ -37,17 +38,22 @@ const Graph: FC<GraphProps> = ({ graphInfo, data }) => {
             });
             graphingData.push(newData);
         });
+        // console.log("before sort: " + JSON.stringify(graphingData));
         sortData(graphingData);
-        //alert(JSON.stringify(graphingData));
+        // console.log("after sort: " + JSON.stringify(graphingData));
         setGraphingData(graphingData);
     }, [graphInfo, data]);
 
 
     const sortData = (data : any[]) => {
+        if(sortBy.length < 2) return;
         data.sort((a, b) => {
-            return -a['ccwm'] + b['ccwm'];
+            //console.log(a["teleopInner"])
+            if(isNaN(a[sortBy])) a[sortBy] = -10;
+            if(isNaN(a[sortBy])) b[sortBy] = -10;
+            return b[sortBy]-a[sortBy];
         });
-
+        console.log(data);
     }
 
     const getTickCount = () => {
