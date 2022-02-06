@@ -1,5 +1,5 @@
 import { AddIcon } from '@chakra-ui/icons';
-import { Heading, IconButton, Spinner, Tooltip, Text, Select } from '@chakra-ui/react';
+import { Heading, IconButton, Spinner, Tooltip } from '@chakra-ui/react';
 import React, { FC, useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import Graph from '../../components/Graph';

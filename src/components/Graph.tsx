@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState, useLayoutEffect } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import {
     Area,
     Bar,
@@ -40,7 +40,7 @@ const Graph: FC<GraphProps> = ({ graphInfo, data, sortBy }) => {
         });
         sortData(graphingData);
         setGraphingData(graphingData);
-    }, [graphInfo, data]);
+    });
 
 
     const sortData = (data : any[]) => {
