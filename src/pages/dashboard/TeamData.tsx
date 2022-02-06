@@ -41,6 +41,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 {
                     x: 'matchNum',
                     y: ['teamNum', 'none', 'none'],
+                    sortBy: 'ccwm',
                     type: 'Bar',
                 },
             ]);
@@ -240,6 +241,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                 {
                                     x: 'matchNum',
                                     y: ['none', 'none', 'none'],
+                                    sortBy: 'ccwm',
                                     type: 'Bar',
                                 },
                             ])

@@ -25,6 +25,7 @@ const GraphInput: FC<GraphInputProps> = ({
     const [yAxis1, setYAxis1] = useState<string>(graphData?.y[0] || keys[1]);
     const [yAxis2, setYAxis2] = useState<string>(graphData?.y[1] || 'none');
     const [yAxis3, setYAxis3] = useState<string>(graphData?.y[2] || 'none');
+    const [sortBy, setSortBy] = useState<string>(graphData?.sortBy || 'ccwm');
     const [type, setType] = useState<
         'Bar' | 'Area' | 'Line' | 'Scatter' | 'Pie'
     >('Bar');
@@ -33,9 +34,10 @@ const GraphInput: FC<GraphInputProps> = ({
         onChange({
             x: xAxis,
             y: [yAxis1, yAxis2, yAxis3],
-            type,
+            type: type,
+            sortBy: sortBy
         });
-    }, [xAxis, yAxis1, yAxis2, yAxis3, type]);
+    }, [xAxis, yAxis1, yAxis2, yAxis3, type, sortBy]);
 
     return (
         <HStack alignItems="center" justifyContent="center" width={'100%'}>
@@ -79,6 +81,19 @@ const GraphInput: FC<GraphInputProps> = ({
                 width={'fit-content'}
                 value={yAxis3}
                 onChange={(e) => setYAxis3(e.target.value)}
+            >
+                <option value="none">None</option>
+                {keys.map((key) => (
+                    <option key={key} value={key}>
+                        {key}
+                    </option>
+                ))}
+            </Select>
+            <Text>Sort By:</Text>
+            <Select
+                width={'fit-content'}
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
             >
                 <option value="none">None</option>
                 {keys.map((key) => (

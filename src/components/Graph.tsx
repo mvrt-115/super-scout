@@ -38,9 +38,7 @@ const Graph: FC<GraphProps> = ({ graphInfo, data, sortBy }) => {
             });
             graphingData.push(newData);
         });
-        // console.log("before sort: " + JSON.stringify(graphingData));
         sortData(graphingData);
-        // console.log("after sort: " + JSON.stringify(graphingData));
         setGraphingData(graphingData);
     }, [graphInfo, data]);
 

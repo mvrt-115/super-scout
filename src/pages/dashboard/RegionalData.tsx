@@ -120,7 +120,7 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                     'regionalDisplay' + year,
                                     JSON.stringify(newGraphs),
                                 );
-                                setSortBy(graphData.y[0])
+                                setSortBy(graphData.sortBy);
                             }}
                             onDelete={() => {
                                 let newGraphs = [...graphs];

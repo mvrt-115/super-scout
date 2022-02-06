@@ -3,6 +3,7 @@ declare module 'qrscan';
 declare interface GraphData {
     x: string;
     y: [string, string, string];
+    sortBy: string;
     type: 'Bar' | 'Area' | 'Line' | 'Scatter' | 'Pie';
 }
 
