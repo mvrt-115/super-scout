@@ -10,6 +10,7 @@ import QRCodeGenerator from './pages/QRCodeGenerator';
 import Scanner from './pages/Scanner';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import Picklist from './pages/Picklist';
 import { AuthProvider } from './contexts/AuthContext';
 import Dashboard from './pages/dashboard/Dashboard';
 import ScoutingInputs from './pages/ScoutingInputs';
@@ -52,6 +53,11 @@ function App() {
                                     exact
                                     path="/sign-up"
                                     component={Signup}
+                                />
+                                <Route
+                                    exact
+                                    path="/picklist"
+                                    component={Picklist}
                                 />
                             </Switch>
                         </div>

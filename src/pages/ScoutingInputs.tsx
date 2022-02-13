@@ -78,7 +78,7 @@ const ScoutingInputs: FC<ScoutingInputsProps> = () => {
             .collection('scouting')
             .doc('endgame')
             .set(endgameInputsToSave);
-    };
+    }
 
     useEffect(() => {
         const fetchData = async () => {
@@ -88,6 +88,7 @@ const ScoutingInputs: FC<ScoutingInputsProps> = () => {
                     .doc(currentUser.uid)
                     .get();
                 const userData: any = userRef.data();
+                console.log(userData);
                 const { role } = userData;
                 if (role === 'admin') {
                     setDisabled(false);

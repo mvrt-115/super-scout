@@ -44,7 +44,11 @@ const Links: LinkType[] = [
     {
         href: '/scouting-inputs',
         label: 'Scouting Inputs',
-    },
+    }, 
+    {
+        href: '/picklist', 
+        label: 'Picklist',
+    }
 ];
 
 const NavLink = ({ children, href }: { children: ReactNode; href: string }) => (
