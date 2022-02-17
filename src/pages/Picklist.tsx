@@ -8,11 +8,28 @@ interface PicklistProps {}
 const Picklist: FC<PicklistProps> = () => {
     const year = new Date().getFullYear();
     const { currentUser } = useAuth();
-    // const [loading, setLoading] = useState<boolean>(true);
     const [regional, setRegional] = useState<string>();
     const [regionals, setRegionals] = useState<string[]>([]);
     const [teams, setTeams] = useState<string[]>([]);
     const [picklist, setPicklist] = useState<string[]>([]);
+
+    useEffect(() => {
+        if (picklist.length > 0) {
+            db.collection('years')
+                .doc(year + '')
+                .collection('regionals')
+                .doc(regional)
+                .collection('picklist')
+                .doc('picklist')
+                .set({
+                    picklist: picklist,
+                });
+        }
+    }, [year, picklist]);
+
+    useEffect(() => {
+        fetchRegionals();
+    }, []);
 
     const fetchRegionals = async () => {
         db.collection('years')
@@ -37,6 +54,7 @@ const Picklist: FC<PicklistProps> = () => {
     };
 
     const fetchTeams = async (regionalChoice: string) => {
+        if (teams.length > 1) setTeams([]);
         if (regionalChoice.length < 3) return;
         setRegional(regionalChoice);
         db.collection('years')
@@ -53,15 +71,27 @@ const Picklist: FC<PicklistProps> = () => {
             });
     };
 
-    useEffect(() => {
-        fetchRegionals();
-    }, []);
+    const fetchPicklist = async (regionalChoice: string) => {
+        setPicklist([]);
+        db.collection('years')
+            .doc(year + '')
+            .collection('regionals')
+            .doc(regionalChoice)
+            .collection('picklist')
+            .get()
+            .then((fields) => {
+                if (fields.docs[0].data().picklist.length > 0)
+                    setPicklist(fields.docs[0].data().picklist);
+                else setPicklist([]);
+            });
+    };
 
     return (
         <>
             <Select
                 onChange={(e) => {
                     fetchTeams(e.target.value);
+                    fetchPicklist(e.target.value);
                 }}
                 placeholder="Select Regional"
             >
@@ -100,6 +130,7 @@ const Picklist: FC<PicklistProps> = () => {
                         <>
                             <Checkbox
                                 size="md"
+                                isChecked={picklist.includes(team)}
                                 isDisabled={!currentUser}
                                 spacing="1rem"
                                 onChange={() => {
@@ -122,7 +153,6 @@ const Picklist: FC<PicklistProps> = () => {
                         </>
                     );
                 })}
-                <Button colorScheme={'#2f064b'}>Save</Button>
             </div>
         </>
     );
