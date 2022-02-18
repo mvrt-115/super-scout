@@ -88,28 +88,65 @@ const Picklist: FC<PicklistProps> = () => {
 
     return (
         <>
-            <Select
-                onChange={(e) => {
-                    fetchTeams(e.target.value);
-                    fetchPicklist(e.target.value);
+            <div
+                style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
                 }}
-                placeholder="Select Regional"
             >
-                {regionals?.map((regional) => {
-                    return <option value={regional}>{regional}</option>;
-                })}
-            </Select>
+                <Select
+                    isDisabled={!currentUser}
+                    onChange={(e) => {
+                        fetchTeams(e.target.value);
+                        fetchPicklist(e.target.value);
+                    }}
+                    placeholder="Select Regional"
+                    size="lg"
+                    variant="filled"
+                    justifySelf={'center'}
+                    textAlign={'center'}
+                    color="#1f0136"
+                    width={'50vw'}
+                    style={{
+                        marginTop: '1rem',
+                        marginBottom: '1rem',
+                    }}
+                >
+                    {regionals?.map((regional) => {
+                        return <option value={regional}>{regional}</option>;
+                    })}
+                </Select>
+            </div>
             <div
                 style={{
                     fontWeight: 'bold',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    position: 'fixed',
+                    // margin: 'auto',
+                    marginTop: '1.05rem',
+                    marginBottom: '1rem',
+                    top: '3vw',
+                    right: '0.0vw',
                 }}
             >
+                <h3
+                    style={{
+                        margin: 'auto',
+                        marginBottom: '0.5rem',
+                        marginTop: '0.5rem',
+                    }}
+                >
+                    Current Picklist:
+                </h3>
                 {picklist?.map((teamNum) => {
                     return (
                         <h2
                             style={{
-                                marginLeft: '0.5em',
-                                marginBottom: '0.5em',
+                                marginRight: '2rem',
+                                marginBottom: '0.5rem',
+                                fontSize: '2rem',
                             }}
                         >
                             {teamNum}
@@ -126,12 +163,16 @@ const Picklist: FC<PicklistProps> = () => {
                 }}
             >
                 {teams?.map((team) => {
+                    let isChecked: boolean = picklist.includes(team);
                     return (
                         <>
                             <Checkbox
-                                size="md"
-                                isChecked={picklist.includes(team)}
-                                isDisabled={!currentUser}
+                                size="lg"
+                                isChecked={isChecked}
+                                isDisabled={
+                                    !currentUser ||
+                                    (picklist.length > 2 && !isChecked)
+                                }
                                 spacing="1rem"
                                 onChange={() => {
                                     addToPicklist(team);
@@ -143,7 +184,7 @@ const Picklist: FC<PicklistProps> = () => {
                                 {/* year is hard coded now, will change later when data is valid for the year 2022*/}
                                 <h1
                                     style={{
-                                        fontSize: '2vw',
+                                        fontSize: '1.25rem',
                                         fontWeight: 'bolder',
                                     }}
                                 >

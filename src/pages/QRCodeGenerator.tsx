@@ -174,10 +174,10 @@ const QRCodeGenerator: FC<QRCodeGeneratorProps> = () => {
 
                         <Button
                             colorScheme="blue"
-                            bg="blue.400"
+                            bg="#4b0f6d"
                             color="white"
                             _hover={{
-                                bg: 'blue.500',
+                                bg: '#2f064b',
                             }}
                             isFullWidth
                             type="submit"
