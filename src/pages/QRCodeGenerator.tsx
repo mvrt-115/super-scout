@@ -41,6 +41,7 @@ const QRCodeGenerator: FC<QRCodeGeneratorProps> = () => {
                 .collection('regionals')
                 .get();
             setRegionals(res.docs.map((doc) => doc.id));
+            if(res.docs.length>0) setRegional(res.docs[0].id);
         };
         fetchData();
     }, [year]);
