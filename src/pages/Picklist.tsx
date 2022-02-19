@@ -207,10 +207,7 @@ const Picklist: FC<PicklistProps> = () => {
                             <Checkbox
                                 size="lg"
                                 isChecked={isChecked}
-                                isDisabled={
-                                    !currentUser ||
-                                    (picklist.length > 2 && !isChecked)
-                                }
+                                isDisabled={!currentUser}
                                 spacing="1rem"
                                 onChange={() => {
                                     addToPicklist(team);
