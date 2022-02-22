@@ -49,7 +49,7 @@ const DashboardHome: FC<DashboardHomeProps> = () => {
         >
             {years.map((year) => (
                 <div style={{ width: '100%' }}>
-                    <Heading size={'lg'}>{year.year}</Heading>
+                    <Heading size={'md'}>{year.year}</Heading>
                     <ul>
                         {year.regionals.map((regional) => (
                             <li className="link">

@@ -1,4 +1,5 @@
-import { Link, Checkbox, Select, Button } from '@chakra-ui/react';
+/* eslint-disable no-loop-func */
+import { Link, Checkbox, Select, Box, Flex } from '@chakra-ui/react';
 import { FC, SyntheticEvent, useEffect, useState, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../firebase';
@@ -10,8 +11,10 @@ const Picklist: FC<PicklistProps> = () => {
     const { currentUser } = useAuth();
     const [regional, setRegional] = useState<string>('');
     const [regionals, setRegionals] = useState<string[]>([]);
+    const [suggestedTeams, setSuggestedTeams] = useState<string[]>([]);
     const [teams, setTeams] = useState<string[]>([]);
     const [picklist, setPicklist] = useState<string[]>([]);
+    
     const dragItem = useRef<number | null>();
     const dragNode = useRef<EventTarget | null>();
 
@@ -31,8 +34,11 @@ const Picklist: FC<PicklistProps> = () => {
 
     useEffect(() => {
         fetchRegionals();
+        fetchPicklist('cvr');
+        fetchTeams('cvr');
+        fetchSuggestedTeams('cvr');
     }, []);
-
+    
     const fetchRegionals = async () => {
         db.collection('years')
             .doc(year + '')
@@ -54,7 +60,6 @@ const Picklist: FC<PicklistProps> = () => {
             : newArray.push(team);
         setPicklist(newArray);
     };
-
     const fetchTeams = async (regionalChoice: string) => {
         if (teams.length > 1) setTeams([]);
         if (regionalChoice.length < 3) return;
@@ -70,6 +75,33 @@ const Picklist: FC<PicklistProps> = () => {
                     return doc.id;
                 });
                 setTeams(teams);
+            });
+    };
+
+    const fetchSuggestedTeams = async (regionalChoice: string) => {
+        if (suggestedTeams.length > 1) setSuggestedTeams([]);
+        if (regionalChoice.length < 3) return;
+        setRegional(regionalChoice);
+        let suggested: string[] = [];
+        let teamList = db.collection('years')
+            .doc(year + '')
+            .collection('regionals')
+            .doc(regionalChoice)
+            .collection('teams');
+            teamList.get().then((data) => {
+                data.docs.forEach((doc) => {
+                    teamList.doc(doc.id).collection('matches').get()
+                    .then((matchList) => {
+                        for(let i = 0; i < matchList.docs.length; i++) {
+                            if(matchList.docs[i].get("Suggest To Picklist")) {   
+                                suggested.push(doc.id);
+                                setSuggestedTeams(suggested);
+                                console.log(suggested);
+                                break;
+                            };
+                        };
+                    });
+                });
             });
     };
 
@@ -118,103 +150,108 @@ const Picklist: FC<PicklistProps> = () => {
 
     return (
         <>
-            <div
-                style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                }}
-            >
+            <Flex alignItems={'center'} justifyContent={'center'}>
                 <Select
                     isDisabled={!currentUser}
                     onChange={(e) => {
                         fetchTeams(e.target.value);
+                        fetchSuggestedTeams(e.target.value);
                         fetchPicklist(e.target.value);
                     }}
-                    placeholder="Select Regional"
                     size="lg"
-                    variant="filled"
+                    variant="Unstyled"
                     justifySelf={'center'}
                     textAlign={'center'}
-                    color="#1f0136"
-                    width={'50vw'}
-                    style={{
-                        marginTop: '1rem',
-                        marginBottom: '1rem',
-                    }}
+                    width="fit-content"
                 >
                     {regionals?.map((regional) => {
-                        return <option value={regional}>{regional}</option>;
+                        return <option value={regional}>{regional.toUpperCase()}</option>;
                     })}
                 </Select>
-            </div>
-            <div
-                style={{
-                    fontWeight: 'bold',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    position: 'fixed',
-                    // margin: 'auto',
-                    marginTop: '1.05rem',
-                    marginBottom: '1rem',
-                    top: '3vw',
-                    right: '0.0vw',
-                }}
-            >
-                <h3
+            </Flex>
+            <Box bg={'mv-purple.200'}>
+                <div
                     style={{
-                        margin: 'auto',
-                        marginBottom: '0.5rem',
-                        marginTop: '0.5rem',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        paddingTop: '10px',
+                        paddingBottom: '10px',
+                        fontWeight: 'bold',
                     }}
                 >
-                    Current Picklist:
-                </h3>
-                {picklist?.map((teamNum, index) => {
-                    return (
-                        <div
-                            draggable
-                            onDragStart={(e) => {
-                                startDrag(e, index);
-                            }}
-                            onDragEnter={(e) => handleDragEnter(e, index)}
-                        >
-                            <h2
-                                style={{
-                                    marginRight: '2rem',
-                                    marginBottom: '0.5rem',
-                                    fontSize: '2rem',
-                                }}
-                            >
-                                {teamNum}
-                            </h2>
-                        </div>
-                    );
-                })}
-            </div>
+                    <h3
+                        style={{
+                            color: 'white',
+                            margin: 'auto',
+                            marginBottom: '0.35rem',
+                            marginTop: '8px',
+                            fontWeight: 'bolder',
+                            fontSize : '20px'
+                        }}
+                    >
+                        Current Picklist:
+                    </h3>
+                    <Flex align="center" justify="center">
+                        {picklist?.map((teamNum, index) => {
+                            return (
+                                <div
+                                    style={{
+                                        marginLeft: '15px',
+                                        marginRight: '15px',
+                                    }}
+                                    draggable
+                                    onDragStart={(e) => {
+                                        startDrag(e, index);
+                                    }}
+                                    onDragEnter={(e) =>
+                                        handleDragEnter(e, index)
+                                    }
+                                >
+                                    <h2
+                                        style={{
+                                            fontSize: '2rem',
+                                            color: 'white',
+                                        }}
+                                    >
+                                        {teamNum}
+                                    </h2>
+                                </div>
+                            );
+                        })}
+                    </Flex>
+                </div>
+            </Box>
+        
             <div
                 style={{
-                    display: 'flex',
+                    display: 'grid',
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
+                    marginTop: '10px',
                 }}
             >
+                <h3 style={{fontWeight: 'bolder'}}>All Teams:</h3>
                 {teams?.map((team) => {
-                    let isChecked: boolean = picklist.includes(team);
                     return (
-                        <>
+                        <div
+                            style={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                            }}
+                        >
                             <Checkbox
+                                mr="10px"
                                 size="lg"
-                                isChecked={isChecked}
+                                isChecked={picklist.includes(team)}
                                 isDisabled={!currentUser}
                                 spacing="1rem"
                                 onChange={() => {
                                     addToPicklist(team);
                                 }}
-                            >
-                                Suggest to Picklist
-                            </Checkbox>
+                            />
                             <Link
                                 href={`./Dashboard/${year}/${regional}/${team}`}
                             >
@@ -227,7 +264,41 @@ const Picklist: FC<PicklistProps> = () => {
                                     {team}
                                 </h1>
                             </Link>
-                        </>
+                        </div>
+                    );
+                })}
+                <h3 style={{fontWeight: 'bolder'}}>Suggested Teams:</h3>
+                {suggestedTeams?.map((team) => {
+                    return (
+                        <div
+                            style={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                            }}
+                        >
+                            <Checkbox
+                                mr="10px"
+                                size="lg"
+                                isChecked={picklist.includes(team)}
+                                isDisabled={!currentUser}
+                                spacing="1rem"
+                                onChange={() => {
+                                    addToPicklist(team);
+                                }}
+                            />
+                            <Link
+                                href={`./Dashboard/${year}/${regional}/${team}`}
+                            >
+                                <h1
+                                    style={{
+                                        fontSize: '1.25rem',
+                                        fontWeight: 'bolder',
+                                    }}
+                                >
+                                    {team}
+                                </h1>
+                            </Link>
+                        </div>
                     );
                 })}
             </div>

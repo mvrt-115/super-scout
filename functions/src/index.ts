@@ -1,6 +1,9 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 
+// const functions = require('firebase-functions');
+// const admin = require('firebase-admin');
+
 // // Start writing Firebase Functions
 // // https://firebase.google.com/docs/functions/typescript
 //
@@ -15,6 +18,7 @@ const db = admin.firestore();
 export const matchUpdate = functions.firestore
     .document('/years/{year}/regionals/{regional}/teams/{team}/matches/{match}')
     .onCreate(async (snap, context) => {
+        functions.logger.info('firebase functions!!!');
         const teamDoc = await db
             .collection('years')
             .doc(context.params.year)
@@ -84,7 +88,7 @@ export const matchUpdate = functions.firestore
             }
         });
         newTeamData.matches = matches;
-        functions.logger.info(newTeamData);
+        // functions.logger.info(newTeamData);
         db.collection('years')
             .doc(context.params.year)
             .collection('regionals')
@@ -102,6 +106,12 @@ const calcAutonPoints = (matchData: any, year: number | string) => {
             matchData.crossedInitLine
             ? 5
             : 0;
+    } else if (year == '2022') {
+        return (
+            matchData['Auton Bottom'] * 2 +
+            matchData['Auton Upper'] * 4 +
+            2 * +matchData['Leave Tarmac']
+        );
     }
     return -1;
 };
@@ -113,6 +123,8 @@ const calcTeleopPoints = (matchData: any, year: number | string) => {
             matchData.teleopUpper * 2 +
             matchData.teleopInner * 4
         );
+    } else if (year == '2022') {
+        return matchData['Teleop Bottom'] + matchData['Teleop Upper'] * 2;
     }
     return -1;
 };
@@ -123,6 +135,25 @@ const calcEndgamePoints = (matchData: any, year: number | string) => {
         if (!matchData.hangFail) endgamePoints += 20;
         if (!matchData.levelFail) endgamePoints += 15;
         return endgamePoints;
+    } else if (year == '2022') {
+        let climbScore: number = 0;
+        switch (matchData['climb rung']) {
+            case 'Low':
+                climbScore = 4;
+                break;
+            case 'Mid':
+                climbScore = 6;
+                break;
+            case 'High':
+                climbScore = 10;
+                break;
+            case 'Traversal':
+                climbScore = 15;
+                break;
+            default:
+                climbScore = 0;
+        }
+        return climbScore;
     }
     return -1;
 };
@@ -144,6 +175,7 @@ export const calculatePoints = functions.https.onCall(async (data, context) => {
     let autonPoints = calcAutonPoints(matchData, year);
     let teleopPoints = calcTeleopPoints(matchData, year);
     let endgamePoints = calcEndgamePoints(matchData, year);
+
     return {
         autonPoints,
         teleopPoints,

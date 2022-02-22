@@ -24,7 +24,6 @@ function App() {
                         <Navbar />
                         <div
                             style={{
-                                marginTop: '3vh',
                                 justifyContent: 'center',
                             }}
                         >
