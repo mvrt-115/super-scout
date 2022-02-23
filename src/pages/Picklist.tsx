@@ -1,5 +1,5 @@
 /* eslint-disable no-loop-func */
-import { Link, Checkbox, Select, Box, Flex } from '@chakra-ui/react';
+import { Link, Checkbox, Select, Box, Flex, Spinner } from '@chakra-ui/react';
 import { FC, SyntheticEvent, useEffect, useState, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../firebase';
@@ -9,12 +9,12 @@ interface PicklistProps {}
 const Picklist: FC<PicklistProps> = () => {
     const year = new Date().getFullYear();
     const { currentUser } = useAuth();
-    const [regional, setRegional] = useState<string>('');
+    const [regional, setRegional] = useState<string>('cvr');
     const [regionals, setRegionals] = useState<string[]>([]);
     const [suggestedTeams, setSuggestedTeams] = useState<string[]>([]);
     const [teams, setTeams] = useState<string[]>([]);
     const [picklist, setPicklist] = useState<string[]>([]);
-    
+    const [loading, setLoading] = useState<boolean>(true);
     const dragItem = useRef<number | null>();
     const dragNode = useRef<EventTarget | null>();
 
@@ -33,12 +33,22 @@ const Picklist: FC<PicklistProps> = () => {
     }, [year, picklist]);
 
     useEffect(() => {
-        fetchRegionals();
-        fetchPicklist('cvr');
-        fetchTeams('cvr');
-        fetchSuggestedTeams('cvr');
+        fetchRegionals()
+        fetchPicklist(regional);
+        fetchSuggestedTeams(regional);
+        fetchTeams(regional);
     }, []);
     
+    useEffect(() =>{
+        setLoading(true);
+        fetchPicklist(regional);
+        fetchTeams(regional);
+        fetchSuggestedTeams(regional);
+    }, [regional])
+
+    useEffect(()=>{
+        setLoading(false);
+    }, [suggestedTeams])
     const fetchRegionals = async () => {
         db.collection('years')
             .doc(year + '')
@@ -63,7 +73,7 @@ const Picklist: FC<PicklistProps> = () => {
     const fetchTeams = async (regionalChoice: string) => {
         if (teams.length > 1) setTeams([]);
         if (regionalChoice.length < 3) return;
-        setRegional(regionalChoice);
+        //setRegional(regionalChoice);
         db.collection('years')
             .doc(year + '')
             .collection('regionals')
@@ -79,9 +89,9 @@ const Picklist: FC<PicklistProps> = () => {
     };
 
     const fetchSuggestedTeams = async (regionalChoice: string) => {
-        if (suggestedTeams.length > 1) setSuggestedTeams([]);
+        //if (suggestedTeams.length > 1) setSuggestedTeams([]);
         if (regionalChoice.length < 3) return;
-        setRegional(regionalChoice);
+        //setRegional(regionalChoice);
         let suggested: string[] = [];
         let teamList = db.collection('years')
             .doc(year + '')
@@ -89,20 +99,26 @@ const Picklist: FC<PicklistProps> = () => {
             .doc(regionalChoice)
             .collection('teams');
             teamList.get().then((data) => {
-                data.docs.forEach((doc) => {
-                    teamList.doc(doc.id).collection('matches').get()
-                    .then((matchList) => {
-                        for(let i = 0; i < matchList.docs.length; i++) {
-                            if(matchList.docs[i].get("Suggest To Picklist")) {   
-                                suggested.push(doc.id);
-                                setSuggestedTeams(suggested);
-                                console.log(suggested);
-                                break;
+                let handleLoop = async() => {
+                    let promises: Promise<any>[] = [];
+                    for(let doc of data.docs){
+                        promises.push(
+                        teamList.doc(doc.id).collection('matches').get()
+                        .then((matchList: any) => {
+                            for(let match of matchList.docs) {
+                                if(match.get("Suggest To Picklist")) { 
+                                    suggested.push(doc.id);
+                                    break;
+                                };
                             };
-                        };
-                    });
-                });
-            });
+                        }));
+                    }
+                    await Promise.all(promises);
+                    setSuggestedTeams(suggested);
+                    console.log(suggested);
+                }
+                handleLoop();
+            })
     };
 
     const fetchPicklist = async (regionalChoice: string) => {
@@ -147,13 +163,13 @@ const Picklist: FC<PicklistProps> = () => {
         dragItem.current = null;
         dragNode.current = null;
     };
-
     return (
-        <>
+        <>      
             <Flex alignItems={'center'} justifyContent={'center'}>
                 <Select
                     isDisabled={!currentUser}
                     onChange={(e) => {
+                        setRegional(e.target.value);
                         fetchTeams(e.target.value);
                         fetchSuggestedTeams(e.target.value);
                         fetchPicklist(e.target.value);
@@ -169,7 +185,7 @@ const Picklist: FC<PicklistProps> = () => {
                     })}
                 </Select>
             </Flex>
-            <Box bg={'mv-purple.200'}>
+                <Box bg={'mv-purple.200'}>
                 <div
                     style={{
                         display: 'flex',
@@ -222,12 +238,12 @@ const Picklist: FC<PicklistProps> = () => {
                         })}
                     </Flex>
                 </div>
-            </Box>
+                </Box>
         
             <div
                 style={{
                     display: 'grid',
-                    flexDirection: 'column',
+                    flexDirection: 'column-reverse',
                     alignItems: 'center',
                     justifyContent: 'center',
                     marginTop: '10px',

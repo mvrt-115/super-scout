@@ -88,6 +88,9 @@ export const matchUpdate = functions.firestore
             }
         });
         newTeamData.matches = matches;
+        if(!teamData["Suggest To Picklist"] && matchData["Suggest To Picklist"]){
+            newTeamData["Suggest To Picklist"] = true;
+        }
         // functions.logger.info(newTeamData);
         db.collection('years')
             .doc(context.params.year)
