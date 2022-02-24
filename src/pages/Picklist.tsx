@@ -4,7 +4,7 @@ import { FC, SyntheticEvent, useEffect, useState, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../firebase';
 
-interface PicklistProps {}
+interface PicklistProps { }
 
 const Picklist: FC<PicklistProps> = () => {
     const year = new Date().getFullYear();
@@ -38,15 +38,15 @@ const Picklist: FC<PicklistProps> = () => {
         fetchSuggestedTeams(regional);
         fetchTeams(regional);
     }, []);
-    
-    useEffect(() =>{
+
+    useEffect(() => {
         setLoading(true);
         fetchPicklist(regional);
         fetchTeams(regional);
         fetchSuggestedTeams(regional);
     }, [regional])
 
-    useEffect(()=>{
+    useEffect(() => {
         setLoading(false);
     }, [suggestedTeams])
     const fetchRegionals = async () => {
@@ -98,27 +98,27 @@ const Picklist: FC<PicklistProps> = () => {
             .collection('regionals')
             .doc(regionalChoice)
             .collection('teams');
-            teamList.get().then((data) => {
-                let handleLoop = async() => {
-                    let promises: Promise<any>[] = [];
-                    for(let doc of data.docs){
-                        promises.push(
+        teamList.get().then((data) => {
+            let handleLoop = async () => {
+                let promises: Promise<any>[] = [];
+                for (let doc of data.docs) {
+                    promises.push(
                         teamList.doc(doc.id).collection('matches').get()
-                        .then((matchList: any) => {
-                            for(let match of matchList.docs) {
-                                if(match.get("Suggest To Picklist")) { 
-                                    suggested.push(doc.id);
-                                    break;
+                            .then((matchList: any) => {
+                                for (let match of matchList.docs) {
+                                    if (match.get("Suggest To Picklist")) {
+                                        suggested.push(doc.id);
+                                        break;
+                                    };
                                 };
-                            };
-                        }));
-                    }
-                    await Promise.all(promises);
-                    setSuggestedTeams(suggested);
-                    console.log(suggested);
+                            }));
                 }
-                handleLoop();
-            })
+                await Promise.all(promises);
+                setSuggestedTeams(suggested);
+                console.log(suggested);
+            }
+            handleLoop();
+        })
     };
 
     const fetchPicklist = async (regionalChoice: string) => {
@@ -130,7 +130,7 @@ const Picklist: FC<PicklistProps> = () => {
             .collection('picklist')
             .get()
             .then((fields) => {
-                if (fields.docs[0]?.data().picklist.length > 0)
+                if (fields.docs[0]?.data().picklist?.length > 0)
                     setPicklist(fields.docs[0].data().picklist);
                 else setPicklist([]);
             });
@@ -163,8 +163,21 @@ const Picklist: FC<PicklistProps> = () => {
         dragItem.current = null;
         dragNode.current = null;
     };
+
+    if (loading) {
+        <div
+            style={{
+                width: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+            }}
+        >
+            <Spinner />
+        </div>
+    }
     return (
-        <>      
+        <>
             <Flex alignItems={'center'} justifyContent={'center'}>
                 <Box bg={'mv.purple-200'}>
                     <Select
@@ -186,64 +199,64 @@ const Picklist: FC<PicklistProps> = () => {
                     </Select>
                 </Box>
             </Flex>
-                <Box bg={'mv-purple.200'}>
-                    <div
-                        style={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            paddingTop: '10px',
-                            paddingBottom: '10px',
-                            fontWeight: 'bold',
-                        }}
-                    >
-                        <h3
-                            style={{
-                                color: 'white',
-                                margin: 'auto',
-                                marginBottom: '0.35rem',
-                                marginTop: '8px',
-                                fontWeight: 'bolder',
-                                fontSize : '20px'
-                            }}
-                        >
-                            Current Picklist:
-                        </h3>
-                        <Flex align="center" justify="center">
-                            {picklist?.map((teamNum, index) => {
-                                return (
-                                    <div
-                                        style={{
-                                            marginLeft: '15px',
-                                            marginRight: '15px',
-                                        }}
-                                        draggable
-                                        onDragStart={(e) => {
-                                            startDrag(e, index);
-                                        }}
-                                        onDragEnter={(e) =>
-                                            handleDragEnter(e, index)
-                                        }
-                                    >
-                                        <h2
-                                            style={{
-                                                fontSize: '2rem',
-                                                color: 'white',
-                                            }}
-                                        >
-                                            {teamNum}
-                                        </h2>
-                                    </div>
-                                );
-                            })}
-                        </Flex>
-                    </div>
-                </Box>
-            <div style={{display : 'flex'}}>
+            <Box bg={'mv-purple.200'}>
                 <div
                     style={{
-                        flex : 1,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        paddingTop: '10px',
+                        paddingBottom: '10px',
+                        fontWeight: 'bold',
+                    }}
+                >
+                    <h3
+                        style={{
+                            color: 'white',
+                            margin: 'auto',
+                            marginBottom: '0.35rem',
+                            marginTop: '8px',
+                            fontWeight: 'bolder',
+                            fontSize: '20px'
+                        }}
+                    >
+                        Current Picklist:
+                    </h3>
+                    <Flex align="center" justify="center">
+                        {picklist?.map((teamNum, index) => {
+                            return (
+                                <div
+                                    style={{
+                                        marginLeft: '15px',
+                                        marginRight: '15px',
+                                    }}
+                                    draggable
+                                    onDragStart={(e) => {
+                                        startDrag(e, index);
+                                    }}
+                                    onDragEnter={(e) =>
+                                        handleDragEnter(e, index)
+                                    }
+                                >
+                                    <h2
+                                        style={{
+                                            fontSize: '2rem',
+                                            color: 'white',
+                                        }}
+                                    >
+                                        {teamNum}
+                                    </h2>
+                                </div>
+                            );
+                        })}
+                    </Flex>
+                </div>
+            </Box>
+            <div style={{ display: 'flex' }}>
+                <div
+                    style={{
+                        flex: 1,
                         flexDirection: 'row',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -251,12 +264,12 @@ const Picklist: FC<PicklistProps> = () => {
                     }}
                 >
                     <h3 style={{
-                            fontWeight: 'bolder', 
-                            fontSize: '1.75rem',
-                            textAlign: 'center'
-                        }}
+                        fontWeight: 'bolder',
+                        fontSize: '1.75rem',
+                        textAlign: 'center'
+                    }}
                     >
-                    All Teams:
+                        All Teams:
                     </h3>
                     {teams?.map((team) => {
                         return (
@@ -302,14 +315,14 @@ const Picklist: FC<PicklistProps> = () => {
                         alignItems: 'center',
                         justifyContent: 'center',
                         verticalAlign: 'middle',
-                        marginTop : '1vh'
+                        marginTop: '1vh'
                     }}
                 >
-                    <h3 
+                    <h3
                         style={{
-                            fontWeight: 'bolder', 
-                            fontSize: '1.75rem', 
-                            marginRight: '2.', 
+                            fontWeight: 'bolder',
+                            fontSize: '1.75rem',
+                            marginRight: '2.',
                             textAlign: 'center'
                         }}
                     >
