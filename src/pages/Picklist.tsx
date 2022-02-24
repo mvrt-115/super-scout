@@ -165,16 +165,18 @@ const Picklist: FC<PicklistProps> = () => {
     };
 
     if (loading) {
-        <div
-            style={{
-                width: '100%',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-            }}
-        >
-            <Spinner />
-        </div>
+        return (
+            <div
+                style={{
+                    width: '100%',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                }}
+            >
+                <Spinner />
+            </div>
+        )
     }
     return (
         <>
