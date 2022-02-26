@@ -1,6 +1,9 @@
 /* eslint-disable no-loop-func */
-import { Link, Checkbox, Select, Box, Flex, Spinner } from '@chakra-ui/react';
+import { Link, Checkbox, Select, Box, Flex, Spinner, textDecoration, transition } from '@chakra-ui/react';
 import { FC, SyntheticEvent, useEffect, useState, useRef } from 'react';
+import { IoEaselSharp } from 'react-icons/io5';
+import { LineChart } from 'recharts';
+import { transform } from 'typescript';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../firebase';
 
@@ -17,6 +20,7 @@ const Picklist: FC<PicklistProps> = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const dragItem = useRef<number | null>();
     const dragNode = useRef<EventTarget | null>();
+
 
     useEffect(() => {
         if (picklist.length > 0 && regional.length > 2) {
@@ -46,9 +50,6 @@ const Picklist: FC<PicklistProps> = () => {
         fetchSuggestedTeams(regional);
     }, [regional])
 
-    useEffect(() => {
-        setLoading(false);
-    }, [suggestedTeams])
     const fetchRegionals = async () => {
         db.collection('years')
             .doc(year + '')
@@ -89,9 +90,7 @@ const Picklist: FC<PicklistProps> = () => {
     };
 
     const fetchSuggestedTeams = async (regionalChoice: string) => {
-        //if (suggestedTeams.length > 1) setSuggestedTeams([]);
         if (regionalChoice.length < 3) return;
-        //setRegional(regionalChoice);
         let suggested: string[] = [];
         let teamList = db.collection('years')
             .doc(year + '')
@@ -115,10 +114,10 @@ const Picklist: FC<PicklistProps> = () => {
                 }
                 await Promise.all(promises);
                 setSuggestedTeams(suggested);
-                console.log(suggested);
             }
             handleLoop();
-        })
+        });
+        setLoading(false);
     };
 
     const fetchPicklist = async (regionalChoice: string) => {
@@ -137,7 +136,6 @@ const Picklist: FC<PicklistProps> = () => {
     };
 
     const startDrag = (e: SyntheticEvent, index: number) => {
-        console.log('start drag');
         dragItem.current = index;
         dragNode.current = e.target;
         dragNode.current.addEventListener('dragend', dragEnd);
@@ -158,7 +156,6 @@ const Picklist: FC<PicklistProps> = () => {
     };
 
     const dragEnd = () => {
-        console.log('drag end');
         dragNode?.current?.removeEventListener('dragend', dragEnd);
         dragItem.current = null;
         dragNode.current = null;
@@ -241,20 +238,30 @@ const Picklist: FC<PicklistProps> = () => {
                                         handleDragEnter(e, index)
                                     }
                                 >
-                                    <h2
-                                        style={{
-                                            fontSize: '2rem',
-                                            color: 'white',
+                                    <Link
+                                        href={`./Dashboard/${year}/${regional}/${teamNum}`}
+                                        color={'white'}
+                                        styles={{
+                                            position: 'relative',
+                                            textDecoration: 'none'
                                         }}
+                                        isExternal
                                     >
-                                        {teamNum}
-                                    </h2>
+                                        <h2
+                                            style={{
+                                                fontSize: '2rem',
+                                                color: 'white',
+                                            }}
+                                        >
+                                            {`${index + 1}. ${teamNum}`}
+                                        </h2>
+                                    </Link>
                                 </div>
                             );
                         })}
                     </Flex>
                 </div>
-            </Box>
+            </Box >
             <div style={{ display: 'flex' }}>
                 <div
                     style={{
