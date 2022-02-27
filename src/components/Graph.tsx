@@ -51,7 +51,6 @@ const Graph: FC<GraphProps> = ({ graphInfo, data, sortBy }) => {
             if(isNaN(a[sortBy])) b[sortBy] = -10;
             return b[sortBy]-a[sortBy];
         });
-        console.log(data);
     }
 
     const getTickCount = () => {
