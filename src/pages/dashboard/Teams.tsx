@@ -45,11 +45,10 @@ const Teams: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
         )
             .then((res) => res.json())
             .then((data) => {
-                if (Date.parse(data['start_date']) >= Date.now()) fetchData();
+                if (Date.parse(data['start_date']) <= Date.now()) fetchData();
                 setStartDate(Date.parse(data['start_date']));
             });
     }, [year, regional]);
-
     if (Date.now() < startDate)
         return (
             <div

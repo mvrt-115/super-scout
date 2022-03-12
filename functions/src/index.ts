@@ -41,6 +41,7 @@ export const matchUpdate = functions.firestore
                 .collection('matches')
                 .get()
         ).docs.length;
+        newTeamData["teamNum"] = context.params.team;
         functions.logger.info(teamData);
         Object.keys(matchData).forEach((key) => {
             if (

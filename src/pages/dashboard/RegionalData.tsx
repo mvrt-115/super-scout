@@ -35,7 +35,6 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
             setPresetGraphs();
     }, [year]);
 
-
     const setPresetGraphs = async () =>{
         await db.collection('years')
         .doc(year)
@@ -110,8 +109,10 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                         index = i;
                     }
                 });
+                //console.log(doc.data());
                 teams[index] = { ...teams[index], ...doc.data() };
             });
+            console.log(teams);
             setTeams(teams);
         };
         fetchData().then(() => setLoading(false));
@@ -125,7 +126,7 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 {graphs.map((graph, index) => (
                     <>
                         <GraphInput
-                            keys={Object.keys(teams[1])}
+                            keys={Object.keys(teams[1].length > teams[0].length ? teams[1] : teams[0])}
                             graphData={graph}
                             onChange={(graphData) => {
                                 let newGraphs = [...graphs];
@@ -190,51 +191,48 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
     }
 
     const renderTable = () => {
-        const checkTeam = teams[0].length> teams[1].length ? teams[0] : teams[1];
+        const checkTeam = Object.keys(teams[0]).length> Object.keys(teams[1]).length ? teams[0] : teams[1];
         return (
             <ThemeProvider theme = { createTheme() }>
-                <TableContainer component={Paper} style={{minWidth: "90vw"}}>
+                <TableContainer component={Paper} style={{minWidth: "90vw", maxHeight: "90vw"}}>
                     <Table stickyHeader sx={{ minWidth: 950, width : '90vw'}}>
                         <TableHead>
                             <TableRow>
-                                <TableCell>
-                                    {/*<Button onClick={()=>{
+                                <TableCell key="teamNum">
+                                    <Button onClick={()=>{
                                         let temp: any[] = teams;
                                         temp.sort((a,b)=> a["teamNum"]-b["teamNum"]);
                                         setTeams(temp);
                                     }}>
                                         teamNum
-                                </Button>*/}
-                                teamNum
+                                </Button>
                                 </TableCell>
-                                {Object.keys(checkTeam).map((key) => {
+                                {(Object.keys(checkTeam).map((key) => {
+                                    if(key!="teamNum")
                                     return (
-                                        key!="teamNum" ? 
-                                        <TableCell>
-                                            {/*<Button onClick={()=>{
+                                        <TableCell key={key}>
+                                            <Button onClick={()=>{
                                                 let temp: any[] = teams;
-                                                temp.sort((a,b)=>
-                                                    a[key] && b[key] ? a[key]-b[key] : (a[key] ? -1 : 1))
+                                                temp.sort((a,b)=> a[key]-b[key]);
                                                 setTeams(temp);
                                             }}>
-                                        {key}
-                                        </Button>*/}
-                                        {key}
-                                        </TableCell> : <></>
+                                                {key}
+                                            </Button>
+                                        </TableCell>
                                     );
-                                })}
+                                }))}
                             </TableRow>
                         </TableHead>
                         <TableBody>
                         {teams.map((team) => (
-                            <TableRow
+                            <TableRow key={team["teamNum"]}
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                             >
-                            <TableCell>{team["teamNum"]}</TableCell>
-                            {Object.keys(team).map((field) => {
+                            <TableCell key={team["teamNum"]+"teamNum"}>{team["teamNum"]}</TableCell>
+                            {Object.keys(checkTeam).map((field) => {
+                                if(field!="teamNum")
                                 return (
-                                    field=="teamNum" ? <></> : 
-                                    <TableCell>{JSON.stringify(team[field]).indexOf('.')==-1 ? team[field] : parseFloat(team[field]).toFixed(3)}</TableCell>
+                                   team[field] !== undefined ? <TableCell key={team["teamNum"]+field}>{JSON.stringify(team[field]).indexOf('.')==-1 ? team[field] : parseFloat(team[field]).toFixed(3)}</TableCell> : <TableCell></TableCell>
                                 );
                             })}
                             </TableRow>
