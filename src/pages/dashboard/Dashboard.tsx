@@ -23,7 +23,9 @@ const Dashboard: FC<DashboardProps> = () => {
                 marginLeft: '10%',
             }}
         >
-            <Heading marginBottom={'1%'}>Dashboard</Heading>
+            <Heading marginBottom={'3%'} marginTop="3%">
+                Dashboard
+            </Heading>
             <Switch>
                 <Route exact path={`${match.path}`} component={DashboardHome} />
                 <Route
