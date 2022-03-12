@@ -88,7 +88,6 @@ const ScoutingInputs: FC<ScoutingInputsProps> = () => {
                     .doc(currentUser.uid)
                     .get();
                 const userData: any = userRef.data();
-                console.log(userData);
                 const { role } = userData;
                 if (role === 'admin') {
                     setDisabled(false);
@@ -210,8 +209,6 @@ const ScoutingInputs: FC<ScoutingInputsProps> = () => {
                                     const newAutonInputs = [...autonInputs];
                                     newAutonInputs[index] = scoutInput;
                                     setAutonInputs(newAutonInputs);
-
-                                    console.log(newAutonInputs);
                                 }}
                                 onDelete={() => {
                                     const newAutonInputs = [...autonInputs];
@@ -254,8 +251,6 @@ const ScoutingInputs: FC<ScoutingInputsProps> = () => {
                                     const newTeleopInputs = [...teleopInputs];
                                     newTeleopInputs[index] = scoutInput;
                                     setTeleopInputs(newTeleopInputs);
-
-                                    console.log(newTeleopInputs);
                                 }}
                                 onDelete={() => {
                                     const newTeleopInputs = [...teleopInputs];

@@ -1,10 +1,13 @@
 import { AddIcon } from '@chakra-ui/icons';
-import { Heading, IconButton, Spinner, Tooltip } from '@chakra-ui/react';
+import { Button, Heading, IconButton, Spinner, Tooltip } from '@chakra-ui/react';
 import React, { FC, useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import Graph from '../../components/Graph';
 import GraphInput from '../../components/GraphInput';
 import { db } from '../../firebase';
+import Paper from '@mui/material/Paper';
+import { TableContainer, Table, TableHead, TableRow, TableBody, TableCell } from '@mui/material';
+import { ThemeProvider, createTheme } from '@mui/material';
 
 interface RouteParams {
     year: string;
@@ -14,6 +17,7 @@ interface RouteParams {
 const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
     const [sortBy, setSortBy] = useState<string>();
     const [teams, setTeams] = useState<any[]>([]);
+    const [table, setTable] = useState<boolean>(false);
     const [graphs, setGraphs] = useState<any[]>([
         {
             x: 'teamNum',
@@ -28,15 +32,30 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
         const regionalDisplay = localStorage.getItem('regionalDisplay' + year);
         if (regionalDisplay) setGraphs(JSON.parse(regionalDisplay));
         else
-            setGraphs([
-                {
-                    x: 'teamNum',
-                    y: ['autonPoints', 'teleopPoints', 'endgamePoints'],
-                    type: 'Bar',
-                },
-            ]);
+            setPresetGraphs();
     }, [year]);
 
+
+    const setPresetGraphs = async () =>{
+        await db.collection('years')
+        .doc(year)
+        .collection('regionals')
+        .doc(regional)
+        .collection("presetGraphs")
+        .doc('regionals')
+        .get()
+        .then((doc) => {
+            const temp: any[] = [];
+            doc.data()!["graphs"]?.forEach((preset: any)=>{
+                temp.push({
+                    x: preset["xAxis"],
+                    y: [preset["yAxis1"],preset["yAxis2"],preset["yAxis3"]],
+                    type: preset["graphType"]
+                });
+            });
+            setGraphs(temp);
+        });
+    }
     useEffect(() => {
         const fetchData = async () => {
             const regionalKey = year + regional;
@@ -91,26 +110,22 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                         index = i;
                     }
                 });
-                console.log(doc.data());
                 teams[index] = { ...teams[index], ...doc.data() };
             });
             setTeams(teams);
-            console.log(teams);
         };
         fetchData().then(() => setLoading(false));
     }, [regional, year]);
     if (!teams || !teams.length) return null;
     if (loading) return <Spinner />;
-    return (
-        <div style={{ width: '70%', display: 'flex', flexDirection:'column', alignItems: 'center', justifyContent: 'center', padding: '5%'}}>
-            <Heading textAlign={'center'} fontSize={'1.5em'} marginBottom="3%">
-                {regional.toUpperCase()} {year}
-            </Heading>
+
+    const renderGraphs = () => {
+        return(
             <div>
                 {graphs.map((graph, index) => (
                     <>
                         <GraphInput
-                            keys={Object.keys(teams[0])}
+                            keys={Object.keys(teams[1])}
                             graphData={graph}
                             onChange={(graphData) => {
                                 let newGraphs = [...graphs];
@@ -142,7 +157,7 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                         'teleopPoints',
                                         'endgamePoints',
                                     ],
-                                    sortBy: 'ccwm',
+                                    sortBy: 'teleopPoints',
                                     type: 'Bar',
                                 }
                             }
@@ -170,6 +185,101 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                     />
                 </Tooltip>
             </div>
+
+        );
+    }
+
+    const renderTable = () => {
+        const checkTeam = teams[0].length> teams[1].length ? teams[0] : teams[1];
+        return (
+            <ThemeProvider theme = { createTheme() }>
+                <TableContainer component={Paper} style={{minWidth: "90vw"}}>
+                    <Table stickyHeader sx={{ minWidth: 950, width : '90vw'}}>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>
+                                    {/*<Button onClick={()=>{
+                                        let temp: any[] = teams;
+                                        temp.sort((a,b)=> a["teamNum"]-b["teamNum"]);
+                                        setTeams(temp);
+                                    }}>
+                                        teamNum
+                                </Button>*/}
+                                teamNum
+                                </TableCell>
+                                {Object.keys(checkTeam).map((key) => {
+                                    return (
+                                        key!="teamNum" ? 
+                                        <TableCell>
+                                            {/*<Button onClick={()=>{
+                                                let temp: any[] = teams;
+                                                temp.sort((a,b)=>
+                                                    a[key] && b[key] ? a[key]-b[key] : (a[key] ? -1 : 1))
+                                                setTeams(temp);
+                                            }}>
+                                        {key}
+                                        </Button>*/}
+                                        {key}
+                                        </TableCell> : <></>
+                                    );
+                                })}
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                        {teams.map((team) => (
+                            <TableRow
+                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                            >
+                            <TableCell>{team["teamNum"]}</TableCell>
+                            {Object.keys(team).map((field) => {
+                                return (
+                                    field=="teamNum" ? <></> : 
+                                    <TableCell>{JSON.stringify(team[field]).indexOf('.')==-1 ? team[field] : parseFloat(team[field]).toFixed(3)}</TableCell>
+                                );
+                            })}
+                            </TableRow>
+                        ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            </ThemeProvider>
+        );
+    }
+
+    return (
+        <div style={{ width: '70%', display: 'flex', flexDirection:'column', alignItems: 'center', justifyContent: 'center', padding: '5%'}}>
+            <Heading textAlign={'center'} fontSize={'1.5em'} marginBottom="3%">
+                {regional.toUpperCase()} {year}
+            </Heading>
+            <div>
+                {table ? <Button
+                                variant="outline"
+                                aria-label="Table"
+                                onClick={() => {
+                                    setTable(false);
+                                }}
+                                width={'100%'}
+                                marginTop={4}
+                                marginBottom={4}
+                                colorScheme={'mv-purple'}
+                >
+                    Graphs
+                </Button> : 
+                <Button
+                                variant="outline"
+                                aria-label="Table"
+                                onClick={() => {
+                                    setTable(true);
+                                }}
+                                width={'100%'}
+                                marginTop={4}
+                                marginBottom={4}
+                                colorScheme={'mv-purple'}
+                >
+                    Table
+                </Button>}
+            </div>
+            {table ? renderTable() : renderGraphs()}
         </div>
     );
 };

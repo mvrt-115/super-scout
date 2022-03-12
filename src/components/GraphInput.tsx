@@ -25,7 +25,7 @@ const GraphInput: FC<GraphInputProps> = ({
     const [yAxis1, setYAxis1] = useState<string>(graphData?.y[0] || keys[1]);
     const [yAxis2, setYAxis2] = useState<string>(graphData?.y[1] || 'none');
     const [yAxis3, setYAxis3] = useState<string>(graphData?.y[2] || 'none');
-    const [sortBy, setSortBy] = useState<string>(graphData?.sortBy || 'ccwm');
+    const [sortBy, setSortBy] = useState<string>(graphData?.sortBy || (graphData?.y[0] || 'ccwm'));
     const [type, setType] = useState<
         'Bar' | 'Area' | 'Line' | 'Scatter' | 'Pie'
     >('Bar');

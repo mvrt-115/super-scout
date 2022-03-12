@@ -337,7 +337,17 @@ const Picklist: FC<PicklistProps> = () => {
                     >
                         Suggested Teams:
                     </h3>
-                    {suggestedTeams?.map((team) => {
+                    {loading && <div
+                                style={{
+                                    width: '100%',
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                }}
+                            >
+                                <Spinner />
+                    </div>}
+                    {!loading && suggestedTeams?.map((team) => {
                         return (
                             <div
                                 style={{

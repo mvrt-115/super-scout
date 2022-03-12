@@ -28,7 +28,6 @@ const Graph: FC<GraphProps> = ({ graphInfo, data, sortBy }) => {
     // const [ticks, setTicks] = useState<number>(5);
 
     useEffect(() => {
-        console.log(sortBy);
         let graphingData: any[] = [];
         data.forEach((data) => {
             const newData: any = {};
@@ -40,7 +39,7 @@ const Graph: FC<GraphProps> = ({ graphInfo, data, sortBy }) => {
         });
         sortData(graphingData);
         setGraphingData(graphingData);
-    });
+    }, [sortBy, graphInfo.x, graphInfo.y, graphInfo.type]);
 
 
     const sortData = (data : any[]) => {
