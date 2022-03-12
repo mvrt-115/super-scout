@@ -27,7 +27,7 @@ const QRCodeGenerator: FC<QRCodeGeneratorProps> = () => {
     const [regionals, setRegionals] = useState<string[]>([]);
     const [qrcode, setQRCode] = useState<string>();
     const [regional, setRegional] = useState<string>('');
-    const [alliance, setAlliance] = useState<string>('');
+    const [alliance, setAlliance] = useState<string>('b');
     const [matchNum, setMatchNum] = useState<string | number>('');
     const [team1, setTeam1] = useState<string | number>('');
     const [team2, setTeam2] = useState<string | number>('');
@@ -48,6 +48,8 @@ const QRCodeGenerator: FC<QRCodeGeneratorProps> = () => {
 
     const handleSubmit = (event: SyntheticEvent) => {
         event.preventDefault();
+
+        console.log(alliance);
 
         setQRCode(
             `${matchNum}@${regional}:${alliance}[${team1},${team2},${team3}]`,
