@@ -33,7 +33,6 @@ const Teams: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
             },
         })
             .then((res) => res.json())
-            .then((data) => console.log(data));
 
         fetch(
             `https://www.thebluealliance.com/api/v3/event/${year}${regional}/simple`,
@@ -49,6 +48,34 @@ const Teams: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 setStartDate(Date.parse(data['start_date']));
             });
     }, [year, regional]);
+    const downloadData = async () =>{
+        const teamList = db.collection("years").doc(year).collection("regionals").doc(regional).collection('teams');
+        teamList.get().then(async (coll)=>{
+            let obj: any = {"teams":{}};
+            await Promise.all(coll.docs.map(async (doc)=>{
+                let temp: any = {};
+                temp = doc.data();
+                temp['matchList'] = {};
+                await teamList.doc(doc.id).collection("matches").get()
+                .then((matches)=>{
+                    matches.docs.forEach((match)=>{
+                       temp['matchList'][match.id] =match.data();
+                    })
+                })
+                obj["teams"][doc.id] = temp;
+            }))
+            const fileName = "file";
+            const json = JSON.stringify(obj);
+            const blob = new Blob([json],{type:'application/json'});
+            const href = await URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = href;
+            link.download = fileName + ".json";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        })
+    }
     if (Date.now() < startDate)
         return (
             <div
@@ -73,7 +100,7 @@ const Teams: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
         );
 
     return (
-        <>
+        <><>
             <Button
                 as={Link}
                 to={`/dashboard/${year}/${regional}/regional-data/`}
@@ -83,11 +110,20 @@ const Teams: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
             >
                 View Regional Data
             </Button>
-            <Grid
-                gap={1}
-                templateColumns={'repeat(auto-fit, minmax(200px, 1fr))'}
+            <Button
+                onClick={downloadData}
+                colorScheme="mv-purple"
+                size="lg"
                 width={'100%'}
+                marginTop = '2'
             >
+                Download Data
+            </Button>
+        </><Grid
+            gap={1}
+            templateColumns={'repeat(auto-fit, minmax(200px, 1fr))'}
+            width={'100%'}
+        >
                 {teams.map((team) => (
                     <li className="link" key={team}>
                         <Link

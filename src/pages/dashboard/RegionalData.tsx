@@ -27,7 +27,7 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
     ]);
     const { year, regional } = match.params;
     const [loading, setLoading] = useState<boolean>(true);
-
+    const [template, setTemplate] = useState<string[]>(['']);
     useEffect(() => {
         const regionalDisplay = localStorage.getItem('regionalDisplay' + year);
         if (regionalDisplay) setGraphs(JSON.parse(regionalDisplay));
@@ -108,25 +108,26 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                     if (team.teamNum === doc.id) {
                         index = i;
                     }
+
                 });
                 //console.log(doc.data());
                 teams[index] = { ...teams[index], ...doc.data() };
             });
-            console.log(teams);
+            setTemplate(Object.keys(teams[0]).length>Object.keys(teams[1]).length ? Object.keys(teams[0]) : Object.keys(teams[1]));
             setTeams(teams);
         };
         fetchData().then(() => setLoading(false));
     }, [regional, year]);
     if (!teams || !teams.length) return null;
     if (loading) return <Spinner />;
-
     const renderGraphs = () => {
+        
         return(
             <div>
                 {graphs.map((graph, index) => (
                     <>
                         <GraphInput
-                            keys={Object.keys(teams[1].length > teams[0].length ? teams[1] : teams[0])}
+                            keys={template}
                             graphData={graph}
                             onChange={(graphData) => {
                                 let newGraphs = [...graphs];
@@ -189,34 +190,55 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
 
         );
     }
-
+    const sort = (ascending: boolean, key: string) =>{
+        let temp = [...teams];
+        temp.sort((a,b) =>{
+            if(a === undefined){
+                return 1;
+            }
+            if(b === undefined){
+                return -1;
+            }
+            return ascending ? a [key] - b[key] : b[key] - a[key];
+        })
+        setTeams(temp);
+    }
+    
     const renderTable = () => {
-        const checkTeam = Object.keys(teams[0]).length> Object.keys(teams[1]).length ? teams[0] : teams[1];
+        const teamTemplate = Object.keys(teams[0]).length > Object.keys(teams[1]).length ? teams[0] : teams[1];
         return (
             <ThemeProvider theme = { createTheme() }>
                 <TableContainer component={Paper} style={{minWidth: "90vw", maxHeight: "90vw"}}>
                     <Table stickyHeader sx={{ minWidth: 950, width : '90vw'}}>
                         <TableHead>
-                            <TableRow>
-                                <TableCell key="teamNum">
-                                    <Button onClick={()=>{
-                                        let temp: any[] = teams;
-                                        temp.sort((a,b)=> a["teamNum"]-b["teamNum"]);
-                                        setTeams(temp);
-                                    }}>
-                                        teamNum
-                                </Button>
+                            <TableRow style={{whiteSpace: "nowrap"}}>
+                                <TableCell key = "teamNum">
+                                    Team Number
+                                        <Button onClick={()=>{
+                                            sort(false, "teamNum");
+                                        }}>
+                                                ↑
+                                        </Button>
+                                        <Button onClick={()=>{
+                                            sort(true,"teamNum");
+                                        }}>
+                                            ↓
+                                        </Button>  
                                 </TableCell>
-                                {(Object.keys(checkTeam).map((key) => {
+                                {(template.map((key) => {
                                     if(key!="teamNum")
                                     return (
                                         <TableCell key={key}>
+                                            {key}
                                             <Button onClick={()=>{
-                                                let temp: any[] = teams;
-                                                temp.sort((a,b)=> a[key]-b[key]);
-                                                setTeams(temp);
+                                                sort(false, key);
                                             }}>
-                                                {key}
+                                                ↑      
+                                            </Button>
+                                            <Button onClick={()=>{
+                                                sort(true,key)
+                                            }}>
+                                                ↓
                                             </Button>
                                         </TableCell>
                                     );
@@ -229,11 +251,11 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                             >
                             <TableCell key={team["teamNum"]+"teamNum"}>{team["teamNum"]}</TableCell>
-                            {Object.keys(checkTeam).map((field) => {
-                                if(field!="teamNum")
-                                return (
-                                   team[field] !== undefined ? <TableCell key={team["teamNum"]+field}>{JSON.stringify(team[field]).indexOf('.')==-1 ? team[field] : parseFloat(team[field]).toFixed(3)}</TableCell> : <TableCell></TableCell>
-                                );
+                            {Object.keys(teamTemplate).map((field) => {
+                                if(field != "teamNum")
+                                    return (
+                                        team[field] !== undefined ? <TableCell key={team["teamNum"]+field}>{JSON.stringify(team[field]).indexOf('.')==-1 ? team[field] : parseFloat(team[field]).toFixed(3)}</TableCell> : <TableCell></TableCell>
+                                    );
                             })}
                             </TableRow>
                         ))}
