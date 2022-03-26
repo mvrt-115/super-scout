@@ -35,25 +35,25 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
             setPresetGraphs();
     }, [year]);
 
-    const setPresetGraphs = async () =>{
+    const setPresetGraphs = async () => {
         await db.collection('years')
-        .doc(year)
-        .collection('regionals')
-        .doc(regional)
-        .collection("presetGraphs")
-        .doc('regionals')
-        .get()
-        .then((doc) => {
-            const temp: any[] = [];
-            doc.data()!["graphs"]?.forEach((preset: any)=>{
-                temp.push({
-                    x: preset["xAxis"],
-                    y: [preset["yAxis1"],preset["yAxis2"],preset["yAxis3"]],
-                    type: preset["graphType"]
+            .doc(year)
+            .collection('regionals')
+            .doc(regional)
+            .collection("presetGraphs")
+            .doc('regionals')
+            .get()
+            .then((doc) => {
+                const temp: any[] = [];
+                doc.data()!["graphs"]?.forEach((preset: any) => {
+                    temp.push({
+                        x: preset["xAxis"],
+                        y: [preset["yAxis1"], preset["yAxis2"], preset["yAxis3"]],
+                        type: preset["graphType"]
+                    });
                 });
+                setGraphs(temp);
             });
-            setGraphs(temp);
-        });
     }
     useEffect(() => {
         const fetchData = async () => {
@@ -110,10 +110,9 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                     }
 
                 });
-                //console.log(doc.data());
                 teams[index] = { ...teams[index], ...doc.data() };
             });
-            setTemplate(Object.keys(teams[0]).length>Object.keys(teams[1]).length ? Object.keys(teams[0]) : Object.keys(teams[1]));
+            setTemplate(Object.keys(teams[0]).length > Object.keys(teams[1]).length ? Object.keys(teams[0]) : Object.keys(teams[1]));
             setTeams(teams);
         };
         fetchData().then(() => setLoading(false));
@@ -121,8 +120,8 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
     if (!teams || !teams.length) return null;
     if (loading) return <Spinner />;
     const renderGraphs = () => {
-        
-        return(
+
+        return (
             <div>
                 {graphs.map((graph, index) => (
                     <>
@@ -163,7 +162,7 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                     type: 'Bar',
                                 }
                             }
-                            sortBy = { sortBy ? sortBy : ''}
+                            sortBy={sortBy ? sortBy : ''}
                         />
                     </>
                 ))}
@@ -190,75 +189,75 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
 
         );
     }
-    const sort = (ascending: boolean, key: string) =>{
+    const sort = (ascending: boolean, key: string) => {
         let temp = [...teams];
-        temp.sort((a,b) =>{
-            if(a === undefined){
+        temp.sort((a, b) => {
+            if (a === undefined) {
                 return 1;
             }
-            if(b === undefined){
+            if (b === undefined) {
                 return -1;
             }
-            return ascending ? a [key] - b[key] : b[key] - a[key];
+            return ascending ? a[key] - b[key] : b[key] - a[key];
         })
         setTeams(temp);
     }
-    
+
     const renderTable = () => {
         const teamTemplate = Object.keys(teams[0]).length > Object.keys(teams[1]).length ? teams[0] : teams[1];
         return (
-            <ThemeProvider theme = { createTheme() }>
-                <TableContainer component={Paper} style={{minWidth: "90vw", maxHeight: "90vw"}}>
-                    <Table stickyHeader sx={{ minWidth: 950, width : '90vw'}}>
+            <ThemeProvider theme={createTheme()}>
+                <TableContainer component={Paper} style={{ minWidth: "90vw", maxHeight: "90vw" }}>
+                    <Table stickyHeader sx={{ minWidth: 950, width: '90vw' }}>
                         <TableHead>
-                            <TableRow style={{whiteSpace: "nowrap"}}>
-                                <TableCell key = "teamNum">
+                            <TableRow style={{ whiteSpace: "nowrap" }}>
+                                <TableCell key="teamNum">
                                     Team Number
-                                        <Button onClick={()=>{
-                                            sort(false, "teamNum");
-                                        }}>
-                                                ↑
-                                        </Button>
-                                        <Button onClick={()=>{
-                                            sort(true,"teamNum");
-                                        }}>
-                                            ↓
-                                        </Button>  
+                                    <Button onClick={() => {
+                                        sort(false, "teamNum");
+                                    }}>
+                                        ↑
+                                    </Button>
+                                    <Button onClick={() => {
+                                        sort(true, "teamNum");
+                                    }}>
+                                        ↓
+                                    </Button>
                                 </TableCell>
                                 {(template.map((key) => {
-                                    if(key!="teamNum")
-                                    return (
-                                        <TableCell key={key}>
-                                            {key}
-                                            <Button onClick={()=>{
-                                                sort(false, key);
-                                            }}>
-                                                ↑      
-                                            </Button>
-                                            <Button onClick={()=>{
-                                                sort(true,key)
-                                            }}>
-                                                ↓
-                                            </Button>
-                                        </TableCell>
-                                    );
+                                    if (key != "teamNum")
+                                        return (
+                                            <TableCell key={key}>
+                                                {key}
+                                                <Button onClick={() => {
+                                                    sort(false, key);
+                                                }}>
+                                                    ↑
+                                                </Button>
+                                                <Button onClick={() => {
+                                                    sort(true, key)
+                                                }}>
+                                                    ↓
+                                                </Button>
+                                            </TableCell>
+                                        );
                                 }))}
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                        {teams.map((team) => (
-                            <TableRow key={team["teamNum"]}
-                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                            >
-                            <TableCell key={team["teamNum"]+"teamNum"}>{team["teamNum"]}</TableCell>
-                            {Object.keys(teamTemplate).map((field) => {
-                                if(field != "teamNum")
-                                    return (
-                                        team[field] !== undefined ? <TableCell key={team["teamNum"]+field}>{JSON.stringify(team[field]).indexOf('.')==-1 ? team[field] : parseFloat(team[field]).toFixed(3)}</TableCell> : <TableCell></TableCell>
-                                    );
-                            })}
-                            </TableRow>
-                        ))}
+                            {teams.map((team) => (
+                                <TableRow key={team["teamNum"]}
+                                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                >
+                                    <TableCell key={team["teamNum"] + "teamNum"}>{team["teamNum"]}</TableCell>
+                                    {Object.keys(teamTemplate).map((field) => {
+                                        if (field != "teamNum")
+                                            return (
+                                                team[field] !== undefined ? <TableCell key={team["teamNum"] + field}>{JSON.stringify(team[field]).indexOf('.') == -1 ? team[field] : parseFloat(team[field]).toFixed(3)}</TableCell> : <TableCell></TableCell>
+                                            );
+                                    })}
+                                </TableRow>
+                            ))}
                         </TableBody>
                     </Table>
                 </TableContainer>
@@ -267,37 +266,37 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
     }
 
     return (
-        <div style={{ width: '70%', display: 'flex', flexDirection:'column', alignItems: 'center', justifyContent: 'center', padding: '5%'}}>
+        <div style={{ width: '70%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '5%' }}>
             <Heading textAlign={'center'} fontSize={'1.5em'} marginBottom="3%">
                 {regional.toUpperCase()} {year}
             </Heading>
             <div>
                 {table ? <Button
-                                variant="outline"
-                                aria-label="Table"
-                                onClick={() => {
-                                    setTable(false);
-                                }}
-                                width={'100%'}
-                                marginTop={4}
-                                marginBottom={4}
-                                colorScheme={'mv-purple'}
+                    variant="outline"
+                    aria-label="Table"
+                    onClick={() => {
+                        setTable(false);
+                    }}
+                    width={'100%'}
+                    marginTop={4}
+                    marginBottom={4}
+                    colorScheme={'mv-purple'}
                 >
                     Graphs
-                </Button> : 
-                <Button
-                                variant="outline"
-                                aria-label="Table"
-                                onClick={() => {
-                                    setTable(true);
-                                }}
-                                width={'100%'}
-                                marginTop={4}
-                                marginBottom={4}
-                                colorScheme={'mv-purple'}
-                >
-                    Table
-                </Button>}
+                </Button> :
+                    <Button
+                        variant="outline"
+                        aria-label="Table"
+                        onClick={() => {
+                            setTable(true);
+                        }}
+                        width={'100%'}
+                        marginTop={4}
+                        marginBottom={4}
+                        colorScheme={'mv-purple'}
+                    >
+                        Table
+                    </Button>}
             </div>
             {table ? renderTable() : renderGraphs()}
         </div>

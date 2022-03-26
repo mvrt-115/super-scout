@@ -123,22 +123,19 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
             })
 
             setOprInfo(
-                `OPR (Offensive Power Rating): ${
-                    Math.round(opr * 100) / 100
+                `OPR (Offensive Power Rating): ${Math.round(opr * 100) / 100
                 }, which is in the ${Math.round(
                     (oprsList.indexOf(opr) / oprsList.length) * 100,
                 )}th percentile`,
             );
             setDprInfo(
-                `DPR (Defensive Power Rating): ${
-                    Math.round(dpr * 100) / 100
+                `DPR (Defensive Power Rating): ${Math.round(dpr * 100) / 100
                 }, which is in the ${Math.round(
                     (dprsList.indexOf(dpr) / dprsList.length) * 100,
                 )}th percentile`,
             );
             setCcwmInfo(
-                `CCWM (Calculated Contribution to Winning Margin): ${
-                    Math.round(ccwm * 100) / 100
+                `CCWM (Calculated Contribution to Winning Margin): ${Math.round(ccwm * 100) / 100
                 }, which is in the ${Math.round(
                     (ccwmsList.indexOf(ccwm) / ccwmsList.length) * 100,
                 )}th percentile`,
@@ -177,14 +174,14 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
     if (!matches || !matches.length) return null;
     if (loading) return <Spinner />;
     return (
-        <div style={{ width: '70%', display: 'flex', flexDirection:'column', alignItems: 'center', justifyContent: 'center', padding: '5%'}}>
+        <div style={{ width: '70%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '5%' }}>
             <Heading textAlign={'center'} fontSize={'1.5em'}>
                 Team # {team} Rank # {ranking}
             </Heading>
             <Text>{oprInfo}</Text>
             <Text>{dprInfo}</Text>
             <Text>{ccwmInfo}</Text>
-                <TeamRadarChartWrapper team={team} opr={oprStat} dpr={dprStat} ccwm={ccwmStat}/>
+            <TeamRadarChartWrapper team={team} opr={oprStat} dpr={dprStat} ccwm={ccwmStat} />
             <div>
                 {graphs.map((graph, index) => (
                     <>
@@ -226,7 +223,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                     type: 'Bar',
                                 }
                             }
-                            sortBy = {sortBy}
+                            sortBy={sortBy}
                         />
                     </>
                 ))}
@@ -261,10 +258,10 @@ interface RadarDataStruct {
     max: number,
 }
 //create radar chart for team with props opr dpr ccwm
-const TeamRadarChartWrapper: React.FC<{ team: string, opr: RadarChartStat; dpr: RadarChartStat; ccwm: RadarChartStat}> = ({ team, opr, dpr, ccwm}) => {
-    const radarData : RadarDataStruct[] = [ {stat: 'OPR', value: opr.value, max: opr.max}, 
-                                            {stat: 'DPR', value: dpr.value, max: dpr.max}, 
-                                            {stat: 'CCWM', value: ccwm.value, max: ccwm.max} ];
+const TeamRadarChartWrapper: React.FC<{ team: string, opr: RadarChartStat; dpr: RadarChartStat; ccwm: RadarChartStat }> = ({ team, opr, dpr, ccwm }) => {
+    const radarData: RadarDataStruct[] = [{ stat: 'OPR', value: opr.value, max: opr.max },
+    { stat: 'DPR', value: dpr.value, max: dpr.max },
+    { stat: 'CCWM', value: ccwm.value, max: ccwm.max }];
     const getToolTip = (stat: string) => {
         return {
             name: stat,
@@ -273,14 +270,14 @@ const TeamRadarChartWrapper: React.FC<{ team: string, opr: RadarChartStat; dpr: 
     }
 
     console.log(['opr', 'dpr', 'ccwm'].map((val) => getToolTip(val)))
-    
+
     return (<RadarChart width={400} height={300} data={radarData} cx="50%" cy="50%">
-    <PolarGrid />
-    <PolarAngleAxis dataKey="stat" />
-    <PolarRadiusAxis angle={30} domain={[0, Math.ceil(Math.max(opr.max, dpr.max, ccwm.max))]} />
-    <Radar name={team} dataKey="value" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
-    <REToolTip />
-  </RadarChart>)
+        <PolarGrid />
+        <PolarAngleAxis dataKey="stat" />
+        <PolarRadiusAxis angle={30} domain={[0, Math.ceil(Math.max(opr.max, dpr.max, ccwm.max))]} />
+        <Radar name={team} dataKey="value" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
+        <REToolTip />
+    </RadarChart>)
 }
 
 

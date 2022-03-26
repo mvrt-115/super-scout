@@ -20,18 +20,19 @@ import React, { FC, SyntheticEvent, useEffect, useState } from 'react';
 import { db } from '../firebase';
 import QRCode from 'react-qr-code';
 
-interface QRCodeGeneratorProps {}
+interface QRCodeGeneratorProps { }
 
 const QRCodeGenerator: FC<QRCodeGeneratorProps> = () => {
     const year = new Date().getFullYear();
-    const [regionals, setRegionals] = useState<string[]>([]);
+    const [regionals, setRegionals] = useState<string[]>(['CASF']); // hard code regionals in the case there is no internet
     const [qrcode, setQRCode] = useState<string>();
-    const [regional, setRegional] = useState<string>('');
+    const [regional, setRegional] = useState<string>('CASF');
     const [alliance, setAlliance] = useState<string>('b');
     const [matchNum, setMatchNum] = useState<string | number>('');
     const [team1, setTeam1] = useState<string | number>('');
     const [team2, setTeam2] = useState<string | number>('');
     const [team3, setTeam3] = useState<string | number>('');
+
 
     useEffect(() => {
         const fetchData = async () => {
@@ -43,7 +44,7 @@ const QRCodeGenerator: FC<QRCodeGeneratorProps> = () => {
             setRegionals(res.docs.map((doc) => doc.id));
             if (res.docs.length > 0) setRegional(res.docs[0].id);
         };
-        fetchData();
+        // fetchData();
     }, [year]);
 
     const handleSubmit = (event: SyntheticEvent) => {
