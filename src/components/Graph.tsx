@@ -2,6 +2,7 @@ import React, { FC, useEffect, useState } from 'react';
 import {
     Area,
     Bar,
+    Brush,
     CartesianGrid,
     Line,
     ResponsiveContainer,
@@ -17,7 +18,7 @@ import { useResizeDetector } from 'react-resize-detector';
 interface GraphProps {
     graphInfo: GraphData;
     data: any[];
-    sortBy : string;
+    sortBy: string;
 }
 
 const Graph: FC<GraphProps> = ({ graphInfo, data, sortBy }) => {
@@ -42,13 +43,13 @@ const Graph: FC<GraphProps> = ({ graphInfo, data, sortBy }) => {
     }, [sortBy, graphInfo.x, graphInfo.y, graphInfo.type]);
 
 
-    const sortData = (data : any[]) => {
-        if(sortBy.length < 2) return;
+    const sortData = (data: any[]) => {
+        if (sortBy.length < 2) return;
         data.sort((a, b) => {
             //console.log(a["teleopInner"])
-            if(isNaN(a[sortBy])) a[sortBy] = -10;
-            if(isNaN(a[sortBy])) b[sortBy] = -10;
-            return b[sortBy]-a[sortBy];
+            if (isNaN(a[sortBy])) a[sortBy] = -10;
+            if (isNaN(a[sortBy])) b[sortBy] = -10;
+            return b[sortBy] - a[sortBy];
         });
     }
 
@@ -68,11 +69,12 @@ const Graph: FC<GraphProps> = ({ graphInfo, data, sortBy }) => {
             <ResponsiveContainer width="100%" height="100%">
                 <ComposedChart data={graphingData}>
                     <CartesianGrid stroke="#f5f5f5" />
-                    <XAxis dataKey="x" />
+                    <XAxis dataKey="x" minTickGap={2} />
                     <YAxis tickCount={getTickCount()} />
                     <Tooltip />
+                    <Brush dataKey="x" height={14} stroke="#1082a8" />
                     {graphInfo.y.map((data, index) => {
-                        if(data === 'none') return null;
+                        if (data === 'none') return null;
                         const props = {
                             dataKey: data,
                             stroke: colors[index],

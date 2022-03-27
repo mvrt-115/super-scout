@@ -5,7 +5,7 @@ import { RouteComponentProps } from 'react-router-dom';
 import Graph from '../../components/Graph';
 import GraphInput from '../../components/GraphInput';
 import { db, functions } from '../../firebase';
-import { RadarChart, Radar, PolarAngleAxis, PolarGrid, PolarRadiusAxis, Tooltip as REToolTip } from 'recharts';
+import { RadarChart, Radar, PolarAngleAxis, PolarGrid, PolarRadiusAxis, PieChart, Pie, Tooltip as REToolTip, Cell } from 'recharts';
 
 interface RouteParams {
     year: string;
@@ -32,6 +32,9 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
     const [ranking, setRanking] = useState<string>();
     const [loading, setLoading] = useState<boolean>(true);
     const [sortBy, setSortBy] = useState<string>('ccwm');
+    const [opr, setOpr] = useState<number>(0);
+    const [dpr, setDpr] = useState<number>(0);
+    const [ccwm, setCcwm] = useState<number>(0);
 
     useEffect(() => {
         const teamDisplay = localStorage.getItem('teamDisplay' + year);
@@ -101,6 +104,9 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
             const opr = oprsJson.oprs[`frc${team}`];
             const dpr = oprsJson.dprs[`frc${team}`];
             const ccwm = oprsJson.ccwms[`frc${team}`];
+            setOpr(opr);
+            setDpr(dpr);
+            setCcwm(ccwm);
 
             oprsList.sort((a, b) => a - b);
             dprsList.sort((a, b) => a - b);
@@ -147,7 +153,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
             }
             setRanking(`${index + 1}`);
         };
-        const fetchStupidData = async () => {
+        const fetchMatchData = async () => {
             matches = await Promise.all(
                 matches.map(async (match) => {
                     const fetchData =
@@ -168,19 +174,102 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
         };
         fetchData()
             .then(() => setLoading(false))
-            .then(fetchStupidData);
+            .then(fetchMatchData);
     }, [year, regional, team]);
+
+    const getAverageAutonPoints = () => {
+        let avgPoints: number = 0;
+        matches.forEach((match) => {
+            let curr = (4 * match['Auton Upper'])
+                + (2 * match['Auton Bottom']);
+            if (match['Left Tarmac'] === undefined) curr += (2 * +match['Leave Tarmac']);
+            else curr += (2 * +match['Left Tarmac']);
+            avgPoints += curr;
+        });
+        avgPoints /= matches.length;
+        return Math.round(avgPoints * 100) / 100;
+    }
+
+    const getAverageTeleopPoints = () => {
+        let avgPoints: number = 0;
+        matches.forEach((match) => {
+            avgPoints += match['Teleop Bottom'] + (2 * match['Teleop Upper']);
+        });
+        avgPoints /= matches.length;
+        return Math.round(avgPoints * 100) / 100;
+    }
+
+    const renderClimbData = () => {
+        const data: any = [
+            { name: "Low", count: 0 },
+            { name: "Mid", count: 0 },
+            { name: "High", count: 0 },
+            { name: "Traversal", count: 0 },
+        ];
+        const colors: string[] = ['#9969ac', '#773791', '#4b0f6d', '#ffc410',]
+        matches.forEach((match) => {
+            switch (match['Climb rung']) {
+                case "Low":
+                    data[0]['count'] += 1;
+                    break;
+                case "Mid":
+                    data[1]['count'] += 1;
+                    break;
+                case "High":
+                    data[2]['count'] += 1;
+                    break;
+                case "Traversal":
+                    data[3]['count'] += 1;
+                    break;
+            }
+        });
+        return (
+            <PieChart width={400} height={400}>
+                <Pie
+                    dataKey={'count'}
+                    isAnimationActive={false}
+                    data={data}
+                    cx={200}
+                    cy={200}
+                    innerRadius={100}
+                    outerRadius={150}
+                    label
+                    fill='#550575'
+                    paddingAngle={2}
+                />
+                <REToolTip />
+            </PieChart>
+        );
+    }
 
     if (!matches || !matches.length) return null;
     if (loading) return <Spinner />;
     return (
         <div style={{ width: '70%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '5%' }}>
-            <Heading textAlign={'center'} fontSize={'1.5em'}>
+            <Heading textAlign={'center'} fontSize={'1.5em'} fontWeight={'bolder'}>
                 Team # {team} Rank # {ranking}
             </Heading>
-            <Text>{oprInfo}</Text>
-            <Text>{dprInfo}</Text>
-            <Text>{ccwmInfo}</Text>
+            <div
+                style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginTop: '2vh',
+                    marginBottom: '2vh'
+                }}
+            >
+                <Text
+                    textAlign={'center'}
+                    fontWeight={'bold'}
+                >
+                    {`OPR: ${Math.round(opr * 100) / 100}`}
+                </Text>
+                <Text textAlign={'center'} fontWeight={'bold'}>{`DPR: ${Math.round(dpr * 100) / 100}`}</Text>
+                <Text textAlign={'center'} fontWeight={'bold'}>{`CCWM: ${Math.round(ccwm * 100) / 100}`}</Text>
+                <Text textAlign={'center'} fontWeight={'bold'}>{`Average amount of points scored in auton: ${getAverageAutonPoints()}`}</Text>
+                <Text textAlign={'center'} fontWeight={'bold'}>{`Average amount of points scored in teleop: ${getAverageTeleopPoints()}`}</Text>
+            </div>
             <TeamRadarChartWrapper team={team} opr={oprStat} dpr={dprStat} ccwm={ccwmStat} />
             <div>
                 {graphs.map((graph, index) => (
@@ -247,6 +336,17 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                         width="100%"
                     />
                 </Tooltip>
+                <Text
+                    style={{
+                        fontSize: '40px',
+                        textAlign: 'center',
+                        marginTop: '5vh',
+                        fontWeight: 'bolder'
+                    }}
+                >
+                    Climb data:
+                </Text>
+                {renderClimbData()}
             </div>
         </div>
     );
@@ -269,17 +369,15 @@ const TeamRadarChartWrapper: React.FC<{ team: string, opr: RadarChartStat; dpr: 
         };
     }
 
-    console.log(['opr', 'dpr', 'ccwm'].map((val) => getToolTip(val)))
-
-    return (<RadarChart width={400} height={300} data={radarData} cx="50%" cy="50%">
-        <PolarGrid />
-        <PolarAngleAxis dataKey="stat" />
-        <PolarRadiusAxis angle={30} domain={[0, Math.ceil(Math.max(opr.max, dpr.max, ccwm.max))]} />
-        <Radar name={team} dataKey="value" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
-        <REToolTip />
-    </RadarChart>)
+    return (
+        <RadarChart width={400} height={300} data={radarData} cx="50%" cy="50%">
+            <PolarGrid />
+            <PolarAngleAxis dataKey="stat" />
+            <PolarRadiusAxis angle={30} domain={[0, Math.ceil(Math.max(opr.max, dpr.max, ccwm.max))]} />
+            <Radar name={team} dataKey="value" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
+            <REToolTip />
+        </RadarChart>
+    );
 }
-
-
 
 export default TeamData;

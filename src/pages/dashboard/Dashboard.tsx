@@ -42,8 +42,6 @@ const Dashboard: FC<DashboardProps> = () => {
             (await matches).docs.forEach((match) => {
                 totalTeleopPoints += ((match.get('Teleop Bottom')) + (2 * match.get('Teleop Upper')));
             });
-            console.log(totalTeleopPoints);
-            console.log(matchCount);
             avgTeleopPoints = totalTeleopPoints / matchCount;
 
             let endgamePoints = await doc.get('endgamePoints');
@@ -79,9 +77,6 @@ const Dashboard: FC<DashboardProps> = () => {
         })
     }
 
-    useEffect(() => {
-        correctData();
-    }, [])
     const match = useRouteMatch();
     return (
         <div

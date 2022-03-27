@@ -48,25 +48,25 @@ const Teams: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 setStartDate(Date.parse(data['start_date']));
             });
     }, [year, regional]);
-    const downloadData = async () =>{
+    const downloadData = async () => {
         const teamList = db.collection("years").doc(year).collection("regionals").doc(regional).collection('teams');
-        teamList.get().then(async (coll)=>{
-            let obj: any = {"teams":{}};
-            await Promise.all(coll.docs.map(async (doc)=>{
+        teamList.get().then(async (coll) => {
+            let obj: any = { "teams": {} };
+            await Promise.all(coll.docs.map(async (doc) => {
                 let temp: any = {};
                 temp = doc.data();
                 temp['matchList'] = {};
                 await teamList.doc(doc.id).collection("matches").get()
-                .then((matches)=>{
-                    matches.docs.forEach((match)=>{
-                       temp['matchList'][match.id] =match.data();
+                    .then((matches) => {
+                        matches.docs.forEach((match) => {
+                            temp['matchList'][match.id] = match.data();
+                        })
                     })
-                })
                 obj["teams"][doc.id] = temp;
             }))
             const fileName = "file";
             const json = JSON.stringify(obj);
-            const blob = new Blob([json],{type:'application/json'});
+            const blob = new Blob([json], { type: 'application/json' });
             const href = await URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = href;
@@ -115,7 +115,7 @@ const Teams: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 colorScheme="mv-purple"
                 size="lg"
                 width={'100%'}
-                marginTop = '2'
+                marginTop='2'
             >
                 Download Data
             </Button>
