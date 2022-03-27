@@ -1,11 +1,14 @@
 import { AddIcon } from '@chakra-ui/icons';
-import { Heading, IconButton, Spinner, Text, Tooltip } from '@chakra-ui/react';
+import { Button, Heading, IconButton, Spinner, Text, Tooltip } from '@chakra-ui/react';
 import React, { FC, useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import Graph from '../../components/Graph';
 import GraphInput from '../../components/GraphInput';
 import { db, functions } from '../../firebase';
 import { RadarChart, Radar, PolarAngleAxis, PolarGrid, PolarRadiusAxis, PieChart, Pie, Tooltip as REToolTip, Cell } from 'recharts';
+import Paper from '@mui/material/Paper';
+import { TableContainer, Table, TableHead, TableRow, TableBody, TableCell } from '@mui/material';
+import { ThemeProvider, createTheme } from '@mui/material';
 
 interface RouteParams {
     year: string;
@@ -32,9 +35,9 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
     const [ranking, setRanking] = useState<string>();
     const [loading, setLoading] = useState<boolean>(true);
     const [sortBy, setSortBy] = useState<string>('ccwm');
-    const [opr, setOpr] = useState<number>(0);
-    const [dpr, setDpr] = useState<number>(0);
-    const [ccwm, setCcwm] = useState<number>(0);
+    const [table, setTable] = useState<boolean>(false);
+    const [template, setTemplate] = useState<string[]>(['']);
+    const [avgValues, setAvgValues] = useState<any>();
 
     useEffect(() => {
         const teamDisplay = localStorage.getItem('teamDisplay' + year);
@@ -53,17 +56,20 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
     useEffect(() => {
         let matches: any[] = [];
         const fetchData = async () => {
-            const matchesCollection = await db
+            const path = db
                 .collection('years')
                 .doc(year)
                 .collection('regionals')
                 .doc(regional)
                 .collection('teams')
-                .doc(team)
-                .collection('matches')
-                .get();
+                .doc(team);
+            const avgs = await path.get();
+            setAvgValues(avgs!.data());
+            console.log(avgs!.data());
+            const matchesCollection = await path.collection('matches').get();
             matches = matchesCollection.docs.map((doc) => doc.data());
             setMatches(matches);
+            setTemplate(Object.keys(matches[0]).length > Object.keys(matches[1]).length ? matches[0] : matches[1]);
             const regionalKey = year + regional;
 
             const [rankingsRes, oprsRes] = await Promise.all([
@@ -104,9 +110,6 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
             const opr = oprsJson.oprs[`frc${team}`];
             const dpr = oprsJson.dprs[`frc${team}`];
             const ccwm = oprsJson.ccwms[`frc${team}`];
-            setOpr(opr);
-            setDpr(dpr);
-            setCcwm(ccwm);
 
             oprsList.sort((a, b) => a - b);
             dprsList.sort((a, b) => a - b);
@@ -177,28 +180,6 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
             .then(fetchMatchData);
     }, [year, regional, team]);
 
-    const getAverageAutonPoints = () => {
-        let avgPoints: number = 0;
-        matches.forEach((match) => {
-            let curr = (4 * match['Auton Upper'])
-                + (2 * match['Auton Bottom']);
-            if (match['Left Tarmac'] === undefined) curr += (2 * +match['Leave Tarmac']);
-            else curr += (2 * +match['Left Tarmac']);
-            avgPoints += curr;
-        });
-        avgPoints /= matches.length;
-        return Math.round(avgPoints * 100) / 100;
-    }
-
-    const getAverageTeleopPoints = () => {
-        let avgPoints: number = 0;
-        matches.forEach((match) => {
-            avgPoints += match['Teleop Bottom'] + (2 * match['Teleop Upper']);
-        });
-        avgPoints /= matches.length;
-        return Math.round(avgPoints * 100) / 100;
-    }
-
     const renderClimbData = () => {
         const data: any = [
             { name: "Low", count: 0 },
@@ -241,7 +222,159 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
             </PieChart>
         );
     }
+    const renderGraphs = () => {
+        return <div>
+            {graphs.map((graph, index) => (
+                <>
+                    <GraphInput
+                        keys={Object.keys(matches[0]).filter(
+                            (key) => typeof matches[0][key] === 'number',
+                        )}
+                        graphData={graph}
+                        onChange={(graphData) => {
+                            let newGraphs = [...graphs];
+                            newGraphs[index] = graphData;
+                            setGraphs(newGraphs);
+                            localStorage.setItem(
+                                'teamDisplay' + year,
+                                JSON.stringify(newGraphs),
+                            );
+                            setSortBy(graphData.sortBy);
+                        }}
+                        onDelete={() => {
+                            let newGraphs = [...graphs];
+                            newGraphs.splice(index, 1);
+                            setGraphs(newGraphs);
+                            localStorage.setItem(
+                                'teamDisplay' + year,
+                                JSON.stringify(newGraphs),
+                            );
+                        }}
+                    />
+                    <Graph
+                        data={matches}
+                        graphInfo={
+                            graph || {
+                                x: 'matchNum',
+                                y: [
+                                    'autonPoints',
+                                    'teleopPoints',
+                                    'endgamePoints',
+                                ],
+                                type: 'Bar',
+                            }
+                        }
+                        sortBy={sortBy}
+                    />
+                </>
+            ))}
+            <Tooltip label="Add Graph">
+                <IconButton
+                    marginTop="5%"
+                    aria-label="Add Graph"
+                    icon={<AddIcon />}
+                    onClick={() =>
+                        setGraphs([
+                            ...graphs,
+                            {
+                                x: 'matchNum',
+                                y: ['none', 'none', 'none'],
+                                sortBy: 'ccwm',
+                                type: 'Bar',
+                            },
+                        ])
+                    }
+                    colorScheme="green"
+                    width="100%"
+                />
+            </Tooltip>
+            {year === '2022' && <Text
+                style={{
+                    fontSize: '40px',
+                    textAlign: 'center',
+                    marginTop: '5vh',
+                    fontWeight: 'bolder'
+                }}
+            >
+                Climb data:
+            </Text>}
+            {year === '2022' && renderClimbData()}
+        </div>
+    }
+    const sort = (ascending: boolean, key: string) => {
+        let temp = [...matches];
+        temp.sort((a, b) => {
+            if (a === undefined) {
+                return 1;
+            }
+            if (b === undefined) {
+                return -1;
+            }
+            return ascending ? a[key] - b[key] : b[key] - a[key];
+        })
+        setMatches(temp);
+    }
 
+    const renderTable = () => {
+        return (
+            <ThemeProvider theme={createTheme()}>
+                <TableContainer component={Paper} style={{ minWidth: "90vw", maxHeight: "90vw" }}>
+                    <Table stickyHeader sx={{ minWidth: 950, width: '90vw' }}>
+                        <TableHead>
+                            <TableRow style={{ whiteSpace: "nowrap" }}>
+                                <TableCell key="matchNum">
+                                    Match Number
+                                    <Button onClick={() => {
+                                        sort(false, "matchNum");
+                                    }}>
+                                        ↑
+                                    </Button>
+                                    <Button onClick={() => {
+                                        sort(true, "matchNum");
+                                    }}>
+                                        ↓
+                                    </Button>
+                                </TableCell>
+                                {(Object.keys(template).map((key: any) => {
+                                    if (key != "matchNum" && key != "teamNum" && typeof template[key] == "number")
+                                        return (
+                                            <TableCell key={key}>
+                                                {key}
+                                                <Button onClick={() => {
+                                                    sort(false, key);
+                                                }}>
+                                                    ↑
+                                                </Button>
+                                                <Button onClick={() => {
+                                                    sort(true, key)
+                                                }}>
+                                                    ↓
+                                                </Button>
+                                            </TableCell>
+                                        );
+                                }))}
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {matches.map((match) => (
+                                <TableRow key={match["matchNum"]}
+                                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                >
+                                    <TableCell key={match["matchNum"] + "teamNum"}>{match["matchNum"]}</TableCell>
+                                    {Object.keys(template).map((field: any) => {
+                                        if (field != "matchNum" && field != "teamNum" && typeof match[field] == "number")
+                                            return (
+                                                match[field] !== undefined ? <TableCell key={match["matchNum"] + field}>{typeof match[field] !== "number" ? match[field] : JSON.stringify(match[field]).indexOf('.') == -1 ? match[field] : parseFloat(match[field]).toFixed(3)}</TableCell> : <TableCell></TableCell>
+                                            );
+                                    })}
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            </ThemeProvider>
+        );
+    }
     if (!matches || !matches.length) return null;
     if (loading) return <Spinner />;
     return (
@@ -263,91 +396,30 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                     textAlign={'center'}
                     fontWeight={'bold'}
                 >
-                    {`OPR: ${Math.round(opr * 100) / 100}`}
+                    {oprInfo}
                 </Text>
-                <Text textAlign={'center'} fontWeight={'bold'}>{`DPR: ${Math.round(dpr * 100) / 100}`}</Text>
-                <Text textAlign={'center'} fontWeight={'bold'}>{`CCWM: ${Math.round(ccwm * 100) / 100}`}</Text>
-                <Text textAlign={'center'} fontWeight={'bold'}>{`Average amount of points scored in auton: ${getAverageAutonPoints()}`}</Text>
-                <Text textAlign={'center'} fontWeight={'bold'}>{`Average amount of points scored in teleop: ${getAverageTeleopPoints()}`}</Text>
+                <Text textAlign={'center'} fontWeight={'bold'}>{dprInfo}</Text>
+                <Text textAlign={'center'} fontWeight={'bold'}>{ccwmInfo}</Text>
+                {Object.entries(avgValues).map(([key, value]) => {
+                    if (key.indexOf('match') == -1 && key !== "teamNum")
+                        return <Text> avg. {key} : {parseFloat(value + '').toFixed(3)}</Text>
+                })}
             </div>
             <TeamRadarChartWrapper team={team} opr={oprStat} dpr={dprStat} ccwm={ccwmStat} />
-            <div>
-                {graphs.map((graph, index) => (
-                    <>
-                        <GraphInput
-                            keys={Object.keys(matches[0]).filter(
-                                (key) => typeof matches[0][key] === 'number',
-                            )}
-                            graphData={graph}
-                            onChange={(graphData) => {
-                                let newGraphs = [...graphs];
-                                newGraphs[index] = graphData;
-                                setGraphs(newGraphs);
-                                localStorage.setItem(
-                                    'teamDisplay' + year,
-                                    JSON.stringify(newGraphs),
-                                );
-                                setSortBy(graphData.sortBy);
-                            }}
-                            onDelete={() => {
-                                let newGraphs = [...graphs];
-                                newGraphs.splice(index, 1);
-                                setGraphs(newGraphs);
-                                localStorage.setItem(
-                                    'teamDisplay' + year,
-                                    JSON.stringify(newGraphs),
-                                );
-                            }}
-                        />
-                        <Graph
-                            data={matches}
-                            graphInfo={
-                                graph || {
-                                    x: 'matchNum',
-                                    y: [
-                                        'autonPoints',
-                                        'teleopPoints',
-                                        'endgamePoints',
-                                    ],
-                                    type: 'Bar',
-                                }
-                            }
-                            sortBy={sortBy}
-                        />
-                    </>
-                ))}
-                <Tooltip label="Add Graph">
-                    <IconButton
-                        marginTop="5%"
-                        aria-label="Add Graph"
-                        icon={<AddIcon />}
-                        onClick={() =>
-                            setGraphs([
-                                ...graphs,
-                                {
-                                    x: 'matchNum',
-                                    y: ['none', 'none', 'none'],
-                                    sortBy: 'ccwm',
-                                    type: 'Bar',
-                                },
-                            ])
-                        }
-                        colorScheme="green"
-                        width="100%"
-                    />
-                </Tooltip>
-                <Text
-                    style={{
-                        fontSize: '40px',
-                        textAlign: 'center',
-                        marginTop: '5vh',
-                        fontWeight: 'bolder'
-                    }}
-                >
-                    Climb data:
-                </Text>
-                {renderClimbData()}
-            </div>
+            <Button
+                variant="outline"
+                aria-label="Table"
+                onClick={() => {
+                    setTable(!table);
+                }}
+                width={'100%'}
+                marginTop={4}
+                marginBottom={4}
+                colorScheme={'mv-purple'}
+            >
+                View {table ? "Graphs" : "Table"}
+            </Button>
+            {table ? renderTable() : renderGraphs()}
         </div>
     );
 };

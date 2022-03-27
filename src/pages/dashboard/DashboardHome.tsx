@@ -3,7 +3,7 @@ import React, { FC, useEffect, useState } from 'react';
 import { Link, useRouteMatch } from 'react-router-dom';
 import { db } from '../../firebase';
 
-interface DashboardHomeProps {}
+interface DashboardHomeProps { }
 
 interface Year {
     year: string;
@@ -51,7 +51,7 @@ const DashboardHome: FC<DashboardHomeProps> = () => {
                 <div style={{ width: '100%' }}>
                     <Heading size={'md'}>{year.year}</Heading>
                     <ul>
-                        {year.regionals.map((regional) => (
+                        {year.regionals.map((regional, index: number) => (
                             <li className="link">
                                 <Link
                                     to={`${match.path}/${year.year}/${regional}/`}

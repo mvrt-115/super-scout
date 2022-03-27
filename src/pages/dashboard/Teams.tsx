@@ -1,4 +1,4 @@
-import { Button, Grid, Heading } from '@chakra-ui/react';
+import { Button, Grid, Heading, Tooltip } from '@chakra-ui/react';
 import React, { FC, useEffect, useState } from 'react';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { db } from '../../firebase';
@@ -14,6 +14,9 @@ const Teams: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
     const [startDate, setStartDate] = useState<number>(Date.now());
     const year = match.params.year;
     const regional = match.params.regional;
+    const [oprs, setOprs] = useState<number[]>([]);
+    const [dprs, setDprs] = useState<number[]>([]);
+    const [ccwms, setCcwms] = useState<number[]>([]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -47,7 +50,62 @@ const Teams: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 if (Date.parse(data['start_date']) <= Date.now()) fetchData();
                 setStartDate(Date.parse(data['start_date']));
             });
+        (async () => {
+            await getTeamsInfo();
+        })();
     }, [year, regional]);
+
+    const getTeamsInfo = async () => {
+        const oprs: number[] = [];
+        const dprs: number[] = [];
+        const ccwms: number[] = [];
+        const promises: Promise<any>[] = [];
+        const [teams, rankingsRes, oprsRes] = await Promise.all([
+            fetch(
+                `https://www.thebluealliance.com/api/v3/event/2022casf/teams`, {
+                headers: {
+                    'X-TBA-Auth-Key': process.env.REACT_APP_TBA_KEY || '',
+                }
+            }
+            ),
+            fetch(
+                `https://www.thebluealliance.com/api/v3/event/2022casf/rankings`,
+                {
+                    headers: {
+                        'X-TBA-Auth-Key': process.env.REACT_APP_TBA_KEY || '',
+                    },
+                }
+            ),
+            fetch(
+                `https://www.thebluealliance.com/api/v3/event/2022casf/oprs`,
+                {
+                    headers: {
+                        'X-TBA-Auth-Key': process.env.REACT_APP_TBA_KEY || '',
+                    },
+                }
+            ),
+        ]);
+        const [teamsJson, oprsJson, rankingsJson] = await Promise.all([
+            teams.json(),
+            oprsRes.json(),
+            rankingsRes.json(),
+        ]);
+        console.log(oprsJson);
+        console.log(teamsJson);
+        teamsJson.forEach((team: any, index: number) => {
+            const teamNumber: number = team['team_number'];
+            const oprVal = oprsJson['oprs'][`frc${teamNumber}`];
+            const dprVal = oprsJson['dprs'][`frc${teamNumber}`];
+            const ccwmVal = oprsJson['ccwms'][`frc${teamNumber}`];
+            oprs.push(oprVal);
+            dprs.push(dprVal);
+            ccwms.push(ccwmVal);
+        });
+        setOprs(oprs);
+        setDprs(dprs);
+        setCcwms(ccwms);
+    };
+
     const downloadData = async () => {
         const teamList = db.collection("years").doc(year).collection("regionals").doc(regional).collection('teams');
         teamList.get().then(async (coll) => {
@@ -119,19 +177,30 @@ const Teams: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
             >
                 Download Data
             </Button>
-        </><Grid
-            gap={1}
-            templateColumns={'repeat(auto-fit, minmax(200px, 1fr))'}
-            width={'100%'}
-        >
-                {teams.map((team) => (
+        </>
+            <Grid
+                gap={1}
+                templateColumns={'repeat(auto-fit, minmax(200px, 1fr))'}
+                width={'100%'}
+            >
+                {teams.map((team, index: number) => (
                     <li className="link" key={team}>
-                        <Link
-                            to={`/dashboard/${year}/${regional}/${team}`}
-                            style={{ textAlign: 'center' }}
+                        <Tooltip
+                            label=
+                            {
+                                `OPR: ${Math.round(oprs[index] * 10) / 10}
+                                \nDPR: ${Math.round(dprs[index] * 10) / 10}
+                                \nCCWM: ${Math.round(ccwms[index] * 10) / 10}
+                                `
+                            }
                         >
-                            {team}
-                        </Link>
+                            <Link
+                                to={`/dashboard/${year}/${regional}/${team}`}
+                                style={{ textAlign: 'center' }}
+                            >
+                                {team}
+                            </Link>
+                        </Tooltip>
                     </li>
                 ))}
             </Grid>
