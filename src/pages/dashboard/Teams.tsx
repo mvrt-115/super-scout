@@ -122,7 +122,7 @@ const Teams: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                     })
                 obj["teams"][doc.id] = temp;
             }))
-            const fileName = "file";
+            const fileName = `${regional}Data`;
             const json = JSON.stringify(obj);
             const blob = new Blob([json], { type: 'application/json' });
             const href = await URL.createObjectURL(blob);

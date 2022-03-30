@@ -38,6 +38,8 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
     const [table, setTable] = useState<boolean>(false);
     const [template, setTemplate] = useState<string[]>(['']);
     const [avgValues, setAvgValues] = useState<any>();
+    const [pitScoutData, setPitScoutData] = useState<any>({});
+    const [pitScout, setPitScout] = useState<boolean>(false);
 
     useEffect(() => {
         const teamDisplay = localStorage.getItem('teamDisplay' + year);
@@ -53,132 +55,150 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
             ]);
     }, [year]);
 
+
     useEffect(() => {
-        let matches: any[] = [];
-        const fetchData = async () => {
-            const path = db
+        const fetchQuantitativeData = async () => {
+            let matches: any[] = [];
+            const fetchData = async () => {
+                const path = db
+                    .collection('years')
+                    .doc(year)
+                    .collection('regionals')
+                    .doc(regional)
+                    .collection('teams')
+                    .doc(team);
+                const avgs = await path.get();
+                setAvgValues(avgs!.data());
+                const matchesCollection = await path.collection('matches').get();
+                matches = matchesCollection.docs.map((doc) => doc.data());
+                setMatches(matches);
+                setTemplate(Object.keys(matches[0]).length > Object.keys(matches[1]).length ? matches[0] : matches[1]);
+                const regionalKey = year + regional;
+
+                const [rankingsRes, oprsRes] = await Promise.all([
+                    fetch(
+                        `https://www.thebluealliance.com/api/v3/event/${regionalKey}/rankings`,
+                        {
+                            headers: {
+                                'X-TBA-Auth-Key':
+                                    process.env.REACT_APP_TBA_KEY || '',
+                            },
+                        },
+                    ),
+                    fetch(
+                        `https://www.thebluealliance.com/api/v3/event/${regionalKey}/oprs`,
+                        {
+                            headers: {
+                                'X-TBA-Auth-Key':
+                                    process.env.REACT_APP_TBA_KEY || '',
+                            },
+                        },
+                    ),
+                ]);
+                const [oprsJson, rankingsJson] = await Promise.all([
+                    oprsRes.json(),
+                    rankingsRes.json(),
+                ]);
+
+                const oprsList = Object.keys(oprsJson.oprs).map(
+                    (key) => oprsJson.oprs[key],
+                );
+                const dprsList = Object.keys(oprsJson.dprs).map(
+                    (key) => oprsJson.dprs[key],
+                );
+                const ccwmsList = Object.keys(oprsJson.ccwms).map(
+                    (key) => oprsJson.ccwms[key],
+                );
+
+                const opr = oprsJson.oprs[`frc${team}`];
+                const dpr = oprsJson.dprs[`frc${team}`];
+                const ccwm = oprsJson.ccwms[`frc${team}`];
+
+                oprsList.sort((a, b) => a - b);
+                dprsList.sort((a, b) => a - b);
+                ccwmsList.sort((a, b) => a - b);
+
+                setOprStat({
+                    value: opr,
+                    percentile: oprsList.indexOf(opr) / oprsList.length * 100,
+                    max: oprsList[oprsList.length - 1],
+                })
+                setDprStat({
+                    value: dpr,
+                    percentile: dprsList.indexOf(dpr) / dprsList.length * 100,
+                    max: dprsList[dprsList.length - 1],
+                })
+                setCcwmStat({
+                    value: ccwm,
+                    percentile: ccwmsList.indexOf(ccwm) / ccwmsList.length * 100,
+                    max: ccwmsList[ccwmsList.length - 1],
+                })
+
+                setOprInfo(
+                    `OPR (Offensive Power Rating): ${Math.round(opr * 100) / 100
+                    }, which is in the ${Math.round(
+                        (oprsList.indexOf(opr) / oprsList.length) * 100,
+                    )}th percentile`,
+                );
+                setDprInfo(
+                    `DPR (Defensive Power Rating): ${Math.round(dpr * 100) / 100
+                    }, which is in the ${Math.round(
+                        (dprsList.indexOf(dpr) / dprsList.length) * 100,
+                    )}th percentile`,
+                );
+                setCcwmInfo(
+                    `CCWM (Calculated Contribution to Winning Margin): ${Math.round(ccwm * 100) / 100
+                    }, which is in the ${Math.round(
+                        (ccwmsList.indexOf(ccwm) / ccwmsList.length) * 100,
+                    )}th percentile`,
+                );
+                const rankingsList = rankingsJson.rankings;
+                let index = 0;
+                for (let i = 0; i < rankingsList.length; i++) {
+                    if (rankingsList[i].team_key === `frc${team}`) index = i;
+                }
+                setRanking(`${index + 1}`);
+            };
+            const fetchMatchData = async () => {
+                matches = await Promise.all(
+                    matches.map(async (match) => {
+                        const fetchData =
+                            functions.httpsCallable('calculatePoints');
+                        const pointsData = await fetchData({
+                            year,
+                            regional,
+                            team,
+                            match: match.matchNum + '',
+                        });
+                        return {
+                            ...match,
+                            ...pointsData.data,
+                        };
+                    }),
+                );
+                setMatches(matches);
+            };
+            fetchData()
+                .then(fetchMatchData);
+        }
+
+        const fetchQualitativeData = async () => {
+            await db
                 .collection('years')
                 .doc(year)
                 .collection('regionals')
                 .doc(regional)
                 .collection('teams')
-                .doc(team);
-            const avgs = await path.get();
-            setAvgValues(avgs!.data());
-            console.log(avgs!.data());
-            const matchesCollection = await path.collection('matches').get();
-            matches = matchesCollection.docs.map((doc) => doc.data());
-            setMatches(matches);
-            setTemplate(Object.keys(matches[0]).length > Object.keys(matches[1]).length ? matches[0] : matches[1]);
-            const regionalKey = year + regional;
+                .doc(team)
+                .collection('pitScoutData')
+                .doc('pitScoutAnswers')
+                .get().then((data) => {
+                    setPitScoutData(data.data() || {});
+                });
+        }
 
-            const [rankingsRes, oprsRes] = await Promise.all([
-                fetch(
-                    `https://www.thebluealliance.com/api/v3/event/${regionalKey}/rankings`,
-                    {
-                        headers: {
-                            'X-TBA-Auth-Key':
-                                process.env.REACT_APP_TBA_KEY || '',
-                        },
-                    },
-                ),
-                fetch(
-                    `https://www.thebluealliance.com/api/v3/event/${regionalKey}/oprs`,
-                    {
-                        headers: {
-                            'X-TBA-Auth-Key':
-                                process.env.REACT_APP_TBA_KEY || '',
-                        },
-                    },
-                ),
-            ]);
-            const [oprsJson, rankingsJson] = await Promise.all([
-                oprsRes.json(),
-                rankingsRes.json(),
-            ]);
-
-            const oprsList = Object.keys(oprsJson.oprs).map(
-                (key) => oprsJson.oprs[key],
-            );
-            const dprsList = Object.keys(oprsJson.dprs).map(
-                (key) => oprsJson.dprs[key],
-            );
-            const ccwmsList = Object.keys(oprsJson.ccwms).map(
-                (key) => oprsJson.ccwms[key],
-            );
-
-            const opr = oprsJson.oprs[`frc${team}`];
-            const dpr = oprsJson.dprs[`frc${team}`];
-            const ccwm = oprsJson.ccwms[`frc${team}`];
-
-            oprsList.sort((a, b) => a - b);
-            dprsList.sort((a, b) => a - b);
-            ccwmsList.sort((a, b) => a - b);
-
-            setOprStat({
-                value: opr,
-                percentile: oprsList.indexOf(opr) / oprsList.length * 100,
-                max: oprsList[oprsList.length - 1],
-            })
-            setDprStat({
-                value: dpr,
-                percentile: dprsList.indexOf(dpr) / dprsList.length * 100,
-                max: dprsList[dprsList.length - 1],
-            })
-            setCcwmStat({
-                value: ccwm,
-                percentile: ccwmsList.indexOf(ccwm) / ccwmsList.length * 100,
-                max: ccwmsList[ccwmsList.length - 1],
-            })
-
-            setOprInfo(
-                `OPR (Offensive Power Rating): ${Math.round(opr * 100) / 100
-                }, which is in the ${Math.round(
-                    (oprsList.indexOf(opr) / oprsList.length) * 100,
-                )}th percentile`,
-            );
-            setDprInfo(
-                `DPR (Defensive Power Rating): ${Math.round(dpr * 100) / 100
-                }, which is in the ${Math.round(
-                    (dprsList.indexOf(dpr) / dprsList.length) * 100,
-                )}th percentile`,
-            );
-            setCcwmInfo(
-                `CCWM (Calculated Contribution to Winning Margin): ${Math.round(ccwm * 100) / 100
-                }, which is in the ${Math.round(
-                    (ccwmsList.indexOf(ccwm) / ccwmsList.length) * 100,
-                )}th percentile`,
-            );
-            const rankingsList = rankingsJson.rankings;
-            let index = 0;
-            for (let i = 0; i < rankingsList.length; i++) {
-                if (rankingsList[i].team_key === `frc${team}`) index = i;
-            }
-            setRanking(`${index + 1}`);
-        };
-        const fetchMatchData = async () => {
-            matches = await Promise.all(
-                matches.map(async (match) => {
-                    const fetchData =
-                        functions.httpsCallable('calculatePoints');
-                    const pointsData = await fetchData({
-                        year,
-                        regional,
-                        team,
-                        match: match.matchNum + '',
-                    });
-                    return {
-                        ...match,
-                        ...pointsData.data,
-                    };
-                }),
-            );
-            setMatches(matches);
-        };
-        fetchData()
-            .then(() => setLoading(false))
-            .then(fetchMatchData);
-    }, [year, regional, team]);
+        fetchQuantitativeData().then(fetchQualitativeData).then(() => setLoading(false));
+    }, [year, regional, team,]);
 
     const renderClimbData = () => {
         const data: any = [
@@ -187,7 +207,6 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
             { name: "High", count: 0 },
             { name: "Traversal", count: 0 },
         ];
-        const colors: string[] = ['#9969ac', '#773791', '#4b0f6d', '#ffc410',]
         matches.forEach((match) => {
             switch (match['Climb rung']) {
                 case "Low":
@@ -223,7 +242,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
         );
     }
     const renderGraphs = () => {
-        return <div>
+        return <>
             {graphs.map((graph, index) => (
                 <>
                     <GraphInput
@@ -299,7 +318,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 Climb data:
             </Text>}
             {year === '2022' && renderClimbData()}
-        </div>
+        </>
     }
     const sort = (ascending: boolean, key: string) => {
         let temp = [...matches];
@@ -377,50 +396,110 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
     }
     if (!matches || !matches.length) return null;
     if (loading) return <Spinner />;
-    return (
-        <div style={{ width: '70%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '5%' }}>
-            <Heading textAlign={'center'} fontSize={'1.5em'} fontWeight={'bolder'}>
-                Team # {team} Rank # {ranking}
-            </Heading>
+
+    const renderScoutingData = () => {
+        return (
+            <div style={{ width: '70%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '5%' }}>
+                <Heading textAlign={'center'} fontSize={'1.5em'} fontWeight={'bolder'}>
+                    Team # {team} Rank # {ranking}
+                </Heading>
+                <div
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        marginTop: '2vh',
+                        marginBottom: '2vh'
+                    }}
+                >
+                    <Text
+                        textAlign={'center'}
+                        fontWeight={'bold'}
+                    >
+                        {oprInfo}
+                    </Text>
+                    <Text textAlign={'center'} fontWeight={'bold'}>{dprInfo}</Text>
+                    <Text textAlign={'center'} fontWeight={'bold'}>{ccwmInfo}</Text>
+                    {Object.entries(avgValues).map(([key, value]) => {
+                        if (key.indexOf('match') == -1 && key !== "teamNum")
+                            return <Text> Average {key} : {parseFloat(value + '').toFixed(3)}</Text>
+                    })}
+                </div>
+                <TeamRadarChartWrapper team={team} opr={oprStat} dpr={dprStat} ccwm={ccwmStat} />
+                <Button
+                    variant="outline"
+                    aria-label="Table"
+                    onClick={() => {
+                        setTable(!table);
+                    }}
+                    width={'100%'}
+                    marginTop={4}
+                    marginBottom={4}
+                    colorScheme={'mv-purple'}
+                >
+                    View {table ? "Graphs" : "Table"}
+                </Button>
+                {table ? renderTable() : renderGraphs()}
+            </div>
+        );
+    }
+
+    const renderPitScoutData = () => {
+        if (Object.keys(pitScoutData).length === 0) {
+            return (
+                <div
+                    style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }}
+                >
+                    <Text
+                        style={{ fontWeight: 'bolder' }}
+                    >
+                        No pit scouting data available.
+                    </Text>
+                </div>
+            );
+        }
+        return (
             <div
                 style={{
                     display: 'flex',
-                    flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    marginTop: '2vh',
-                    marginBottom: '2vh'
+                    flexDirection: 'column',
                 }}
             >
-                <Text
-                    textAlign={'center'}
-                    fontWeight={'bold'}
-                >
-                    {oprInfo}
-                </Text>
-                <Text textAlign={'center'} fontWeight={'bold'}>{dprInfo}</Text>
-                <Text textAlign={'center'} fontWeight={'bold'}>{ccwmInfo}</Text>
-                {Object.entries(avgValues).map(([key, value]) => {
-                    if (key.indexOf('match') == -1 && key !== "teamNum")
-                        return <Text> avg. {key} : {parseFloat(value + '').toFixed(3)}</Text>
+                {Object.keys(pitScoutData).map((field: any, index: number) => {
+                    return (
+                        <Text
+                            style={{
+                                marginTop: '1rem',
+                            }}
+                        >
+                            {`${field}: ${pitScoutData[field]}`}
+                        </Text>
+                    );
                 })}
             </div>
-            <TeamRadarChartWrapper team={team} opr={oprStat} dpr={dprStat} ccwm={ccwmStat} />
-            <Button
-                variant="outline"
-                aria-label="Table"
-                onClick={() => {
-                    setTable(!table);
-                }}
-                width={'100%'}
-                marginTop={4}
-                marginBottom={4}
-                colorScheme={'mv-purple'}
-            >
-                View {table ? "Graphs" : "Table"}
-            </Button>
-            {table ? renderTable() : renderGraphs()}
-        </div>
+        );
+    }
+
+    return (
+        <>
+            <div>
+                <Button
+                    onClick={() => {
+                        setPitScout(!pitScout);
+                    }}
+                >
+                    {pitScout ? 'View Scouting Data' : 'View Pit Scouting data'}
+                </Button>
+            </div>
+            {pitScout ? renderPitScoutData() : renderScoutingData()}
+        </>
     );
 };
 
