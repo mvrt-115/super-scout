@@ -112,7 +112,8 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 });
                 teams[index] = { ...teams[index], ...doc.data() };
             });
-            setTemplate(Object.keys(teams[0]).length > Object.keys(teams[1]).length ? Object.keys(teams[0]) : Object.keys(teams[1]));
+            console.log(teams);
+            setTemplate(Object.keys(teams[0])?.length > Object.keys(teams[1]).length ? Object.keys(teams[0]) : Object.keys(teams[1]));
             setTeams(teams);
         };
         fetchData().then(() => setLoading(false));

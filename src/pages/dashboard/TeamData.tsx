@@ -9,6 +9,7 @@ import { RadarChart, Radar, PolarAngleAxis, PolarGrid, PolarRadiusAxis, PieChart
 import Paper from '@mui/material/Paper';
 import { TableContainer, Table, TableHead, TableRow, TableBody, TableCell } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material';
+import { AiOutlineConsoleSql } from 'react-icons/ai';
 
 interface RouteParams {
     year: string;
@@ -58,6 +59,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
 
     useEffect(() => {
         const fetchQuantitativeData = async () => {
+            console.log('inside')
             let matches: any[] = [];
             const fetchData = async () => {
                 const path = db
@@ -72,7 +74,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 const matchesCollection = await path.collection('matches').get();
                 matches = matchesCollection.docs.map((doc) => doc.data());
                 setMatches(matches);
-                setTemplate(Object.keys(matches[0]).length > Object.keys(matches[1]).length ? matches[0] : matches[1]);
+                if (matches.length > 0) setTemplate(Object.keys(matches[0]).length > Object.keys(matches[1]).length ? matches[0] : matches[1]);
                 const regionalKey = year + regional;
 
                 const [rankingsRes, oprsRes] = await Promise.all([
@@ -99,65 +101,67 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                     oprsRes.json(),
                     rankingsRes.json(),
                 ]);
+                if (oprsJson.oprs && oprsJson.dprs && oprsJson.dprs) {
+                    const oprsList = Object.keys(oprsJson.oprs).map(
+                        (key) => oprsJson.oprs[key],
+                    );
+                    const dprsList = Object.keys(oprsJson.dprs).map(
+                        (key) => oprsJson.dprs[key],
+                    );
+                    const ccwmsList = Object.keys(oprsJson.ccwms).map(
+                        (key) => oprsJson.ccwms[key],
+                    );
 
-                const oprsList = Object.keys(oprsJson.oprs).map(
-                    (key) => oprsJson.oprs[key],
-                );
-                const dprsList = Object.keys(oprsJson.dprs).map(
-                    (key) => oprsJson.dprs[key],
-                );
-                const ccwmsList = Object.keys(oprsJson.ccwms).map(
-                    (key) => oprsJson.ccwms[key],
-                );
+                    const opr = oprsJson.oprs[`frc${team}`];
+                    const dpr = oprsJson.dprs[`frc${team}`];
+                    const ccwm = oprsJson.ccwms[`frc${team}`];
 
-                const opr = oprsJson.oprs[`frc${team}`];
-                const dpr = oprsJson.dprs[`frc${team}`];
-                const ccwm = oprsJson.ccwms[`frc${team}`];
+                    oprsList.sort((a, b) => a - b);
+                    dprsList.sort((a, b) => a - b);
+                    ccwmsList.sort((a, b) => a - b);
 
-                oprsList.sort((a, b) => a - b);
-                dprsList.sort((a, b) => a - b);
-                ccwmsList.sort((a, b) => a - b);
+                    setOprStat({
+                        value: opr,
+                        percentile: oprsList.indexOf(opr) / oprsList.length * 100,
+                        max: oprsList[oprsList.length - 1],
+                    })
+                    setDprStat({
+                        value: dpr,
+                        percentile: dprsList.indexOf(dpr) / dprsList.length * 100,
+                        max: dprsList[dprsList.length - 1],
+                    })
+                    setCcwmStat({
+                        value: ccwm,
+                        percentile: ccwmsList.indexOf(ccwm) / ccwmsList.length * 100,
+                        max: ccwmsList[ccwmsList.length - 1],
+                    })
 
-                setOprStat({
-                    value: opr,
-                    percentile: oprsList.indexOf(opr) / oprsList.length * 100,
-                    max: oprsList[oprsList.length - 1],
-                })
-                setDprStat({
-                    value: dpr,
-                    percentile: dprsList.indexOf(dpr) / dprsList.length * 100,
-                    max: dprsList[dprsList.length - 1],
-                })
-                setCcwmStat({
-                    value: ccwm,
-                    percentile: ccwmsList.indexOf(ccwm) / ccwmsList.length * 100,
-                    max: ccwmsList[ccwmsList.length - 1],
-                })
-
-                setOprInfo(
-                    `OPR (Offensive Power Rating): ${Math.round(opr * 100) / 100
-                    }, which is in the ${Math.round(
-                        (oprsList.indexOf(opr) / oprsList.length) * 100,
-                    )}th percentile`,
-                );
-                setDprInfo(
-                    `DPR (Defensive Power Rating): ${Math.round(dpr * 100) / 100
-                    }, which is in the ${Math.round(
-                        (dprsList.indexOf(dpr) / dprsList.length) * 100,
-                    )}th percentile`,
-                );
-                setCcwmInfo(
-                    `CCWM (Calculated Contribution to Winning Margin): ${Math.round(ccwm * 100) / 100
-                    }, which is in the ${Math.round(
-                        (ccwmsList.indexOf(ccwm) / ccwmsList.length) * 100,
-                    )}th percentile`,
-                );
-                const rankingsList = rankingsJson.rankings;
-                let index = 0;
-                for (let i = 0; i < rankingsList.length; i++) {
-                    if (rankingsList[i].team_key === `frc${team}`) index = i;
+                    setOprInfo(
+                        `OPR (Offensive Power Rating): ${Math.round(opr * 100) / 100
+                        }, which is in the ${Math.round(
+                            (oprsList.indexOf(opr) / oprsList.length) * 100,
+                        )}th percentile`,
+                    );
+                    setDprInfo(
+                        `DPR (Defensive Power Rating): ${Math.round(dpr * 100) / 100
+                        }, which is in the ${Math.round(
+                            (dprsList.indexOf(dpr) / dprsList.length) * 100,
+                        )}th percentile`,
+                    );
+                    setCcwmInfo(
+                        `CCWM (Calculated Contribution to Winning Margin): ${Math.round(ccwm * 100) / 100
+                        }, which is in the ${Math.round(
+                            (ccwmsList.indexOf(ccwm) / ccwmsList.length) * 100,
+                        )}th percentile`,
+                    );
+                    const rankingsList = rankingsJson.rankings;
+                    let index = 0;
+                    for (let i = 0; i < rankingsList.length; i++) {
+                        if (rankingsList[i].team_key === `frc${team}`) index = i;
+                    }
+                    setRanking(`${index + 1}`);
                 }
-                setRanking(`${index + 1}`);
+
             };
             const fetchMatchData = async () => {
                 matches = await Promise.all(
@@ -180,9 +184,11 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
             };
             fetchData()
                 .then(fetchMatchData);
+            console.log('done');
         }
 
         const fetchQualitativeData = async () => {
+            console.log('inside the other one');
             await db
                 .collection('years')
                 .doc(year)
@@ -193,11 +199,13 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 .collection('pitScoutData')
                 .doc('pitScoutAnswers')
                 .get().then((data) => {
+                    console.log('inside the promise');
                     setPitScoutData(data.data() || {});
                 });
+            console.log('done with quantitative');
         }
 
-        fetchQuantitativeData().then(fetchQualitativeData).then(() => setLoading(false));
+        fetchQuantitativeData().then(fetchQualitativeData).then(() => { console.log('done loading'); setLoading(false) });
     }, [year, regional, team,]);
 
     const renderClimbData = () => {
@@ -242,6 +250,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
         );
     }
     const renderGraphs = () => {
+        console.log('rendering grpahs');
         return <>
             {graphs.map((graph, index) => (
                 <>
@@ -318,6 +327,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 Climb data:
             </Text>}
             {year === '2022' && renderClimbData()}
+            {console.log('done rendering graphs')}
         </>
     }
     const sort = (ascending: boolean, key: string) => {
@@ -394,10 +404,18 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
             </ThemeProvider>
         );
     }
-    if (!matches || !matches.length) return null;
     if (loading) return <Spinner />;
 
     const renderScoutingData = () => {
+        if ((!matches || !matches.length)) return (
+            <Text
+                style={{
+                    marginTop: '1rem'
+                }}
+            >
+                No scouting data available!
+            </Text>
+        );
         return (
             <div style={{ width: '70%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '5%' }}>
                 <Heading textAlign={'center'} fontSize={'1.5em'} fontWeight={'bolder'}>
@@ -446,6 +464,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
     }
 
     const renderPitScoutData = () => {
+        console.log("Called")
         if (Object.keys(pitScoutData).length === 0) {
             return (
                 <div
