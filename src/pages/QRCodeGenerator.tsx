@@ -24,9 +24,9 @@ interface QRCodeGeneratorProps { }
 
 const QRCodeGenerator: FC<QRCodeGeneratorProps> = () => {
     const year = new Date().getFullYear();
-    const [regionals, setRegionals] = useState<string[]>(['CASF']); // hard code regionals in the case there is no internet
+    const [regionals, setRegionals] = useState<string[]>(['cafr']); // hard code regionals in the case there is no internet
     const [qrcode, setQRCode] = useState<string>();
-    const [regional, setRegional] = useState<string>('CASF');
+    const [regional, setRegional] = useState<string>('cafr');
     const [alliance, setAlliance] = useState<string>('b');
     const [matchNum, setMatchNum] = useState<string | number>('');
     const [team1, setTeam1] = useState<string | number>('');
@@ -50,7 +50,7 @@ const QRCodeGenerator: FC<QRCodeGeneratorProps> = () => {
     const handleSubmit = (event: SyntheticEvent) => {
         event.preventDefault();
 
-        console.log(alliance);
+        console.log(regional);
 
         setQRCode(
             `${matchNum}@${regional}:${alliance}[${team1},${team2},${team3}]`,
