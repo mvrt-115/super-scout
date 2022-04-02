@@ -90,8 +90,6 @@ const Teams: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
             oprsRes.json(),
             rankingsRes.json(),
         ]);
-        console.log(oprsJson);
-        console.log(teamsJson);
         teamsJson.forEach((team: any, index: number) => {
             const teamNumber: number = team['team_number'];
             const oprVal = oprsJson['oprs'][`frc${teamNumber}`];
@@ -120,7 +118,8 @@ const Teams: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                             temp['matchList'][match.id] = match.data();
                         })
                     })
-                obj["teams"][doc.id] = temp;
+                temp['pitScoutData'] =
+                    obj["teams"][doc.id] = temp;
             }))
             const fileName = `${regional}Data`;
             const json = JSON.stringify(obj);
