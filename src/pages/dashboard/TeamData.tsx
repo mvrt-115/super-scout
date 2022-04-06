@@ -189,15 +189,13 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
 
                     setOprInfo('{');
                     setDprInfo(
-                        `DPR (Defensive Power Rating): ${
-                            Math.round(dpr * 100) / 100
+                        `DPR (Defensive Power Rating): ${Math.round(dpr * 100) / 100
                         }, which is in the ${Math.round(
                             (dprsList.indexOf(dpr) / dprsList.length) * 100,
                         )}th percentile`,
                     );
                     setCcwmInfo(
-                        `CCWM (Calculated Contribution to Winning Margin): ${
-                            Math.round(ccwm * 100) / 100
+                        `CCWM (Calculated Contribution to Winning Margin): ${Math.round(ccwm * 100) / 100
                         }, which is in the ${Math.round(
                             (ccwmsList.indexOf(ccwm) / ccwmsList.length) * 100,
                         )}th percentile`,
@@ -316,7 +314,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                 (key) =>
                                     typeof matches[0][key] === 'number' ||
                                     Number.parseInt(matches[0][key]) ==
-                                        matches[0][key],
+                                    matches[0][key],
                             )}
                             graphData={graph}
                             onChange={(graphData) => {
@@ -492,15 +490,15 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                                     }
                                                 >
                                                     {typeof match[field] !==
-                                                    'number'
+                                                        'number'
                                                         ? match[field]
                                                         : JSON.stringify(
-                                                              match[field],
-                                                          ).indexOf('.') == -1
-                                                        ? match[field]
-                                                        : parseFloat(
-                                                              match[field],
-                                                          ).toFixed(3)}
+                                                            match[field],
+                                                        ).indexOf('.') == -1
+                                                            ? match[field]
+                                                            : parseFloat(
+                                                                match[field],
+                                                            ).toFixed(3)}
                                                 </TableCell>
                                             ) : (
                                                 <TableCell></TableCell>
@@ -591,7 +589,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                 )
                                     return (
                                         <Card
-                                            title={'Average' + key}
+                                            title={'Average ' + key}
                                             info={
                                                 parseFloat(value + '').toFixed(
                                                     3,
@@ -628,7 +626,6 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
     };
 
     const renderPitScoutData = () => {
-        console.log('Called');
         if (Object.keys(pitScoutData).length === 0) {
             return (
                 <div
@@ -668,6 +665,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
         );
     };
 
+
     return (
         <>
             <div>
@@ -704,9 +702,8 @@ const TeamRadarChartWrapper: React.FC<{
     const getToolTip = (stat: string) => {
         return {
             name: stat,
-            value: `${stat}: ${
-                radarData.find((data) => data.stat === stat)?.value
-            }`,
+            value: `${stat}: ${radarData.find((data) => data.stat === stat)?.value
+                }`,
         };
     };
 
