@@ -28,14 +28,16 @@ export default function Card({
                 rounded={'lg'}
                 p={6}
                 textAlign={'center'}
+                maxWidth="150px"
             >
-                <Heading fontSize={'2xl'} fontFamily={'body'}>
+                <Heading fontSize={'md'} fontFamily={'body'}>
                     {title}
                 </Heading>
                 <Text
                     textAlign={'center'}
                     color={useColorModeValue('gray.700', 'gray.400')}
                     px={3}
+                    fontSize={'sm'}
                 >
                     {info}
                 </Text>

@@ -1,10 +1,12 @@
 import { AddIcon } from '@chakra-ui/icons';
 import {
     Button,
+    Grid,
     Heading,
     HStack,
     IconButton,
     Spinner,
+    Stack,
     Text,
     Tooltip,
 } from '@chakra-ui/react';
@@ -261,10 +263,11 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
 
     const renderClimbData = () => {
         const data: any = [
-            { name: 'Low', count: 0 },
-            { name: 'Mid', count: 0 },
-            { name: 'High', count: 0 },
-            { name: 'Traversal', count: 0 },
+            { name: 'Low', count: 0, fill: '#260235' },
+            { name: 'Mid', count: 0, fill: '#550575' },
+            { name: 'High', count: 0, fill: '#dab0ec' },
+            { name: 'Traversal', count: 0, fill: '#ffc410' },
+            { name: 'None', count: 0, fill: '#202020' },
         ];
         matches.forEach((match) => {
             switch (match['Climb rung']) {
@@ -280,6 +283,9 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 case 'Traversal':
                     data[3]['count'] += 1;
                     break;
+                case 'None':
+                    data[4]['count'] += 1;
+                    break;
             }
         });
         return (
@@ -293,7 +299,6 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                     innerRadius={100}
                     outerRadius={150}
                     label
-                    fill="#550575"
                     paddingAngle={2}
                 />
                 <REToolTip />
@@ -525,7 +530,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
         return (
             <div
                 style={{
-                    width: '70%',
+                    width: '80%',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
@@ -548,25 +553,37 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                         justifyContent: 'center',
                         marginTop: '2vh',
                         marginBottom: '2vh',
+                        width: '100%',
                     }}
                 >
-                    <HStack>
-                        <Card
-                            title="OPR"
-                            info={oprStat.value + ''}
-                            subinfo={oprStat.percentile + '% Percentile'}
-                        ></Card>
-                        <Card
-                            title="DPR"
-                            info={dprStat.value + ''}
-                            subinfo={dprStat.percentile + '% Percentile'}
-                        ></Card>
-                        <Card
-                            title="CCWM"
-                            info={ccwmStat.value + ''}
-                            subinfo={ccwmStat.percentile + '% Percentile'}
-                        ></Card>
+                    <Stack alignItems={'center'}>
                         <HStack>
+                            <Card
+                                title="OPR"
+                                info={Math.round(oprStat.value * 100) / 10 + ''}
+                                subinfo={oprStat.percentile + '% Percentile'}
+                            ></Card>
+                            <Card
+                                title="DPR"
+                                info={Math.round(dprStat.value * 100) / 10 + ''}
+                                subinfo={dprStat.percentile + '% Percentile'}
+                            ></Card>
+                            <Card
+                                title="CCWM"
+                                info={
+                                    Math.round(ccwmStat.value * 100) / 100 + ''
+                                }
+                                subinfo={ccwmStat.percentile + '% Percentile'}
+                            ></Card>
+                        </HStack>
+
+                        <Grid
+                            // gap={1}
+                            templateColumns={
+                                'repeat(auto-fit, minmax(150px, 1fr))'
+                            }
+                            width={'65vw'}
+                        >
                             {Object.entries(avgValues).map(([key, value]) => {
                                 if (
                                     key.indexOf('match') == -1 &&
@@ -583,8 +600,8 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                         ></Card>
                                     );
                             })}
-                        </HStack>
-                    </HStack>
+                        </Grid>
+                    </Stack>
                 </div>
                 <TeamRadarChartWrapper
                     team={team}
