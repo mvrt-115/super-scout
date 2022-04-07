@@ -223,7 +223,6 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
     }
 
     const renderTable = () => {
-        const teamTemplate = Object.keys(teams[0]).length > Object.keys(teams[1]).length ? teams[0] : teams[1];
         return (
             <ThemeProvider theme={createTheme()}>
                 <TableContainer component={Paper} style={{ minWidth: "90vw", maxHeight: "90vw" }}>
@@ -269,7 +268,7 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                 >
                                     <TableCell key={team["teamNum"] + "teamNum"}>{team["teamNum"]}</TableCell>
-                                    {Object.keys(teamTemplate).map((field) => {
+                                    {template.map((field) => {
                                         if (field != "teamNum")
                                             return (
                                                 team[field] !== undefined ? <TableCell key={team["teamNum"] + field}>{JSON.stringify(team[field]).indexOf('.') == -1 ? team[field] : parseFloat(team[field]).toFixed(3)}</TableCell> : <TableCell></TableCell>
@@ -402,13 +401,13 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
     return (
         <>
             <div>
-                <Button
+                {/*<Button
                     onClick={() => {
                         setPitScout(!pitScout);
                     }}
                 >
-                    {pitScout ? 'View Regional Data' : 'View Pit scout data'}
-                </Button>
+                    {(pitScout ? 'View Regional Data' : 'View Pit scout data')}
+                </Button>*/}
             </div>
             {pitScout ? renderPitScout() : renderQualitativeData()}
         </>

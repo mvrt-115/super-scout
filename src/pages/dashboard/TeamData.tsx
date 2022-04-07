@@ -304,7 +304,6 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
         );
     };
     const renderGraphs = () => {
-        console.log('rendering grpahs');
         return (
             <>
                 {graphs.map((graph, index) => (
