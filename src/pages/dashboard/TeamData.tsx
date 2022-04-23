@@ -54,7 +54,16 @@ interface RadarChartStat {
 const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
     const { year, regional, team } = match.params;
     const [matches, setMatches] = useState<any[]>([]);
-    const [graphs, setGraphs] = useState<GraphData[]>([]);
+    const [graphs, setGraphs] = useState<GraphData[]>(
+        [
+            {
+                x: 'matchNum',
+                y: ['teamNum', 'none', 'none'],
+                sortBy: 'ccwm',
+                type: 'Bar',
+            },
+        ]
+    );
     const [oprInfo, setOprInfo] = useState<any>();
     const [dprInfo, setDprInfo] = useState<any>();
     const [ccwmInfo, setCcwmInfo] = useState<any>();
@@ -75,7 +84,6 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
     });
     const [ranking, setRanking] = useState<string>();
     const [loading, setLoading] = useState<boolean>(true);
-    const [sortBy, setSortBy] = useState<string>('ccwm');
     const [table, setTable] = useState<boolean>(false);
     const [template, setTemplate] = useState<string[]>(['']);
     const [avgValues, setAvgValues] = useState<any>();
@@ -86,14 +94,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
         const teamDisplay = localStorage.getItem('teamDisplay' + year);
         if (teamDisplay) setGraphs(JSON.parse(teamDisplay));
         else
-            setGraphs([
-                {
-                    x: 'matchNum',
-                    y: ['teamNum', 'none', 'none'],
-                    sortBy: 'ccwm',
-                    type: 'Bar',
-                },
-            ]);
+            setPresetGraphs();
     }, [year]);
 
     useEffect(() => {
@@ -258,7 +259,27 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 setLoading(false);
             });
     }, [year, regional, team]);
-
+    const setPresetGraphs = async () => {
+        await db.collection('years')
+            .doc(year)
+            .collection('regionals')
+            .doc(regional)
+            .collection("presetGraphs")
+            .doc('team')
+            .get()
+            .then((doc) => {
+                const temp: any[] = [];
+                doc.data()!["graphs"]?.forEach((preset: any) => {
+                    temp.push({
+                        x: preset["xAxis"],
+                        y: [preset["yAxis1"], preset["yAxis2"], preset["yAxis3"]],
+                        type: preset["graphType"],
+                        sortBy: preset["sortBy"] ? preset["sortBy"] : preset["yAxis1"]
+                    });
+                });
+                setGraphs(temp);
+            });
+    }
     const renderClimbData = () => {
         const data: any = [
             { name: 'Low', count: 0, fill: '#260235' },
@@ -324,7 +345,6 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                     'teamDisplay' + year,
                                     JSON.stringify(newGraphs),
                                 );
-                                setSortBy(graphData.sortBy);
                             }}
                             onDelete={() => {
                                 let newGraphs = [...graphs];
@@ -342,14 +362,14 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                 graph || {
                                     x: 'matchNum',
                                     y: [
-                                        'autonPoints',
                                         'teleopPoints',
+                                        'autonPoints',
                                         'endgamePoints',
                                     ],
                                     type: 'Bar',
+                                    sortBy: 'teleopPoints'
                                 }
                             }
-                            sortBy={sortBy}
                         />
                     </>
                 ))}
@@ -358,7 +378,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                         marginTop="5%"
                         aria-label="Add Graph"
                         icon={<AddIcon />}
-                        onClick={() =>
+                        onClick={() =>{
                             setGraphs([
                                 ...graphs,
                                 {
@@ -368,6 +388,8 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                     type: 'Bar',
                                 },
                             ])
+                            console.log(graphs[0].sortBy);
+                        }
                         }
                         colorScheme="green"
                         width="100%"
@@ -694,9 +716,9 @@ const TeamRadarChartWrapper: React.FC<{
     ccwm: RadarChartStat;
 }> = ({ team, opr, dpr, ccwm }) => {
     const radarData: RadarDataStruct[] = [
-        { stat: 'OPR', value: opr.value, max: opr.max },
-        { stat: 'DPR', value: dpr.value, max: dpr.max },
-        { stat: 'CCWM', value: ccwm.value, max: ccwm.max },
+        { stat: 'OPR', value: parseFloat(opr.value.toFixed(3)), max: opr.max },
+        { stat: 'DPR', value: parseFloat(dpr.value.toFixed(3)), max: dpr.max },
+        { stat: 'CCWM', value: parseFloat(ccwm.value.toFixed(3)), max: ccwm.max },
     ];
     const getToolTip = (stat: string) => {
         return {

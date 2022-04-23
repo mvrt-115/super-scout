@@ -7,6 +7,7 @@ import {
     Spinner,
     VStack,
 } from '@chakra-ui/react';
+import { AnyPointerEvent } from 'framer-motion/types/gestures/PanSession';
 import React, { FC, useEffect, useState } from 'react';
 import ScoutInputInput from '../components/ScoutInputInput';
 import { useAuth } from '../contexts/AuthContext';
@@ -141,10 +142,18 @@ const ScoutingInputs: FC<ScoutingInputsProps> = () => {
                           }
                         : teleopRef.data();
                 setTeleopInputs(
-                    Object.keys(teleopData).map((key) => ({
-                        key,
-                        type: teleopData[key],
-                    })),
+                    Object.keys(teleopData).map((key) => {
+                        if (Array.isArray(teleopData[key]))
+                            return {
+                                key,
+                                type: 'dropdown',
+                                choices: teleopData[key],
+                            };
+                        return {
+                            key,
+                            type: teleopData[key],
+                        };
+                    }),
                 );
 
                 const endgameData: any =
@@ -154,10 +163,20 @@ const ScoutingInputs: FC<ScoutingInputsProps> = () => {
                           }
                         : endgameRef.data();
                 setEndgameInputs(
-                    Object.keys(endgameData).map((key) => ({
-                        key,
-                        type: endgameData[key],
-                    })),
+                    Object.keys(endgameData).map((key) => {
+                        if (Array.isArray(endgameData[key]))
+                            return {
+                                key,
+                                type: 'dropdown',
+                                choices: endgameData[key].map((key2: any)=>{
+                                    return JSON.stringify(key2);
+                                }),
+                            };
+                        return {
+                            key,
+                            type: endgameData[key],
+                        };
+                    }),
                 );
             }
         };

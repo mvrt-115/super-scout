@@ -18,10 +18,9 @@ import { useResizeDetector } from 'react-resize-detector';
 interface GraphProps {
     graphInfo: GraphData;
     data: any[];
-    sortBy: string;
 }
 
-const Graph: FC<GraphProps> = ({ graphInfo, data, sortBy }) => {
+const Graph: FC<GraphProps> = ({ graphInfo, data}) => {
     const [graphingData, setGraphingData] = useState<any[]>([]);
     const colors = ['#260245', '#ffc410', '#dab0ec', '#550575'];
     //create ref of box for box sizing
@@ -40,16 +39,16 @@ const Graph: FC<GraphProps> = ({ graphInfo, data, sortBy }) => {
         });
         sortData(graphingData);
         setGraphingData(graphingData);
-    }, [sortBy, graphInfo.x, graphInfo.y, graphInfo.type]);
+    }, [graphInfo.sortBy, graphInfo.x, graphInfo.y, graphInfo.type]);
 
 
     const sortData = (data: any[]) => {
-        if (sortBy.length < 2) return;
+        if (graphInfo.sortBy.length < 2) return;
         data.sort((a, b) => {
             //console.log(a["teleopInner"])
-            if (isNaN(a[sortBy])) a[sortBy] = -10;
-            if (isNaN(a[sortBy])) b[sortBy] = -10;
-            return b[sortBy] - a[sortBy];
+            //if (isNaN(a[sortBy])) a[sortBy] = -10;
+            //if (isNaN(a[sortBy])) b[sortBy] = -10;
+            return b[graphInfo.sortBy] - a[graphInfo.sortBy];
         });
     }
 

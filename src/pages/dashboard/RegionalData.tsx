@@ -8,14 +8,13 @@ import { db } from '../../firebase';
 import Paper from '@mui/material/Paper';
 import { TableContainer, Table, TableHead, TableRow, TableBody, TableCell } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material';
-
+import RegionalTable from '../../components/RegionalTable';
 interface RouteParams {
     year: string;
     regional: string;
 }
 
 const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
-    const [sortBy, setSortBy] = useState<string>();
     const [teams, setTeams] = useState<any[]>([]);
     const [table, setTable] = useState<boolean>(false);
     const [graphs, setGraphs] = useState<any[]>([
@@ -28,6 +27,7 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
     const { year, regional } = match.params;
     const [loading, setLoading] = useState<boolean>(true);
     const [template, setTemplate] = useState<string[]>(['']);
+    const [pitTemplate, setPitTemplate] = useState<string[]>(['']);
     const [pitScout, setPitScout] = useState<boolean>(false);
     const [pitScoutData, setPitScoutData] = useState<any[]>([{}]);
 
@@ -44,7 +44,7 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
             .collection('regionals')
             .doc(regional)
             .collection("presetGraphs")
-            .doc('regionals')
+            .doc('regional')
             .get()
             .then((doc) => {
                 const temp: any[] = [];
@@ -52,7 +52,8 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                     temp.push({
                         x: preset["xAxis"],
                         y: [preset["yAxis1"], preset["yAxis2"], preset["yAxis3"]],
-                        type: preset["graphType"]
+                        type: preset["graphType"],
+                        sortBy: preset["sortBy"] ? preset["sortBy"] : preset["yAxis1"]
                     });
                 });
                 setGraphs(temp);
@@ -130,13 +131,26 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 .collection('regionals')
                 .doc(regional)
                 .collection('teams');
-            await ((await path.get()).docs.forEach((doc) => {
-                data.push(doc.data() || { teamNum: doc.id });
-            }));
+            let promiseList: Promise<any>[] = [];
+            await path.get().then((docList)=>{
+                for(let doc of docList.docs){
+                    promiseList.push(path.doc(doc.id).collection("pitScoutData").doc("pitScoutAnswers").get()
+                    .then((resp)=>{
+                        let temp: any = resp.data()!;
+                        delete temp["Team Number"];
+                        temp["teamNum"] = parseInt(doc.id);
+                        data.push(temp);
+                    }))
+                }
+            })
+            await Promise.all(promiseList);
             setPitScoutData(data);
+            if(data[0] && data[1]){
+                setPitTemplate(Object.keys(data[0]).length>Object.keys(data[1]).length ? Object.keys(data[0]) : Object.keys(data[1]));
+            }
         }
 
-        fetchData().then(() => setLoading(false));
+        fetchData().then(() => fetchPitScoutData().then(()=> setLoading(false)));
     }, [regional, year]);
     if (loading) return <Spinner />;
     const renderGraphs = () => {
@@ -155,7 +169,6 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                     'regionalDisplay' + year,
                                     JSON.stringify(newGraphs),
                                 );
-                                setSortBy(graphData.sortBy);
                             }}
                             onDelete={() => {
                                 let newGraphs = [...graphs];
@@ -181,7 +194,6 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                     type: 'Bar',
                                 }
                             }
-                            sortBy={sortBy ? sortBy : ''}
                         />
                     </>
                 ))}
@@ -208,6 +220,14 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
 
         );
     }
+
+    const renderTable = () => {
+        return (
+            <ThemeProvider theme={createTheme()}>
+              <RegionalTable teamTemplate={template} teamList={teams}/>
+            </ThemeProvider>
+        );
+    }
     const sort = (ascending: boolean, key: string) => {
         let temp = [...teams];
         temp.sort((a, b) => {
@@ -221,14 +241,16 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
         })
         setTeams(temp);
     }
-
-    const renderTable = () => {
+    const renderPitScout = () => {
         return (
-            <ThemeProvider theme={createTheme()}>
-                <TableContainer component={Paper} style={{ minWidth: "90vw", maxHeight: "90vw" }}>
-                    <Table stickyHeader sx={{ minWidth: 950, width: '90vw' }}>
+            <>
+                <Text>
+                    This is the pitscout page!
+                </Text>
+                <ThemeProvider theme={createTheme()}>
+                    <TableContainer component={Paper} style={{ minWidth: '90vw', minHeight: '90vh' }}>
                         <TableHead>
-                            <TableRow style={{ whiteSpace: "nowrap" }}>
+                            <TableRow style={{ whiteSpace: 'nowrap' }}>
                                 <TableCell key="teamNum">
                                     Team Number
                                     <Button onClick={() => {
@@ -242,76 +264,12 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                         ↓
                                     </Button>
                                 </TableCell>
-                                {(template.map((key) => {
-                                    if (key != "teamNum")
+                                {pitTemplate.map((field: any, index: number) => {
+                                    if(field!=="teamNum")
                                         return (
-                                            <TableCell key={key}>
-                                                {key}
-                                                <Button onClick={() => {
-                                                    sort(false, key);
-                                                }}>
-                                                    ↑
-                                                </Button>
-                                                <Button onClick={() => {
-                                                    sort(true, key)
-                                                }}>
-                                                    ↓
-                                                </Button>
-                                            </TableCell>
-                                        );
-                                }))}
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {teams.map((team) => (
-                                <TableRow key={team["teamNum"]}
-                                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                                >
-                                    <TableCell key={team["teamNum"] + "teamNum"}>{team["teamNum"]}</TableCell>
-                                    {template.map((field) => {
-                                        if (field != "teamNum")
-                                            return (
-                                                team[field] !== undefined ? <TableCell key={team["teamNum"] + field}>{JSON.stringify(team[field]).indexOf('.') == -1 ? team[field] : parseFloat(team[field]).toFixed(3)}</TableCell> : <TableCell></TableCell>
-                                            );
-                                    })}
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-            </ThemeProvider>
-        );
-    }
-
-    const renderPitScout = () => {
-        return (
-            <>
-                <Text>
-                    This is the pitscout page!
-                </Text>
-                <ThemeProvider theme={createTheme()}>
-                    <TableContainer component={Paper} style={{ minWidth: '90vw', minHeight: '90vh' }}>
-                        <TableHead>
-                            <TableRow style={{ whiteSpace: 'nowrap' }}>
-                                <TableCell key="Team Number">
-                                    Team Number
-                                    <Button onClick={() => {
-                                        sort(false, "matchNum");
-                                    }}>
-                                        ↑
-                                    </Button>
-                                    <Button onClick={() => {
-                                        sort(true, "matchNum");
-                                    }}>
-                                        ↓
-                                    </Button>
-                                </TableCell>
-                                {pitScoutData.map((teamData: any, index: number) => {
-                                    let teamNum: number = teamData['teamNum'];
-                                    return (
-                                        <TableCell key={teamNum}>
-                                            {teamNum}
-                                            <Button onClick={() => {
+                                        <TableCell key={field}>
+                                            {field}
+                                            {/*<Button onClick={() => {
                                                 sort(false, "teamNum");
                                             }}>
                                                 ↑
@@ -320,7 +278,7 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                                 sort(true, "teamNum")
                                             }}>
                                                 ↓
-                                            </Button>
+                                        </Button>*/}
                                         </TableCell>
                                     );
                                 })}
@@ -331,12 +289,12 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                 return (
                                     <TableRow key={teamData['teamNum']}>
                                         <TableCell key={teamData['teamNum'] + 'teamNum'}>{teamData['teamNum']}</TableCell>
-                                        {Object.keys(teamData).map((key: any, index: number) => {
+                                        {pitTemplate.map((key: any, index: number) => {
                                             return (
                                                 teamData[key] !== undefined && key !== 'teamNum'
                                                 && <TableCell key={teamData['teamNum'] + key}>
                                                     {JSON.stringify(teamData[key]).length > 5 ?
-                                                        JSON.stringify(teamData[key]).substring(0, 5) + "..." :
+                                                        JSON.stringify(teamData[key])://.substring(0, 5) + "..." :
                                                         JSON.stringify(teamData[key])
                                                     }
                                                 </TableCell>
@@ -401,15 +359,15 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
     return (
         <>
             <div>
-                {/*<Button
+                {<Button
                     onClick={() => {
                         setPitScout(!pitScout);
                     }}
                 >
                     {(pitScout ? 'View Regional Data' : 'View Pit scout data')}
-                </Button>*/}
+                </Button>}
             </div>
-            {pitScout ? renderPitScout() : renderQualitativeData()}
+            {pitScout ? renderPitScout() :  renderQualitativeData()}
         </>
     );
 };

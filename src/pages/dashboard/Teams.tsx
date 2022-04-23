@@ -62,14 +62,14 @@ const Teams: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
         const promises: Promise<any>[] = [];
         const [teams, rankingsRes, oprsRes] = await Promise.all([
             fetch(
-                `https://www.thebluealliance.com/api/v3/event/2022casf/teams`, {
+                `https://www.thebluealliance.com/api/v3/event/${year}${regional}/teams`, {
                 headers: {
                     'X-TBA-Auth-Key': process.env.REACT_APP_TBA_KEY || '',
                 }
             }
             ),
             fetch(
-                `https://www.thebluealliance.com/api/v3/event/2022casf/rankings`,
+                `https://www.thebluealliance.com/api/v3/event/${year}${regional}/rankings`,
                 {
                     headers: {
                         'X-TBA-Auth-Key': process.env.REACT_APP_TBA_KEY || '',
@@ -77,7 +77,7 @@ const Teams: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 }
             ),
             fetch(
-                `https://www.thebluealliance.com/api/v3/event/2022casf/oprs`,
+                `https://www.thebluealliance.com/api/v3/event/${year}${regional}/oprs`,
                 {
                     headers: {
                         'X-TBA-Auth-Key': process.env.REACT_APP_TBA_KEY || '',
