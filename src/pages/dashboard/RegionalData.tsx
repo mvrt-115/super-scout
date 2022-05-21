@@ -1,7 +1,7 @@
 import { AddIcon } from '@chakra-ui/icons';
 import { Button, Heading, IconButton, Spinner, Tooltip, Text } from '@chakra-ui/react';
 import React, { FC, useEffect, useState } from 'react';
-import { RouteComponentProps } from 'react-router-dom';
+import { Link, RouteComponentProps } from 'react-router-dom';
 import Graph from '../../components/Graph';
 import GraphInput from '../../components/GraphInput';
 import { db } from '../../firebase';
@@ -143,11 +143,16 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                     }))
                 }
             })
+            console.log(JSON.stringify(data)+" "+regional);
             await Promise.all(promiseList);
             setPitScoutData(data);
-            if(data[0] && data[1]){
-                setPitTemplate(Object.keys(data[0]).length>Object.keys(data[1]).length ? Object.keys(data[0]) : Object.keys(data[1]));
+            let temp: string[] = ["teamNum"];
+            for(let team of data){
+                if(Object.keys(team).length>temp.length){
+                    temp = Object.keys(team);
+                }
             }
+            setPitTemplate(temp);
         }
 
         fetchData().then(() => fetchPitScoutData().then(()=> setLoading(false)));
@@ -157,7 +162,9 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
         return (
             <div>
                 {graphs.map((graph, index) => (
-                    <>
+                    <div style={{
+                        width: '100%'
+                    }}>
                         <GraphInput
                             keys={template}
                             graphData={graph}
@@ -195,7 +202,7 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                 }
                             }
                         />
-                    </>
+                    </div>
                 ))}
                 <Tooltip label="Add Graph">
                     <IconButton
@@ -253,16 +260,6 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                             <TableRow style={{ whiteSpace: 'nowrap' }}>
                                 <TableCell key="teamNum">
                                     Team Number
-                                    <Button onClick={() => {
-                                        sort(false, "teamNum");
-                                    }}>
-                                        ↑
-                                    </Button>
-                                    <Button onClick={() => {
-                                        sort(true, "teamNum");
-                                    }}>
-                                        ↓
-                                    </Button>
                                 </TableCell>
                                 {pitTemplate.map((field: any, index: number) => {
                                     if(field!=="teamNum")
@@ -319,9 +316,6 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
             );
         return (
             <div style={{ width: '70%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '5%' }}>
-                <Heading textAlign={'center'} fontSize={'1.5em'} marginBottom="3%">
-                    {regional.toUpperCase()} {year}
-                </Heading>
                 <div>
                     {table ? <Button
                         variant="outline"
@@ -359,6 +353,21 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
     return (
         <>
             <div>
+                <li className="link" style={{
+                        padding: "none",
+                        margin: "none",
+                        textAlign: "center",
+                        fontWeight: "bold",
+                        fontSize: '1.5em',
+                        backgroundColor: "white",
+                        color: 'black'
+                    }}>
+                        <Link
+                            to={`..`}
+                        >
+                            {regional.toUpperCase()} {year}
+                        </Link>
+                </li>
                 {<Button
                     onClick={() => {
                         setPitScout(!pitScout);

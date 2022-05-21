@@ -1,4 +1,4 @@
-import { Button, Grid, Heading, Tooltip } from '@chakra-ui/react';
+import { Button, Grid, Heading, Spinner, Tooltip } from '@chakra-ui/react';
 import React, { FC, useEffect, useState } from 'react';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { db } from '../../firebase';
@@ -17,6 +17,7 @@ const Teams: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
     const [oprs, setOprs] = useState<number[]>([]);
     const [dprs, setDprs] = useState<number[]>([]);
     const [ccwms, setCcwms] = useState<number[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -54,7 +55,9 @@ const Teams: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
             await getTeamsInfo();
         })();
     }, [year, regional]);
-
+    useEffect(()=>{
+        setLoading(false);
+    }, [teams])
     const getTeamsInfo = async () => {
         const oprs: number[] = [];
         const dprs: number[] = [];
@@ -155,7 +158,20 @@ const Teams: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 </Heading>
             </div>
         );
-
+    if (loading) {
+        return (
+            <div
+                style={{
+                    width: '100%',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                }}
+            >
+                <Spinner />
+            </div>
+        )
+    }
     return (
         <><>
             <Button

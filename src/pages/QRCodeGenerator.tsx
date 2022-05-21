@@ -44,7 +44,7 @@ const QRCodeGenerator: FC<QRCodeGeneratorProps> = () => {
             setRegionals(res.docs.map((doc) => doc.id));
             if (res.docs.length > 0) setRegional(res.docs[0].id);
         };
-        // fetchData();
+        fetchData();
     }, [year]);
 
     const handleSubmit = (event: SyntheticEvent) => {
@@ -185,7 +185,7 @@ const QRCodeGenerator: FC<QRCodeGeneratorProps> = () => {
                             }}
                             isFullWidth
                             type="submit"
-                        >
+                       >
                             Create QR Code
                         </Button>
                     </VStack>

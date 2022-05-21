@@ -1,5 +1,5 @@
 import { DeleteIcon } from '@chakra-ui/icons';
-import { HStack, IconButton, Select, Text } from '@chakra-ui/react';
+import { HStack, IconButton, Text, Select} from '@chakra-ui/react';
 import React, { FC, useEffect, useState } from 'react';
 
 interface GraphInputProps {
@@ -40,10 +40,13 @@ const GraphInput: FC<GraphInputProps> = ({
     }, [xAxis, yAxis1, yAxis2, yAxis3, type, sortBy]);
 
     return (
-        <HStack alignItems="center" justifyContent="center" width={'100%'}>
+        <div style={{
+            display: "flex",
+            alignItems: "center",
+            flexDirection: "row"
+        }}>
             <Text>X-Axis:</Text>
             <Select
-                width={'fit-content'}
                 value={xAxis}
                 onChange={(e) => setXAxis(e.target.value)}
             >
@@ -55,7 +58,6 @@ const GraphInput: FC<GraphInputProps> = ({
             </Select>
             <Text>Y-Axis:</Text>
             <Select
-                width={'fit-content'}
                 value={yAxis1}
                 onChange={(e) => setYAxis1(e.target.value)}
             >
@@ -66,7 +68,6 @@ const GraphInput: FC<GraphInputProps> = ({
                 ))}
             </Select>
             <Select
-                width={'fit-content'}
                 value={yAxis2}
                 onChange={(e) => setYAxis2(e.target.value)}
             >
@@ -78,7 +79,6 @@ const GraphInput: FC<GraphInputProps> = ({
                 ))}
             </Select>
             <Select
-                width={'fit-content'}
                 value={yAxis3}
                 onChange={(e) => setYAxis3(e.target.value)}
             >
@@ -91,7 +91,6 @@ const GraphInput: FC<GraphInputProps> = ({
             </Select>
             <Text>Sort By:</Text>
             <Select
-                width={'fit-content'}
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
             >
@@ -108,20 +107,13 @@ const GraphInput: FC<GraphInputProps> = ({
                     const val: any = e.target.value;
                     setType(val);
                 }}
-                width={'fit-content'}
             >
                 <option value="Bar">Bar</option>
                 <option value="Area">Area</option>
                 <option value="Line">Line</option>
                 <option value="Scatter">Scatter</option>
             </Select>
-            <IconButton
-                aria-label="delete"
-                icon={<DeleteIcon />}
-                onClick={onDelete}
-                colorScheme={'red'}
-            />
-        </HStack>
+        </div>
     );
 };
 

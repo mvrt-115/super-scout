@@ -122,6 +122,7 @@ const Scanner: FC<ScannerProps> = () => {
                                 'matches',
                                 JSON.stringify([...data, matchData]),
                             );
+                            
                         }}
                     />
                 ) : (

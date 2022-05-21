@@ -188,7 +188,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                         max: ccwmsList[ccwmsList.length - 1],
                     });
 
-                    setOprInfo('{');
+                    /*setOprInfo('{');
                     setDprInfo(
                         `DPR (Defensive Power Rating): ${Math.round(dpr * 100) / 100
                         }, which is in the ${Math.round(
@@ -200,7 +200,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                         }, which is in the ${Math.round(
                             (ccwmsList.indexOf(ccwm) / ccwmsList.length) * 100,
                         )}th percentile`,
-                    );
+                    );*/
                     const rankingsList = rankingsJson.rankings;
                     let index = 0;
                     for (let i = 0; i < rankingsList.length; i++) {
