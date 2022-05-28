@@ -19,8 +19,10 @@ import React, { FC, useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import NeedAccount from './NeedAccount';
 import QRScan from 'qrscan';
+import { QrReader } from 'react-qr-reader';
 import { DeleteIcon } from '@chakra-ui/icons';
 import { db } from '../firebase';
+import { Stream } from 'stream';
 
 interface ScannerProps { }
 
@@ -49,7 +51,14 @@ const Scanner: FC<ScannerProps> = () => {
             localStorage.setItem('matches', '[]')
         });
     };
-
+    const stopWebcam = () =>{
+        const video = document.getElementsByTagName("video")[0];
+        navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}}).then((stream)=>{
+            stream.getTracks().forEach((track)=>{
+                track.stop();
+            })
+        })
+    }
     const pushData = async (match: any) => {
         db.collection('years').doc(year + '').collection('scouting').get().then((data) => {
             let autonFields = Object.values(data.docs[0].data().autonFields || {}).map((field: any) => {
@@ -116,14 +125,17 @@ const Scanner: FC<ScannerProps> = () => {
                     <QRScan
                         onFind={(val: any) => {
                             const matchData = JSON.parse(val);
+                            console.log(val);
                             setQrVisible(false);
+                            //stopWebcam();
                             setData([...data, matchData]);
                             localStorage.setItem(
                                 'matches',
-                                JSON.stringify([...data, matchData]),
+                                JSON.stringify([...data, matchData])
                             );
-                            
+
                         }}
+                        constraints={{facingMode:'user'}}
                     />
                 ) : (
                     <Button
