@@ -49,6 +49,7 @@ class QRScanner extends Component<{onFind: (data: string) => void},{notEnabled: 
 
   componentWillUnmount () {
     (this.state.video!).pause();
+    //Kills the video stream before the component unmounts so it will not stay running - massive battery drain
     if(this.state.video?.srcObject)
         (this.state.video?.srcObject! as MediaStream).getTracks().forEach(track => track.stop());
   }

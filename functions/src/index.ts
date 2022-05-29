@@ -5,7 +5,7 @@ import * as admin from 'firebase-admin';
 // const admin = require('firebase-admin');
 
 // // Start writing Firebase Functions
-// // https://firebase.google.com/docs/functions/typescript
+// // https://firebase.google.com/docs/functions/typ    escript
 //
 // export const helloWorld = functions.https.onRequest((request, response) => {
 //   functions.logger.info("Hello logs!", {structuredData: true});
@@ -186,4 +186,37 @@ export const calculatePoints = functions.https.onCall(async (data, context) => {
         teleopPoints,
         endgamePoints,
     };
+});
+
+export const resetData = functions.https.onCall(async (data, context) => {
+    const { year, regional, team } = data;
+    let newData: any = {};
+    let keys: any = [], fields: any = [];
+    let teamsRef = await db
+        .collection('years')
+        .doc(year)
+        .collection('regionals')
+        .doc(regional)
+        .collection('teams').
+        doc(team);
+    let matchesRef = teamsRef.collection('matches');
+    (await matchesRef.get()).docs.forEach(async (match: any, index: number) => {
+        await matchesRef
+                .doc(match.id)
+                .get()
+                .then((data) => {
+                    const temp = data.data();
+                    keys = Object.keys(temp || {});
+                    Object.values(temp || {}).forEach((value: string | number, index: number) => {
+                        if(typeof value === 'number' && keys[index] !== 'matchNum') {
+                            if(fields[index] === undefined) fields[index] = value;
+                            else fields[index] += value;
+                        }
+                    })
+                });
+        });
+        fields.forEach((ele: number, index: number) => {
+            newData[keys[index] || ''] = ele;
+        });
+    return newData;
 });

@@ -4,7 +4,7 @@ import React, { FC, useEffect, useState } from 'react';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import Graph from '../../components/Graph';
 import GraphInput from '../../components/GraphInput';
-import { db } from '../../firebase';
+import { db, functions } from '../../firebase';
 import Paper from '@mui/material/Paper';
 import { TableContainer, Table, TableHead, TableRow, TableBody, TableCell } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material';
@@ -30,7 +30,7 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
     const [pitTemplate, setPitTemplate] = useState<string[]>(['']);
     const [pitScout, setPitScout] = useState<boolean>(false);
     const [pitScoutData, setPitScoutData] = useState<any[]>([{}]);
-
+    
     useEffect(() => {
         const regionalDisplay = localStorage.getItem('regionalDisplay' + year);
         if (regionalDisplay) setGraphs(JSON.parse(regionalDisplay));
@@ -122,6 +122,19 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
             setTemplate(Object.keys(teams[0]).length > Object.keys(teams[1]).length ? Object.keys(teams[0]) : Object.keys(teams[1]));
             setTeams(teams);
         };
+
+        const resetData = async () => {
+            let teamsRef = db
+                .collection('years')
+                .doc(year)
+                .collection('regionals')
+                .doc(regional)
+                .collection('teams');
+            (await teamsRef.get()).docs.forEach(async (team: any, index: number) => {
+                const data = functions.httpsCallable('resetData');
+                await teamsRef.doc(team.id).set(data);
+            })
+        }
 
         const fetchPitScoutData = async () => {
             let data: any[] = [];

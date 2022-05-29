@@ -45,10 +45,7 @@ const Graph: FC<GraphProps> = ({ graphInfo, data}) => {
     const sortData = (data: any[]) => {
         if (graphInfo.sortBy.length < 2) return;
         data.sort((a, b) => {
-            //console.log(a["teleopInner"])
-            //if (isNaN(a[sortBy])) a[sortBy] = -10;
-            //if (isNaN(a[sortBy])) b[sortBy] = -10;
-            return b[graphInfo.sortBy] - a[graphInfo.sortBy];
+            return parseInt(b[graphInfo.sortBy]) - parseInt(a[graphInfo.sortBy]);
         });
     }
 
