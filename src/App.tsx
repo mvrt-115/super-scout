@@ -17,7 +17,14 @@ import ScoutingInputs from './pages/ScoutingInputs';
 
 function App() {
     return (
-        <div className="App">
+        <div
+            className="App"
+            style={{
+                maxWidth: '100vw',
+                height: '100vh',
+                backgroundColor: '#f6e8fc'
+            }}
+        >
             <ChakraProvider theme={theme}>
                 <AuthProvider>
                     <BrowserRouter>

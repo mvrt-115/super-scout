@@ -16,7 +16,7 @@ import {
     FcTodoList,
 } from 'react-icons/fc';
 
-interface HomeProps {}
+interface HomeProps { }
 
 const Home: FC<HomeProps> = () => {
     return (
@@ -36,6 +36,7 @@ const Home: FC<HomeProps> = () => {
                     justifyContent: 'center',
                     alignItems: 'center',
                     flexDirection: 'column',
+                    marginTop: '1rem'
                 }}
             >
                 <Heading
@@ -45,11 +46,11 @@ const Home: FC<HomeProps> = () => {
                     color={'mv-purple.500'}
                 >
                     MVRT{' '}
-                    <Text as={'span'} color={'mv-gold'}>
+                    <Text as={'span'} color={'#260235'}>
                         Super Scout
                     </Text>
                 </Heading>
-                <Box p={4} display="flex" justifyContent={'center'}>
+                <Box p={4} display="flex" justifyContent={'center'} marginTop={'0.5rem'}>
                     <SimpleGrid
                         columns={{ base: 1, md: 4 }}
                         spacing={10}

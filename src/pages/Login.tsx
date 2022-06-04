@@ -22,7 +22,7 @@ import { Link, useHistory } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import firebase from '../firebase';
 
-export interface LoginProps {}
+export interface LoginProps { }
 
 const Login: FC<LoginProps> = () => {
     const [email, setEmail] = useState('');

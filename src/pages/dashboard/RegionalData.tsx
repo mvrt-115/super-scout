@@ -4,7 +4,7 @@ import React, { FC, useEffect, useState } from 'react';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import Graph from '../../components/Graph';
 import GraphInput from '../../components/GraphInput';
-import { db, functions } from '../../firebase';
+import { db, functions, auth } from '../../firebase';
 import Paper from '@mui/material/Paper';
 import { TableContainer, Table, TableHead, TableRow, TableBody, TableCell } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material';
@@ -30,6 +30,9 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
     const [pitTemplate, setPitTemplate] = useState<string[]>(['']);
     const [pitScout, setPitScout] = useState<boolean>(false);
     const [pitScoutData, setPitScoutData] = useState<any[]>([{}]);
+    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+
+    auth.onAuthStateChanged((user) => setIsLoggedIn(user !== null));
 
     useEffect(() => {
         console.clear();
@@ -37,7 +40,7 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
         if (regionalDisplay) setGraphs(JSON.parse(regionalDisplay));
         else
             setPresetGraphs();
-    }, [year]);
+    }, [year, isLoggedIn]);
 
     const setPresetGraphs = async () => {
         await db.collection('years')
@@ -376,7 +379,7 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 </Button>}
             </div>
             {pitScout ? renderPitScout() : renderQualitativeData()}
-            <Button
+            {isLoggedIn && < Button
                 onClick={() => {
                     console.clear();
                     const resetData = functions.httpsCallable('resetData');
@@ -393,7 +396,7 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 }}
             >
                 Reset Data Values
-            </Button>
+            </Button>}
         </>
     );
 };

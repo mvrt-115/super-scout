@@ -25,7 +25,7 @@ const Dashboard: FC<DashboardProps> = () => {
                 marginLeft: '10%',
             }}
         >
-            <Heading marginBottom={'3%'} marginTop="3%">
+            <Heading marginBottom={'3%'} marginTop="3%" textColor={'#550575'}>
                 Dashboard
             </Heading>
             <Switch>
