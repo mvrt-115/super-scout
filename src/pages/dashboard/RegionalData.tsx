@@ -30,8 +30,9 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
     const [pitTemplate, setPitTemplate] = useState<string[]>(['']);
     const [pitScout, setPitScout] = useState<boolean>(false);
     const [pitScoutData, setPitScoutData] = useState<any[]>([{}]);
-    
+
     useEffect(() => {
+        console.clear();
         const regionalDisplay = localStorage.getItem('regionalDisplay' + year);
         if (regionalDisplay) setGraphs(JSON.parse(regionalDisplay));
         else
@@ -60,6 +61,7 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
             });
     }
     useEffect(() => {
+        console.clear();
         const fetchData = async () => {
             const regionalKey = year + regional;
             const [regionalRef, oprsRe, rankingsRe] = await Promise.all([
@@ -93,8 +95,6 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 oprsRe.json(),
                 rankingsRe.json(),
             ]);
-            console.log(rankingsJson);
-            console.log(oprsJson);
             let teams: any = [];
             rankingsJson.rankings.forEach(
                 (teamInfo: any, index: string | number) => {
@@ -114,27 +114,12 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                     if (team.teamNum === doc.id) {
                         index = i;
                     }
-
                 });
                 teams[index] = { ...teams[index], ...doc.data() };
             });
-            console.log(teams);
             setTemplate(Object.keys(teams[0]).length > Object.keys(teams[1]).length ? Object.keys(teams[0]) : Object.keys(teams[1]));
             setTeams(teams);
         };
-
-        const resetData = async () => {
-            let teamsRef = db
-                .collection('years')
-                .doc(year)
-                .collection('regionals')
-                .doc(regional)
-                .collection('teams');
-            (await teamsRef.get()).docs.forEach(async (team: any, index: number) => {
-                const data = functions.httpsCallable('resetData');
-                await teamsRef.doc(team.id).set(data);
-            })
-        }
 
         const fetchPitScoutData = async () => {
             let data: any[] = [];
@@ -145,31 +130,32 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 .doc(regional)
                 .collection('teams');
             let promiseList: Promise<any>[] = [];
-            await path.get().then((docList)=>{
-                for(let doc of docList.docs){
+            await path.get().then((docList) => {
+                for (let doc of docList.docs) {
                     promiseList.push(path.doc(doc.id).collection("pitScoutData").doc("pitScoutAnswers").get()
-                    .then((resp)=>{
-                        let temp: any = resp.data()!;
-                        delete temp["Team Number"];
-                        temp["teamNum"] = parseInt(doc.id);
-                        data.push(temp);
-                    }))
+                        .then((resp) => {
+                            let temp: any = resp.data()!;
+                            delete temp["Team Number"];
+                            temp["teamNum"] = parseInt(doc.id);
+                            data.push(temp);
+                        }))
                 }
-            })
-            console.log(JSON.stringify(data)+" "+regional);
+            });
             await Promise.all(promiseList);
             setPitScoutData(data);
             let temp: string[] = ["teamNum"];
-            for(let team of data){
-                if(Object.keys(team).length>temp.length){
+            for (let team of data) {
+                if (Object.keys(team).length > temp.length) {
                     temp = Object.keys(team);
                 }
             }
             setPitTemplate(temp);
         }
-
-        fetchData().then(() => fetchPitScoutData().then(()=> setLoading(false)));
+        if (year == '2022' && regional == 'cafr')
+            fetchData().then(() => fetchPitScoutData().then(() => setLoading(false)));
+        else fetchData().then(() => setLoading(false));
     }, [regional, year]);
+
     if (loading) return <Spinner />;
     const renderGraphs = () => {
         return (
@@ -244,7 +230,7 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
     const renderTable = () => {
         return (
             <ThemeProvider theme={createTheme()}>
-              <RegionalTable teamTemplate={template} teamList={teams}/>
+                <RegionalTable teamTemplate={template} teamList={teams} />
             </ThemeProvider>
         );
     }
@@ -275,11 +261,11 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                     Team Number
                                 </TableCell>
                                 {pitTemplate.map((field: any, index: number) => {
-                                    if(field!=="teamNum")
+                                    if (field !== "teamNum")
                                         return (
-                                        <TableCell key={field}>
-                                            {field}
-                                            {/*<Button onClick={() => {
+                                            <TableCell key={field}>
+                                                {field}
+                                                {/*<Button onClick={() => {
                                                 sort(false, "teamNum");
                                             }}>
                                                 ↑
@@ -289,8 +275,8 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                             }}>
                                                 ↓
                                         </Button>*/}
-                                        </TableCell>
-                                    );
+                                            </TableCell>
+                                        );
                                 })}
                             </TableRow>
                         </TableHead>
@@ -304,7 +290,7 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                                 teamData[key] !== undefined && key !== 'teamNum'
                                                 && <TableCell key={teamData['teamNum'] + key}>
                                                     {JSON.stringify(teamData[key]).length > 5 ?
-                                                        JSON.stringify(teamData[key])://.substring(0, 5) + "..." :
+                                                        JSON.stringify(teamData[key]) ://.substring(0, 5) + "..." :
                                                         JSON.stringify(teamData[key])
                                                     }
                                                 </TableCell>
@@ -367,19 +353,19 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
         <>
             <div>
                 <li className="link" style={{
-                        padding: "none",
-                        margin: "none",
-                        textAlign: "center",
-                        fontWeight: "bold",
-                        fontSize: '1.5em',
-                        backgroundColor: "white",
-                        color: 'black'
-                    }}>
-                        <Link
-                            to={`..`}
-                        >
-                            {regional.toUpperCase()} {year}
-                        </Link>
+                    padding: "none",
+                    margin: "none",
+                    textAlign: "center",
+                    fontWeight: "bold",
+                    fontSize: '1.5em',
+                    backgroundColor: "white",
+                    color: 'black'
+                }}>
+                    <Link
+                        to={`..`}
+                    >
+                        {regional.toUpperCase()} {year}
+                    </Link>
                 </li>
                 {<Button
                     onClick={() => {
@@ -389,7 +375,25 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                     {(pitScout ? 'View Regional Data' : 'View Pit scout data')}
                 </Button>}
             </div>
-            {pitScout ? renderPitScout() :  renderQualitativeData()}
+            {pitScout ? renderPitScout() : renderQualitativeData()}
+            <Button
+                onClick={() => {
+                    console.clear();
+                    const resetData = functions.httpsCallable('resetData');
+                    const teamsRef = db
+                        .collection('years')
+                        .doc(year)
+                        .collection('regionals')
+                        .doc(regional)
+                        .collection('teams');
+                    teamsRef.get().then((teamData) => {
+                        teamData.docs.forEach((team: any) => resetData({ year, regional, team: team.id })
+                            .then(async (newData) => await teamsRef.doc(team.id).set(newData)));
+                    });
+                }}
+            >
+                Reset Data Values
+            </Button>
         </>
     );
 };

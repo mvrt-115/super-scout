@@ -20,7 +20,7 @@ interface GraphProps {
     data: any[];
 }
 
-const Graph: FC<GraphProps> = ({ graphInfo, data}) => {
+const Graph: FC<GraphProps> = ({ graphInfo, data }) => {
     const [graphingData, setGraphingData] = useState<any[]>([]);
     const colors = ['#260245', '#ffc410', '#dab0ec', '#550575'];
     //create ref of box for box sizing

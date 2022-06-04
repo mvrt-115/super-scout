@@ -190,33 +190,30 @@ export const calculatePoints = functions.https.onCall(async (data, context) => {
 
 export const resetData = functions.https.onCall(async (data, context) => {
     const { year, regional, team } = data;
+    let matchCount: number = 0;
     let newData: any = {};
-    let keys: any = [], fields: any = [];
-    let teamsRef = await db
+    await (db
         .collection('years')
         .doc(year)
         .collection('regionals')
         .doc(regional)
-        .collection('teams').
-        doc(team);
-    let matchesRef = teamsRef.collection('matches');
-    (await matchesRef.get()).docs.forEach(async (match: any, index: number) => {
-        await matchesRef
-                .doc(match.id)
-                .get()
-                .then((data) => {
-                    const temp = data.data();
-                    keys = Object.keys(temp || {});
-                    Object.values(temp || {}).forEach((value: string | number, index: number) => {
-                        if(typeof value === 'number' && keys[index] !== 'matchNum') {
-                            if(fields[index] === undefined) fields[index] = value;
-                            else fields[index] += value;
-                        }
-                    })
+        .collection('teams')
+        .doc(team)
+        .collection('matches')
+        .get()
+        .then((data) => {
+            matchCount = data.docs.length;
+            data.docs.forEach((match) => {
+                const temp = match.data();
+                const keys = Object.keys(temp || {});
+                Object.values(temp || {}).forEach((value: string | number, index: number) => {
+                    if (typeof value === 'number' && keys[index] !== 'matchNum') {
+                        if (newData[keys[index]] === undefined) newData[keys[index]] = value;
+                        else newData[keys[index]] += value;
+                    }
                 });
-        });
-        fields.forEach((ele: number, index: number) => {
-            newData[keys[index] || ''] = ele;
-        });
+            });
+        }));
+    Object.keys(newData).forEach((key: string) => newData[key] = Math.floor(newData[key] / matchCount * 1000) / 1000);
     return newData;
 });

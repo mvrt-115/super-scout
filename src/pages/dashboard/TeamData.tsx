@@ -229,7 +229,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 );
                 setMatches(matches);
             };
-            fetchData().then(fetchMatchData);
+            fetchData().then(() => fetchMatchData());
             console.log('done');
         };
 
@@ -378,7 +378,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                         marginTop="5%"
                         aria-label="Add Graph"
                         icon={<AddIcon />}
-                        onClick={() =>{
+                        onClick={() => {
                             setGraphs([
                                 ...graphs,
                                 {
@@ -408,7 +408,6 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                     </Text>
                 )}
                 {year === '2022' && renderClimbData()}
-                {console.log('done rendering graphs')}
             </>
         );
     };
