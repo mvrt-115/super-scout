@@ -76,7 +76,7 @@ const QRCodeGenerator: FC<QRCodeGeneratorProps> = () => {
             >
                 <form onSubmit={handleSubmit}>
                     <VStack spacing={5}>
-                        <Heading>Match QR Code Data</Heading>
+                        <Heading textColor={'#550575'}>Match QR Code Data</Heading>
                         <FormControl isRequired>
                             <FormLabel>Regional</FormLabel>
                             <HStack>
@@ -185,7 +185,7 @@ const QRCodeGenerator: FC<QRCodeGeneratorProps> = () => {
                             }}
                             isFullWidth
                             type="submit"
-                       >
+                        >
                             Create QR Code
                         </Button>
                     </VStack>

@@ -14,6 +14,7 @@ import {
     FcCamcorderPro,
     FcPrint,
     FcTodoList,
+    FcCheckmark,
 } from 'react-icons/fc';
 
 interface HomeProps { }
@@ -50,9 +51,9 @@ const Home: FC<HomeProps> = () => {
                         Super Scout
                     </Text>
                 </Heading>
-                <Box p={4} display="flex" justifyContent={'center'} marginTop={'0.5rem'}>
+                <Box p={6} display="flex" justifyContent={'center'} marginTop={'0.5rem'}>
                     <SimpleGrid
-                        columns={{ base: 1, md: 4 }}
+                        columns={{ base: 2, md: 3 }}
                         spacing={10}
                         width={['100%', '100%', '50%']}
                     >
@@ -79,6 +80,12 @@ const Home: FC<HomeProps> = () => {
                             title="Scouting Inputs"
                             text="View and edit scouting inputs for the current years FRC game that will be used by the scouting app"
                             to="/scouting-inputs"
+                        />
+                        <Feature
+                            icon={<Icon w={10} h={10} as={FcCheckmark} />}
+                            title="Picklist"
+                            text="Add and remove teams for a Picklist in the desired regional"
+                            to="/picklist"
                         />
                     </SimpleGrid>
                 </Box>
@@ -114,8 +121,8 @@ const Feature: FC<FeatureProps> = ({ title, text, icon, to }) => {
             >
                 {icon}
             </Flex>
-            <Text fontWeight={600}>{title}</Text>
-            <Text color={'gray.600'} textAlign={'center'}>
+            <Text color={"#550575"} fontWeight={600}>{title}</Text>
+            <Text color={'#550575'} textAlign={'center'}>
                 {text}
             </Text>
         </Stack>

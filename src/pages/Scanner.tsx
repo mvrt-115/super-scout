@@ -137,7 +137,7 @@ const Scanner: FC<ScannerProps> = () => {
             </Box>
 
             <VStack width="25%" marginTop={'3%'}>
-                <Heading>Locally Stored Matches</Heading>
+                <Heading textColor={'#550575'}>Locally Stored Matches</Heading>
                 <Spacer />
                 <Button
                     colorScheme="green"
