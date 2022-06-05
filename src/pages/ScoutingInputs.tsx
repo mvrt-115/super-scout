@@ -147,7 +147,9 @@ const ScoutingInputs: FC<ScoutingInputsProps> = () => {
                             return {
                                 key,
                                 type: 'dropdown',
-                                choices: teleopData[key],
+                                choices: teleopData[key].map((key2: any) =>{
+                                    return JSON.stringify(key2);
+                                })
                             };
                         return {
                             key,
