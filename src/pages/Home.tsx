@@ -16,6 +16,9 @@ import {
     FcTodoList,
     FcCheckmark,
 } from 'react-icons/fc';
+import "@fontsource/montserrat/500.css";
+import theme from '../theme';
+import Fonts from '../Fonts';
 
 interface HomeProps { }
 
@@ -45,9 +48,15 @@ const Home: FC<HomeProps> = () => {
                     fontSize={{ base: '2xl', sm: '4xl', md: '6xl' }}
                     lineHeight={'110%'}
                     color={'mv-purple.500'}
+                    style={{
+                        display: 'flex',
+                        padding: '1rem',
+                    }}
                 >
-                    MVRT{' '}
-                    <Text as={'span'} color={'#260235'}>
+                    <Text>
+                        MVRT
+                    </Text>
+                    <Text as={'span'} color={'mv-purple.1000'} style={{ fontFamily: 'Montserrat' }}>
                         Super Scout
                     </Text>
                 </Heading>
@@ -55,7 +64,7 @@ const Home: FC<HomeProps> = () => {
                     <SimpleGrid
                         columns={{ base: 2, md: 3 }}
                         spacing={10}
-                        width={['100%', '100%', '50%']}
+                        width={['100%', '100%', '60%']}
                     >
                         <Feature
                             icon={<Icon w={10} h={10} as={FcComboChart} />}
@@ -121,8 +130,8 @@ const Feature: FC<FeatureProps> = ({ title, text, icon, to }) => {
             >
                 {icon}
             </Flex>
-            <Text color={"#550575"} fontWeight={600}>{title}</Text>
-            <Text color={'#550575'} textAlign={'center'}>
+            <Text color={"mv-purple.500"} fontWeight={600}>{title}</Text>
+            <Text color={'mv-purple.500'} textAlign={'center'}>
                 {text}
             </Text>
         </Stack>
