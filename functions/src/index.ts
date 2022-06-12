@@ -211,6 +211,16 @@ export const resetData = functions.https.onCall(async (data, context) => {
                         if (newData[keys[index]] === undefined) newData[keys[index]] = value;
                         else newData[keys[index]] += value;
                     }
+                    const autonPoints = calcAutonPoints(temp.matchNum, 2022);
+                    if(newData.autonPoints === undefined) newData.autonPoints = autonPoints;
+                    else newData.autonPoints += autonPoints;
+                    const teleopPoints = calcTeleopPoints(temp.matchNum, 2022);
+                    if(newData.teleopPoints === undefined) newData.teleopPoints = autonPoints;
+                    else newData.teleopPoints += teleopPoints;
+                    const endgamePoints = calcEndgamePoints(temp.matchNum, 2022);
+                    if(newData.endgamePoints === undefined) newData.endgamePoints = endgamePoints;
+                    else newData.endgamePoints += endgamePoints;
+
                 });
             });
         }));
