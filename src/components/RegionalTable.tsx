@@ -10,15 +10,16 @@ import { TableContainer, Table, TableHead, TableRow, TableBody, TableCell } from
 import { ThemeProvider, createTheme } from '@mui/material';
 
 interface RegionalTableProps {
-    teamTemplate: string[];
-    teamList: any[];
+    pTemplate: string[];
+    pList: any[];
+    base: string;
 }
 
-const RegionalTable: FC<RegionalTableProps> = ({teamTemplate, teamList}) => {
-    const [teams, setTeams] = useState<any[]>([...teamList]);
-    const [template, setTemplate] = useState<string[]>(teamTemplate);
+const RegionalTable: FC<RegionalTableProps> = ({pTemplate, pList, base}) => {
+    const [list, setList] = useState<any[]>([...pList]);
+    const [template, setTemplate] = useState<string[]>(pTemplate);
     const sort = (ascending: boolean, key: string) => {
-        let temp = [...teams];
+        let temp = [...list];
         temp.sort((a, b) => {
             if (a === undefined) {
                 return 1;
@@ -28,28 +29,28 @@ const RegionalTable: FC<RegionalTableProps> = ({teamTemplate, teamList}) => {
             }
             return ascending ? a[key] - b[key] : b[key] - a[key];
         })
-        setTeams(temp);
+        setList(temp);
     }
     return (
         <TableContainer component={Paper} style={{ minWidth: "90vw", maxHeight: "90vw" }}>
                     <Table stickyHeader sx={{ minWidth: 950, width: '90vw' }}>
                         <TableHead>
                             <TableRow style={{ whiteSpace: "nowrap" }}>
-                                <TableCell key="teamNum">
-                                    Team Number
+                                <TableCell key={base}>
+                                        {base}
                                     <Button onClick={() => {
-                                        sort(false, "teamNum");
+                                        sort(false, base);
                                     }}>
                                         ↑
                                     </Button>
                                     <Button onClick={() => {
-                                        sort(true, "teamNum");
+                                        sort(true, base);
                                     }}>
                                         ↓
                                     </Button>
                                 </TableCell>
                                 {(template.map((key) => {
-                                    if (key != "teamNum")
+                                    if (key != base)
                                         return (
                                             <TableCell key={key}>
                                                 {key}
@@ -69,15 +70,15 @@ const RegionalTable: FC<RegionalTableProps> = ({teamTemplate, teamList}) => {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {teams.map((team) => (
-                                <TableRow key={team["teamNum"]}
+                            {list.map((team) => (
+                                <TableRow key={team[base]}
                                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                 >
-                                    <TableCell key={team["teamNum"] + "teamNum"}>{team["teamNum"]}</TableCell>
+                                    <TableCell key={team[base] + base}>{team[base]}</TableCell>
                                     {template.map((field) => {
-                                        if (field != "teamNum")
+                                        if (field != base)
                                             return (
-                                                team[field] !== undefined ? <TableCell key={team["teamNum"] + field}>{JSON.stringify(team[field]).indexOf('.') == -1 ? team[field] : parseFloat(team[field]).toFixed(3)}</TableCell> : <TableCell></TableCell>
+                                                <TableCell key={team[base] + field}>{!Number.isNaN(parseFloat(team[field])) && JSON.stringify(team[field]).indexOf(".")>-1 ? parseFloat(team[field]).toFixed(3) : JSON.stringify(team[field])}</TableCell>
                                             );
                                     })}
                                 </TableRow>

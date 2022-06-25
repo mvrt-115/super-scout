@@ -38,6 +38,7 @@ import {
 import { ThemeProvider, createTheme } from '@mui/material';
 import { AiOutlineConsoleSql } from 'react-icons/ai';
 import Card from '../../components/Card';
+import RegionalTable from '../../components/RegionalTable';
 
 interface RouteParams {
     year: string;
@@ -121,8 +122,8 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                         setTemplate(
                             Object.keys(matches[0]).length >
                                 Object.keys(matches[1]).length
-                                ? matches[0]
-                                : matches[1],
+                                ? Object.keys(matches[0])
+                                : Object.keys(matches[1])
                         );
                 const regionalKey = year + regional;
 
@@ -426,9 +427,11 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
     };
 
     const renderTable = () => {
+        console.log(template+" TEMPLATE");
         return (
             <ThemeProvider theme={createTheme()}>
-                <TableContainer
+                <RegionalTable pTemplate={template} pList={matches} base="matchNum"/>
+                {/*<TableContainer
                     component={Paper}
                     style={{ minWidth: '90vw', maxHeight: '90vw' }}
                 >
@@ -528,7 +531,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                             ))}
                         </TableBody>
                     </Table>
-                </TableContainer>
+                                </TableContainer>*/}
             </ThemeProvider>
         );
     };

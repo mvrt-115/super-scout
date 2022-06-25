@@ -233,7 +233,7 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
     const renderTable = () => {
         return (
             <ThemeProvider theme={createTheme()}>
-                <RegionalTable teamTemplate={template} teamList={teams} />
+                <RegionalTable pTemplate={template} pList={teams} base="teamNum"/>
             </ThemeProvider>
         );
     }
@@ -268,16 +268,6 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                         return (
                                             <TableCell key={field}>
                                                 {field}
-                                                {/*<Button onClick={() => {
-                                                sort(false, "teamNum");
-                                            }}>
-                                                ↑
-                                            </Button>
-                                            <Button onClick={() => {
-                                                sort(true, "teamNum")
-                                            }}>
-                                                ↓
-                                        </Button>*/}
                                             </TableCell>
                                         );
                                 })}

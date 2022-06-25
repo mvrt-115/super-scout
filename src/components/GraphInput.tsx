@@ -113,6 +113,12 @@ const GraphInput: FC<GraphInputProps> = ({
                 <option value="Line">Line</option>
                 <option value="Scatter">Scatter</option>
             </Select>
+            <IconButton
+                aria-label="delete"
+                icon={<DeleteIcon />}
+                onClick={onDelete}
+                colorScheme={'red'}
+            />
         </div>
     );
 };

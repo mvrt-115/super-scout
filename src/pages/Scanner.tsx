@@ -19,7 +19,7 @@ import React, { FC, useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import NeedAccount from './NeedAccount';
 import QRScan from 'qrscan';
-import QRScanner from './QRScanner';
+import QRScanner from '../components/QRScanner';
 import { DeleteIcon } from '@chakra-ui/icons';
 import { db } from '../firebase';
 import { Stream } from 'stream';
