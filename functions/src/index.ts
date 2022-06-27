@@ -142,7 +142,7 @@ const calcEndgamePoints = (matchData: any, year: number | string) => {
         return endgamePoints;
     } else if (year == '2022') {
         let climbScore: number = 0;
-        switch (matchData['climb rung']) {
+        switch (matchData['Climb rung']) {
             case 'Low':
                 climbScore = 4;
                 break;
@@ -204,16 +204,26 @@ export const resetData = functions.https.onCall(async (data, context) => {
         .then((data) => {
             matchCount = data.docs.length;
             data.docs.forEach((match) => {
-                const temp = match.data();
-                const keys = Object.keys(temp || {});
-                Object.values(temp || {}).forEach((value: string | number, index: number) => {
+                const matchData = match.data();
+                const keys = Object.keys(matchData || {});
+                Object.values(matchData || {}).forEach((value: string | number | boolean, index: number) => {
                     if (typeof value === 'number' && keys[index] !== 'matchNum') {
                         if (newData[keys[index]] === undefined) newData[keys[index]] = value;
                         else newData[keys[index]] += value;
                     }
                 });
+                const autonPoints = calcAutonPoints(matchData, 2022);
+                if(newData['autonPoints']) newData.autonPoints += autonPoints;
+                else newData['autonPoints'] = autonPoints;
+                const teleopPoints = calcTeleopPoints(matchData, 2022);
+                if(newData['teleopPoints']) newData.teleopPoints += teleopPoints;
+                else newData['teleopPoints'] = teleopPoints;
+                const endgamePoints = calcEndgamePoints(matchData, 2022);
+                if(newData['endgamePoints']) newData.endgamePoints += endgamePoints;
+                else newData['endgamePoints'] = endgamePoints;
             });
         }));
-    Object.keys(newData).forEach((key: string) => newData[key] = Math.floor(newData[key] / matchCount * 1000) / 1000);
+    Object.keys(newData).forEach((key: string) => newData[key] = (Math.floor((newData[key] / matchCount) * 1000)) / 1000);
+    newData.teamNum = team;
     return newData;
 });
