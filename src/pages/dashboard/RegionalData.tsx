@@ -389,9 +389,9 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                         .collection('regionals')
                         .doc(regional)
                         .collection('teams');
-                    teamsRef.get().then((teamData) => {
+                    teamsRef.get().then(async (teamData) => {
                         teamData.docs.forEach((team: any) => resetData({ year, regional, team: team.id })
-                            .then(async (newData) => await teamsRef.doc(team.id).set(newData['data'])));
+                            .then(async (newData) => await teamsRef.doc(team.id).set(newData.data)));
                     });
                 }}
             >
