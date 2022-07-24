@@ -50,9 +50,9 @@ const DashboardHome: FC<DashboardHomeProps> = () => {
             {years.map((year) => (
                 <div style={{ width: '100%' }}>
                     <Heading size={'md'}>{year.year}</Heading>
-                    <ul>
+                    <ul key={year.year}>
                         {year.regionals.map((regional, index: number) => (
-                            <li className="link">
+                            <li key={year.year+regional} className="link">
                                 <Link
                                     to={`${match.path}/${year.year}/${regional}/`}
                                 >

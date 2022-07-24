@@ -70,15 +70,15 @@ const RegionalTable: FC<RegionalTableProps> = ({pTemplate, pList, base}) => {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {list.map((team) => (
-                                <TableRow key={team[base]}
+                            {list.map((element) => (
+                                <TableRow key={element[base]}
                                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                 >
-                                    <TableCell key={team[base] + base}>{team[base]}</TableCell>
+                                    <TableCell key={element[base] + base}>{element[base]}</TableCell>
                                     {template.map((field) => {
                                         if (field != base)
                                             return (
-                                                <TableCell key={team[base] + field}>{!Number.isNaN(parseFloat(team[field])) && JSON.stringify(team[field]).indexOf(".")>-1 ? parseFloat(team[field]).toFixed(3) : JSON.stringify(team[field])}</TableCell>
+                                                <TableCell key={element[base] + field}>{!Number.isNaN(parseFloat(element[field])) && JSON.stringify(element[field]).indexOf(".")>-1 ? parseFloat(element[field]).toFixed(3) : JSON.stringify(element[field])}</TableCell>
                                             );
                                     })}
                                 </TableRow>

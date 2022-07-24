@@ -431,107 +431,6 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
         return (
             <ThemeProvider theme={createTheme()}>
                 <RegionalTable pTemplate={template} pList={matches} base="matchNum"/>
-                {/*<TableContainer
-                    component={Paper}
-                    style={{ minWidth: '90vw', maxHeight: '90vw' }}
-                >
-                    <Table stickyHeader sx={{ minWidth: 950, width: '90vw' }}>
-                        <TableHead>
-                            <TableRow style={{ whiteSpace: 'nowrap' }}>
-                                <TableCell key="matchNum">
-                                    Match Number
-                                    <Button
-                                        onClick={() => {
-                                            sort(false, 'matchNum');
-                                        }}
-                                    >
-                                        ↑
-                                    </Button>
-                                    <Button
-                                        onClick={() => {
-                                            sort(true, 'matchNum');
-                                        }}
-                                    >
-                                        ↓
-                                    </Button>
-                                </TableCell>
-                                {Object.keys(template).map((key: any) => {
-                                    if (
-                                        key != 'matchNum' &&
-                                        key != 'teamNum' &&
-                                        typeof template[key] == 'number'
-                                    )
-                                        return (
-                                            <TableCell key={key}>
-                                                {key}
-                                                <Button
-                                                    onClick={() => {
-                                                        sort(false, key);
-                                                    }}
-                                                >
-                                                    ↑
-                                                </Button>
-                                                <Button
-                                                    onClick={() => {
-                                                        sort(true, key);
-                                                    }}
-                                                >
-                                                    ↓
-                                                </Button>
-                                            </TableCell>
-                                        );
-                                })}
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {matches.map((match) => (
-                                <TableRow
-                                    key={match['matchNum']}
-                                    sx={{
-                                        '&:last-child td, &:last-child th': {
-                                            border: 0,
-                                        },
-                                    }}
-                                >
-                                    <TableCell
-                                        key={match['matchNum'] + 'teamNum'}
-                                    >
-                                        {match['matchNum']}
-                                    </TableCell>
-                                    {Object.keys(template).map((field: any) => {
-                                        if (
-                                            field != 'matchNum' &&
-                                            field != 'teamNum' &&
-                                            typeof match[field] == 'number'
-                                        )
-                                            return match[field] !==
-                                                undefined ? (
-                                                <TableCell
-                                                    key={
-                                                        match['matchNum'] +
-                                                        field
-                                                    }
-                                                >
-                                                    {typeof match[field] !==
-                                                        'number'
-                                                        ? match[field]
-                                                        : JSON.stringify(
-                                                            match[field],
-                                                        ).indexOf('.') == -1
-                                                            ? match[field]
-                                                            : parseFloat(
-                                                                match[field],
-                                                            ).toFixed(3)}
-                                                </TableCell>
-                                            ) : (
-                                                <TableCell></TableCell>
-                                            );
-                                    })}
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                                </TableContainer>*/}
             </ThemeProvider>
         );
     };
@@ -673,7 +572,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                     flexDirection: 'column',
                 }}
             >
-                {Object.keys(pitScoutData).map((field: any, index: number) => {
+                {Object.keys(pitScoutData).map((field: any) => {
                     return (
                         <Text
                             style={{

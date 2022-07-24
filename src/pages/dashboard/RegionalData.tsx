@@ -154,7 +154,7 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
             }
             setPitTemplate(temp);
         }
-        if (year == '2022' && regional == 'cafr')
+        if (year === '2022' && regional === 'cafr')
             fetchData().then(() => fetchPitScoutData().then(() => setLoading(false)));
         else fetchData().then(() => setLoading(false));
     }, [regional, year]);

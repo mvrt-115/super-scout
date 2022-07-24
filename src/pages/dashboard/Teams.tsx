@@ -110,24 +110,28 @@ const Teams: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
     const downloadData = async () => {
         const teamList = db.collection("years").doc(year).collection("regionals").doc(regional).collection('teams');
         teamList.get().then(async (coll) => {
-            let obj: any = { "teams": {} };
+            let obj: any = { "teams": [] };
             await Promise.all(coll.docs.map(async (doc) => {
-                let temp: any = {};
-                temp = doc.data();
-                temp['matchList'] = {};
+                let temp = doc.data();
+                temp.matchList = [];
                 await teamList.doc(doc.id).collection("matches").get()
                     .then((matches) => {
                         matches.docs.forEach((match) => {
-                            temp['matchList'][match.id] = match.data();
+                            temp.matchList.push(match.data());
                         })
                     })
-                temp['pitScoutData'] =
-                    obj["teams"][doc.id] = temp;
+                await teamList.doc(doc.id).collection("pitScoutData").doc("pitScoutAnswers").get().then((pitScout)=>{
+                    if(pitScout.exists){
+                        temp.pitScoutData = pitScout.data();
+                    }
+                })
+                obj.teams.push(temp);
             }))
-            const fileName = `${regional}Data`;
+            console.log(obj);
+            const fileName = `${year}${regional}Data`;
             const json = JSON.stringify(obj);
             const blob = new Blob([json], { type: 'application/json' });
-            const href = await URL.createObjectURL(blob);
+            const href = URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = href;
             link.download = fileName + ".json";

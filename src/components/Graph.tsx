@@ -25,14 +25,13 @@ const Graph: FC<GraphProps> = ({ graphInfo, data }) => {
     const colors = ['#260245', '#ffc410', '#dab0ec', '#550575'];
     //create ref of box for box sizing
     const { width, height, ref } = useResizeDetector();
-    // const [ticks, setTicks] = useState<number>(5);
 
     useEffect(() => {
         let graphingData: any[] = [];
         data.forEach((data) => {
             const newData: any = {};
             newData['x'] = data[graphInfo.x];
-            graphInfo.y.forEach((y, index) => {
+            graphInfo.y.forEach((y) => {
                 if (y !== 'none') newData[y] = data[y];
             });
             graphingData.push(newData);
