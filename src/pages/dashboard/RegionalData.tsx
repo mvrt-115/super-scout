@@ -8,7 +8,7 @@ import { db, functions, auth } from '../../firebase';
 import Paper from '@mui/material/Paper';
 import { TableContainer, Table, TableHead, TableRow, TableBody, TableCell } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material';
-import RegionalTable from '../../components/RegionalTable';
+import DataTable from '../../components/DataTable';
 interface RouteParams {
     year: string;
     regional: string;
@@ -233,7 +233,7 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
     const renderTable = () => {
         return (
             <ThemeProvider theme={createTheme()}>
-                <RegionalTable pTemplate={template} pList={teams} base="teamNum"/>
+                <DataTable pTemplate={template} pList={teams} base="teamNum"/>
             </ThemeProvider>
         );
     }

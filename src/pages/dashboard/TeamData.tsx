@@ -38,7 +38,7 @@ import {
 import { ThemeProvider, createTheme } from '@mui/material';
 import { AiOutlineConsoleSql } from 'react-icons/ai';
 import Card from '../../components/Card';
-import RegionalTable from '../../components/RegionalTable';
+import DataTable from '../../components/DataTable';
 
 interface RouteParams {
     year: string;
@@ -52,7 +52,7 @@ interface RadarChartStat {
     max: number;
 }
 
-const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
+const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match}) => {
     const { year, regional, team } = match.params;
     const [matches, setMatches] = useState<any[]>([]);
     const [graphs, setGraphs] = useState<GraphData[]>(
@@ -65,9 +65,6 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
             },
         ]
     );
-    const [oprInfo, setOprInfo] = useState<any>();
-    const [dprInfo, setDprInfo] = useState<any>();
-    const [ccwmInfo, setCcwmInfo] = useState<any>();
     const [oprStat, setOprStat] = useState<RadarChartStat>({
         value: 0,
         percentile: 0,
@@ -100,7 +97,6 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
 
     useEffect(() => {
         const fetchQuantitativeData = async () => {
-            console.log('inside');
             let matches: any[] = [];
             const fetchData = async () => {
                 const path = db
@@ -116,6 +112,22 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                     .collection('matches')
                     .get();
                 matches = matchesCollection.docs.map((doc) => doc.data());
+                matches = await Promise.all(
+                    matches.map(async (match) => {
+                        const fetchData =
+                            functions.httpsCallable('calculatePoints');
+                        const pointsData = await fetchData({
+                            year,
+                            regional,
+                            team,
+                            match: match.matchNum + '',
+                        });
+                        return {
+                            ...match,
+                            ...pointsData.data,
+                        };
+                    })
+                )
                 setMatches(matches);
                 if (match && matches[0] && matches[1])
                     if (matches.length > 0)
@@ -188,20 +200,6 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                             (ccwmsList.indexOf(ccwm) / ccwmsList.length) * 100,
                         max: ccwmsList[ccwmsList.length - 1],
                     });
-
-                    /*setOprInfo('{');
-                    setDprInfo(
-                        `DPR (Defensive Power Rating): ${Math.round(dpr * 100) / 100
-                        }, which is in the ${Math.round(
-                            (dprsList.indexOf(dpr) / dprsList.length) * 100,
-                        )}th percentile`,
-                    );
-                    setCcwmInfo(
-                        `CCWM (Calculated Contribution to Winning Margin): ${Math.round(ccwm * 100) / 100
-                        }, which is in the ${Math.round(
-                            (ccwmsList.indexOf(ccwm) / ccwmsList.length) * 100,
-                        )}th percentile`,
-                    );*/
                     const rankingsList = rankingsJson.rankings;
                     let index = 0;
                     for (let i = 0; i < rankingsList.length; i++) {
@@ -211,31 +209,10 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                     setRanking(`${index + 1}`);
                 }
             };
-            const fetchMatchData = async () => {
-                matches = await Promise.all(
-                    matches.map(async (match) => {
-                        const fetchData =
-                            functions.httpsCallable('calculatePoints');
-                        const pointsData = await fetchData({
-                            year,
-                            regional,
-                            team,
-                            match: match.matchNum + '',
-                        });
-                        return {
-                            ...match,
-                            ...pointsData.data,
-                        };
-                    }),
-                );
-                setMatches(matches);
-            };
-            fetchData().then(() => fetchMatchData());
-            console.log('done');
+            fetchData();
         };
 
         const fetchQualitativeData = async () => {
-            console.log('inside the other one');
             await db
                 .collection('years')
                 .doc(year)
@@ -247,16 +224,13 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 .doc('pitScoutAnswers')
                 .get()
                 .then((data) => {
-                    console.log('inside the promise');
                     setPitScoutData(data.data() || {});
                 });
-            console.log('done with quantitative');
         };
 
         fetchQuantitativeData()
             .then(fetchQualitativeData)
             .then(() => {
-                console.log('done loading');
                 setLoading(false);
             });
     }, [year, regional, team]);
@@ -389,7 +363,6 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                     type: 'Bar',
                                 },
                             ])
-                            console.log(graphs[0].sortBy);
                         }
                         }
                         colorScheme="green"
@@ -412,25 +385,11 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
             </>
         );
     };
-    const sort = (ascending: boolean, key: string) => {
-        let temp = [...matches];
-        temp.sort((a, b) => {
-            if (a === undefined) {
-                return 1;
-            }
-            if (b === undefined) {
-                return -1;
-            }
-            return ascending ? a[key] - b[key] : b[key] - a[key];
-        });
-        setMatches(temp);
-    };
-
+    
     const renderTable = () => {
-        console.log(template+" TEMPLATE");
         return (
             <ThemeProvider theme={createTheme()}>
-                <RegionalTable pTemplate={template} pList={matches} base="matchNum"/>
+                <DataTable pTemplate={template} pList={matches} base="matchNum"/>
             </ThemeProvider>
         );
     };

@@ -313,8 +313,6 @@ const ScoutingInputs: FC<ScoutingInputsProps> = () => {
                                     const newEndgameInputs = [...endgameInputs];
                                     newEndgameInputs[index] = scoutInput;
                                     setEndgameInputs(newEndgameInputs);
-
-                                    console.log(newEndgameInputs);
                                 }}
                                 onDelete={() => {
                                     const newEndgameInputs = [...endgameInputs];
