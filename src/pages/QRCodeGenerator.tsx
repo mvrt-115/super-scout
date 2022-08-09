@@ -14,7 +14,7 @@ import {
     HStack,
 } from '@chakra-ui/react';
 import { ImEarth } from 'react-icons/im';
-import { AiOutlineFieldNumber } from 'react-icons/ai';
+import { AiOutlineFieldNumber, AiOutlineArrowLeft, AiOutlineArrowRight } from 'react-icons/ai';
 import { BsFillShieldFill } from 'react-icons/bs';
 import React, { FC, SyntheticEvent, useEffect, useState } from 'react';
 import { db } from '../firebase';
@@ -22,17 +22,23 @@ import QRCode from 'react-qr-code';
 
 interface QRCodeGeneratorProps { }
 
+interface MatchData {
+    key: string;
+    match_number: number;
+}
+
 const QRCodeGenerator: FC<QRCodeGeneratorProps> = () => {
     const year = new Date().getFullYear();
     const [regionals, setRegionals] = useState<string[]>(['cafr']); // hard code regionals in the case there is no internet
     const [qrcode, setQRCode] = useState<string>();
     const [regional, setRegional] = useState<string>('cafr');
     const [alliance, setAlliance] = useState<string>('b');
-    const [matchNum, setMatchNum] = useState<string | number>('');
+    const [matchNum, setMatchNum] = useState<number>(1);
     const [team1, setTeam1] = useState<string | number>('');
     const [team2, setTeam2] = useState<string | number>('');
     const [team3, setTeam3] = useState<string | number>('');
-
+    const [loaded, setLoaded] = useState<boolean>(false);
+    const [loadedData, setLoadedData] = useState<any>({});
 
     useEffect(() => {
         const fetchData = async () => {
@@ -57,6 +63,48 @@ const QRCodeGenerator: FC<QRCodeGeneratorProps> = () => {
         );
     };
 
+    const loadRegionalData = async () => {
+        const regionalKey = year + regional;
+
+        const dataRes = await fetch(
+            `https://www.thebluealliance.com/api/v3/event/${regionalKey}/matches/simple`,
+            {
+                headers: {
+                    'X-TBA-Auth-Key':
+                        process.env.REACT_APP_TBA_KEY || '',
+                },
+            },
+        )
+
+        const dataJson = await dataRes.json();
+
+        setLoadedData(dataJson);
+        setLoaded(true);
+        fillData();
+    }
+
+    useEffect(() => {loadRegionalData()}, [regional]);
+
+    const fillData = () => {
+        if (matchNum && loaded) {
+            const match = loadedData.find((match: MatchData) => match.key.includes("qm" + matchNum));
+            let allianceData = null;
+            if (alliance == "b") {
+                allianceData = match.alliances.blue.team_keys;
+            } else if (alliance == "r") {
+                allianceData = match.alliances.red.team_keys;
+            }
+            setTeam1(parseInt(allianceData[0].substring(3)));
+            setTeam2(parseInt(allianceData[1].substring(3)));
+            setTeam3(parseInt(allianceData[2].substring(3)));
+            setQRCode(
+                `${matchNum}@${regional}:${alliance}[${team1},${team2},${team3}]`,
+            );
+        }
+    }
+
+    useEffect(fillData, [alliance, matchNum]);
+
     return (
         <div
             style={{
@@ -73,7 +121,19 @@ const QRCodeGenerator: FC<QRCodeGeneratorProps> = () => {
                 color={useColorModeValue('gray.700', 'whiteAlpha.900')}
                 shadow="base"
                 width={['100%', '100%', '50%', '50%']}
+                display={'flex'}
+                justifyContent={'space-between'}
+                alignItems={'center'}
             >
+
+                <Button
+                    children={<AiOutlineArrowLeft />}
+                    bg={'#FFFFFF'}
+                    onClick={() => {
+                        setMatchNum(matchNum-1);
+                    }}
+                />
+
                 <form onSubmit={handleSubmit}>
                     <VStack spacing={5}>
                         <Heading textColor={'#550575'}>Match QR Code Data</Heading>
@@ -107,8 +167,9 @@ const QRCodeGenerator: FC<QRCodeGeneratorProps> = () => {
                                     type="number"
                                     name="matchNum"
                                     placeholder="Match Number"
+                                    value={matchNum}
                                     onChange={(e) =>
-                                        setMatchNum(e.target.value)
+                                        setMatchNum(parseInt(e.target.value))
                                     }
                                 />
                             </InputGroup>
@@ -142,6 +203,7 @@ const QRCodeGenerator: FC<QRCodeGeneratorProps> = () => {
                                         type="number"
                                         name="team1"
                                         placeholder="Team 1"
+                                        value={team1}
                                         onChange={(e) =>
                                             setTeam1(e.target.value)
                                         }
@@ -155,6 +217,7 @@ const QRCodeGenerator: FC<QRCodeGeneratorProps> = () => {
                                         type="number"
                                         name="team2"
                                         placeholder="Team 2"
+                                        value={team2}
                                         onChange={(e) =>
                                             setTeam2(e.target.value)
                                         }
@@ -168,6 +231,7 @@ const QRCodeGenerator: FC<QRCodeGeneratorProps> = () => {
                                         type="number"
                                         name="team3"
                                         placeholder="Team 3"
+                                        value={team3}
                                         onChange={(e) =>
                                             setTeam3(e.target.value)
                                         }
@@ -175,7 +239,19 @@ const QRCodeGenerator: FC<QRCodeGeneratorProps> = () => {
                                 </InputGroup>
                             </HStack>
                         </FormControl>
-
+                        <Button
+                            colorScheme="blue"
+                            bg="#4b0f6d"
+                            color="white"
+                            _hover={{
+                                bg: '#2f064b',
+                            }}
+                            isFullWidth
+                            type="submit"
+                            onClick={fillData}
+                        >
+                            Fill Data
+                        </Button>
                         <Button
                             colorScheme="blue"
                             bg="#4b0f6d"
@@ -190,6 +266,15 @@ const QRCodeGenerator: FC<QRCodeGeneratorProps> = () => {
                         </Button>
                     </VStack>
                 </form>
+
+                <Button
+                    children={<AiOutlineArrowRight />}
+                    bg={'#FFFFFF'}
+                    onClick={() => {
+                        setMatchNum(matchNum+1);
+                    }}
+                />
+
             </Box>
             {qrcode && (
                 <Box
