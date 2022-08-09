@@ -19,7 +19,6 @@ import { BsFillShieldFill } from 'react-icons/bs';
 import React, { FC, SyntheticEvent, useEffect, useState } from 'react';
 import { db } from '../firebase';
 import QRCode from 'react-qr-code';
-import { cpuUsage } from 'process';
 
 interface QRCodeGeneratorProps { }
 
@@ -89,8 +88,6 @@ const QRCodeGenerator: FC<QRCodeGeneratorProps> = () => {
     const fillData = () => {
         if (matchNum && loaded) {
             const match = loadedData[matchNum-1];
-            console.log(loadedData[matchNum-1]);
-            console.log(matchNum);
             let allianceData = null;
             if (alliance == "b") {
                 allianceData = match.alliances.blue.team_keys;
