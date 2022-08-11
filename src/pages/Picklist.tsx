@@ -12,11 +12,12 @@ interface PicklistProps { }
 const Picklist: FC<PicklistProps> = () => {
     const year = new Date().getFullYear();
     const { currentUser } = useAuth();
-    const [regional, setRegional] = useState<string>('cvr');
+    const [regional, setRegional] = useState<string>('cafr');
     const [regionals, setRegionals] = useState<string[]>([]);
     const [suggestedTeams, setSuggestedTeams] = useState<string[]>([]);
     const [teams, setTeams] = useState<string[]>([]);
     const [picklist, setPicklist] = useState<string[]>([]);
+    //const [defensePicklist, setDefensePicklist] = useState<string[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const dragItem = useRef<number | null>();
     const dragNode = useRef<EventTarget | null>();
@@ -29,7 +30,7 @@ const Picklist: FC<PicklistProps> = () => {
                 .collection('regionals')
                 .doc(regional)
                 .collection('picklist')
-                .doc('picklist')
+                .doc('offensePicklist')
                 .set({
                     picklist: picklist,
                 });
@@ -278,7 +279,7 @@ const Picklist: FC<PicklistProps> = () => {
                         textAlign: 'center'
                     }}
                     >
-                        All Teams:
+                        Offense Picklist:
                     </h3>
                     {teams?.map((team) => {
                         return (
@@ -335,19 +336,9 @@ const Picklist: FC<PicklistProps> = () => {
                             textAlign: 'center'
                         }}
                     >
-                        Suggested Teams:
+                        Defense Picklist:
                     </h3>
-                    {loading && <div
-                        style={{
-                            width: '100%',
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                        }}
-                    >
-                        <Spinner />
-                    </div>}
-                    {!loading && suggestedTeams?.map((team) => {
+                    {teams?.map((team) => {
                         return (
                             <div
                                 style={{
@@ -356,8 +347,6 @@ const Picklist: FC<PicklistProps> = () => {
                                     alignItems: 'center',
                                     justifyContent: 'flex-start',
                                     marginLeft: '20vw'
-                                    // float: 'left'
-                                    // verticalAlign: 'middle'
                                 }}
                             >
                                 <Checkbox
@@ -365,7 +354,7 @@ const Picklist: FC<PicklistProps> = () => {
                                     size="lg"
                                     isChecked={picklist.includes(team)}
                                     isDisabled={!currentUser}
-                                    spacing="10rem"
+                                    spacing="1rem"
                                     onChange={() => {
                                         addToPicklist(team);
                                     }}
