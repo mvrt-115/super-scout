@@ -51,6 +51,12 @@ const QRCodeGenerator: FC<QRCodeGeneratorProps> = () => {
             if (res.docs.length > 0) setRegional(res.docs[0].id);
         };
         fetchData();
+
+        const localData = localStorage.getItem("matches");
+        if (localData) {
+            setLoadedData(JSON.parse(localData));
+            setLoaded(true);
+        }
     }, [year]);
 
     const handleSubmit = (event: SyntheticEvent) => {
@@ -78,12 +84,12 @@ const QRCodeGenerator: FC<QRCodeGeneratorProps> = () => {
 
         const dataJson = await dataRes.json();
 
-        setLoadedData(dataJson.filter((val:any) => val.comp_level=="qm").sort((a:any,b:any)=> a.match_number-b.match_number));
-        setLoaded(true);
-        fillData();
-    }
+        const filteredData = dataJson.filter((val:any) => val.comp_level=="qm").sort((a:any,b:any)=> a.match_number-b.match_number)
 
-    useEffect(() => {loadRegionalData()}, [regional]);
+        localStorage.setItem("matches", JSON.stringify(filteredData));
+        setLoadedData(filteredData);
+        setLoaded(true);
+    }
 
     const fillData = () => {
         if (matchNum && loaded) {
@@ -103,7 +109,16 @@ const QRCodeGenerator: FC<QRCodeGeneratorProps> = () => {
         }
     }
 
-    useEffect(fillData, [alliance, matchNum]);
+    useEffect(fillData, [loaded, alliance, matchNum]);
+
+    const clearData = () => {
+        localStorage.removeItem("matches");
+        setTeam1('');
+        setTeam2('');
+        setTeam3('');
+        setQRCode('');
+        setLoaded(false);
+    }
 
     return (
         <div
@@ -247,11 +262,24 @@ const QRCodeGenerator: FC<QRCodeGeneratorProps> = () => {
                                 bg: '#2f064b',
                             }}
                             isFullWidth
-                            type="submit"
-                            onClick={fillData}
+                            onClick={() => {
+                                loadRegionalData();
+                            }}
                         >
-                            Fill Data
+                            Load Data
                         </Button>
+                        {loaded && <Button
+                            colorScheme="blue"
+                            bg="#4b0f6d"
+                            color="white"
+                            _hover={{
+                                bg: '#2f064b',
+                            }}
+                            isFullWidth
+                            onClick={clearData}
+                        >
+                            Clear Data
+                        </Button>}
                         <Button
                             colorScheme="blue"
                             bg="#4b0f6d"
