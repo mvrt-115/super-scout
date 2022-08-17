@@ -218,6 +218,7 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                     x: 'teamNum',
                                     y: ['none', 'none', 'none'],
                                     type: 'Bar',
+                                    sortBy: 'ranking'
                                 },
                             ])
                         }
