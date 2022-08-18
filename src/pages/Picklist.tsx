@@ -165,17 +165,30 @@ const Picklist: FC<PicklistProps> = () => {
         dragNode.current.addEventListener('dragend', dragEnd);
     };
 
-    const handleDragEnter = (e: SyntheticEvent, index: number) => {
+    const handleDragEnter = (e: SyntheticEvent, index: number, picklistType: string) => {
         if (e.target !== dragNode.current) {
-            setOffensePicklist((oldPicklist) => {
-                let newPicklist = JSON.parse(JSON.stringify(oldPicklist));
-                newPicklist.splice(
-                    index,
-                    0,
-                    newPicklist.splice(dragItem.current!, 1)[0],
-                );
-                return newPicklist;
-            });
+            if(picklistType === 'offense'){
+                setOffensePicklist((oldPicklist) => {
+                    let newPicklist = JSON.parse(JSON.stringify(oldPicklist));
+                    newPicklist.splice(
+                        index,
+                        0,
+                        newPicklist.splice(dragItem.current!, 1)[0],
+                    );
+                    return newPicklist;
+                });
+            }
+            else if(picklistType === 'defense'){
+                setDefensePicklist((oldPicklist) => {
+                    let newPicklist = JSON.parse(JSON.stringify(oldPicklist));
+                    newPicklist.splice(
+                        index,
+                        0,
+                        newPicklist.splice(dragItem.current!, 1)[0],
+                    );
+                    return newPicklist;
+                });
+            }
         }
     };
 
@@ -245,7 +258,7 @@ const Picklist: FC<PicklistProps> = () => {
                             fontSize: '20px'
                         }}
                     >
-                        Current Picklist:
+                        Current Offense Picklist:
                     </h3>
                     <Flex align="center" justify="center">
                         {offensePicklist?.map((teamNum, index) => {
@@ -260,7 +273,71 @@ const Picklist: FC<PicklistProps> = () => {
                                         startDrag(e, index);
                                     }}
                                     onDragEnter={(e) =>
-                                        handleDragEnter(e, index)
+                                        handleDragEnter(e, index, 'offense')
+                                    }
+                                >
+                                    <Link
+                                        href={`./Dashboard/${year}/${regional}/${teamNum}`}
+                                        color={'white'}
+                                        styles={{
+                                            position: 'relative',
+                                            textDecoration: 'none'
+                                        }}
+                                        isExternal
+                                    >
+                                        <h2
+                                            style={{
+                                                fontSize: '2rem',
+                                                color: 'white',
+                                            }}
+                                        >
+                                            {`${index + 1}. ${teamNum}`}
+                                        </h2>
+                                    </Link>
+                                </div>
+                            );
+                        })}
+                    </Flex>
+                </div>
+            </Box >
+            <Box bg={'mv-purple.200'}>
+                <div
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        paddingTop: '10px',
+                        paddingBottom: '10px',
+                        fontWeight: 'bold',
+                    }}
+                >
+                    <h3
+                        style={{
+                            color: 'white',
+                            margin: 'auto',
+                            marginBottom: '0.35rem',
+                            marginTop: '8px',
+                            fontWeight: 'bolder',
+                            fontSize: '20px'
+                        }}
+                    >
+                        Current Defense Picklist:
+                    </h3>
+                    <Flex align="center" justify="center">
+                        {defensePicklist?.map((teamNum, index) => {
+                            return (
+                                <div
+                                    style={{
+                                        marginLeft: '15px',
+                                        marginRight: '15px',
+                                    }}
+                                    draggable
+                                    onDragStart={(e) => {
+                                        startDrag(e, index);
+                                    }}
+                                    onDragEnter={(e) =>
+                                        handleDragEnter(e, index, 'defense')
                                     }
                                 >
                                     <Link
