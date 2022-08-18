@@ -54,16 +54,18 @@ const Picklist: FC<PicklistProps> = () => {
 
     useEffect(() => {
         fetchRegionals()
-        fetchPicklist(regional);
-        fetchSuggestedTeams(regional);
-        fetchTeams(regional);
+        fetchPicklist(regional, 'offense');
+        fetchPicklist(regional, 'defense');
+        fetchOffenseTeams(regional);
+        fetchDefenseTeams(regional);
     }, []);
 
     useEffect(() => {
         setLoading(true);
-        fetchPicklist(regional);
-        fetchTeams(regional);
-        fetchSuggestedTeams(regional);
+        fetchPicklist(regional, 'offense');
+        fetchPicklist(regional, 'defense');
+        fetchOffenseTeams(regional);
+        fetchDefenseTeams(regional);
     }, [regional])
 
     const fetchRegionals = async () => {
@@ -80,15 +82,24 @@ const Picklist: FC<PicklistProps> = () => {
             });
     };
 
-    const addToPicklist = (team: string) => {
-        let newArray = [...offensePicklist];
-        offensePicklist.includes(team)
-            ? newArray.splice(offensePicklist.indexOf(team), 1)
-            : newArray.push(team);
-        setOffensePicklist(newArray);
+    const addToPicklist = (team: string, picklistType: string) => {
+        if(picklistType === 'offense'){
+            let newArray = [...offensePicklist];
+            offensePicklist.includes(team)
+                ? newArray.splice(offensePicklist.indexOf(team), 1)
+                : newArray.push(team);
+            setOffensePicklist(newArray);
+        }
+        else if(picklistType === 'defense'){
+            let newArray = [...defensePicklist];
+            defensePicklist.includes(team)
+                ? newArray.splice(defensePicklist.indexOf(team), 1)
+                : newArray.push(team);
+            setDefensePicklist(newArray);
+        }
     };
 
-    const fetchTeams = async (regionalChoice: string) => {
+    const fetchOffenseTeams = async (regionalChoice: string) => {
         if (offenseTeams.length > 1) setOffenseTeams([]);
         if (regionalChoice.length < 3) return;
         //setRegional(regionalChoice);
@@ -104,42 +115,30 @@ const Picklist: FC<PicklistProps> = () => {
                 });
                 setOffenseTeams(teams);
             });
-    };
-
-    const fetchSuggestedTeams = async (regionalChoice: string) => {
-        if (regionalChoice.length < 3) return;
-        let suggested: string[] = [];
-        let teamList = db.collection('years')
-            .doc(year + '')
-            .collection('regionals')
-            .doc(regionalChoice)
-            .collection('teams');
-        teamList.get().then((data) => {
-            let handleLoop = async () => {
-                let promises: Promise<any>[] = [];
-                for (let doc of data.docs) {
-                    promises.push(
-                        teamList.doc(doc.id).collection('matches').get()
-                            .then((matchList: any) => {
-                                for (let match of matchList.docs) {
-                                    if (match.get("Suggest To Picklist")) {
-                                        suggested.push(doc.id);
-                                        break;
-                                    };
-                                };
-                            }));
-                }
-                await Promise.all(promises);
-                setSuggestedTeams(suggested);
-            }
-            handleLoop();
-        });
         setLoading(false);
     };
 
-    const fetchPicklist = async (regionalChoice: string) => {
+    const fetchDefenseTeams = async (regionalChoice: string) => {
+        if (defenseTeams.length > 1) setDefenseTeams([]);
+        if (regionalChoice.length < 3) return;
+        //setRegional(regionalChoice);
+        db.collection('years')
+            .doc(year + '')
+            .collection('regionals')
+            .doc(regionalChoice)
+            .collection('teams')
+            .get()
+            .then((data) => {
+                let teams = data.docs.map((doc) => {
+                    return doc.id;
+                });
+                setDefenseTeams(teams);
+            });
+    };
+
+    const fetchPicklist = async (regionalChoice: string, picklistType: string) => {
         setOffensePicklist([]);
-        //setDefensePicklist([]);
+        setDefensePicklist([]);
         db.collection('years')
             .doc(year + '')
             .collection('regionals')
@@ -147,9 +146,16 @@ const Picklist: FC<PicklistProps> = () => {
             .collection('picklist')
             .get()
             .then((fields) => {
-                if (fields.docs[0]?.data().offensePicklist?.length > 0)
-                    setOffensePicklist(fields.docs[0].data().offensePicklist);
-                else setOffensePicklist([]);
+                if(picklistType === 'offense'){
+                    if (fields.docs[0]?.data().offensePicklist?.length > 0)
+                        setOffensePicklist(fields.docs[0].data().offensePicklist);
+                    else setOffensePicklist([]);
+                }
+                else if(picklistType === 'defense'){
+                    if (fields.docs[0]?.data().defensePicklist?.length > 0)
+                        setDefensePicklist(fields.docs[0].data().defensePicklist);
+                    else setDefensePicklist([]);
+                }
             });
     };
 
@@ -201,11 +207,10 @@ const Picklist: FC<PicklistProps> = () => {
                         isDisabled={!currentUser}
                         onChange={(e) => {
                             setRegional(e.target.value);
-                            fetchTeams(e.target.value);
-                            //fetchTeams(e.target.value, 'defense');
-                            fetchSuggestedTeams(e.target.value);
-                            fetchPicklist(e.target.value);
-                            //fetchPicklist(e.target.value, 'defense');
+                            fetchOffenseTeams(e.target.value);
+                            fetchDefenseTeams(e.target.value);
+                            fetchPicklist(e.target.value, 'offense');
+                            fetchPicklist(e.target.value, 'defense');
                         }}
                         size="lg"
                         variant="Unstyled"
@@ -318,7 +323,7 @@ const Picklist: FC<PicklistProps> = () => {
                                     isDisabled={!currentUser}
                                     spacing="1rem"
                                     onChange={() => {
-                                        addToPicklist(team);
+                                        addToPicklist(team, 'offense');
                                     }}
                                 />
                                 <Link
@@ -375,7 +380,7 @@ const Picklist: FC<PicklistProps> = () => {
                                     isDisabled={!currentUser}
                                     spacing="1rem"
                                     onChange={() => {
-                                        addToPicklist(team);
+                                        addToPicklist(team, 'defense');
                                     }}
                                 />
                                 <Link
