@@ -112,22 +112,6 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match}) => {
                     .collection('matches')
                     .get();
                 matches = matchesCollection.docs.map((doc) => doc.data());
-                matches = await Promise.all(
-                    matches.map(async (match) => {
-                        const fetchData =
-                            functions.httpsCallable('calculatePoints');
-                        const pointsData = await fetchData({
-                            year,
-                            regional,
-                            team,
-                            match: match.matchNum + '',
-                        });
-                        return {
-                            ...match,
-                            ...pointsData.data,
-                        };
-                    })
-                )
                 setMatches(matches);
                 if (match && matches[0] && matches[1])
                     if (matches.length > 0)
@@ -209,7 +193,26 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match}) => {
                     setRanking(`${index + 1}`);
                 }
             };
-            fetchData();
+            const fetchMatchData = async () => {
+                matches = await Promise.all(
+                    matches.map(async (match) => {
+                        const fetchData =
+                            functions.httpsCallable('calculatePoints');
+                        const pointsData = await fetchData({
+                            year,
+                            regional,
+                            team,
+                            match: match.matchNum + '',
+                        });
+                        return {
+                            ...match,
+                            ...pointsData.data,
+                        };
+                    }),
+                );
+                setMatches(matches);
+            };
+            fetchData().then(() => fetchMatchData());
         };
 
         const fetchQualitativeData = async () => {
