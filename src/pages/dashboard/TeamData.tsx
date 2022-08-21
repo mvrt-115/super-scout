@@ -106,13 +106,33 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match}) => {
                     .doc(regional)
                     .collection('teams')
                     .doc(team);
-                const avgs = await path.get();
+                const avgs = await path.get();                
                 setAvgValues(avgs!.data());
                 const matchesCollection = await path
                     .collection('matches')
                     .get();
                 matches = matchesCollection.docs.map((doc) => doc.data());
+
+                matches = await Promise.all(
+                    matches.map(async (match) => {
+                        const fetchData =
+                            functions.httpsCallable('calculatePoints');
+                        const pointsData = await fetchData({
+                            year,
+                            regional,
+                            team,
+                            match: match.matchNum + '',
+                        });
+                        return {
+                            ...match,
+                            ...pointsData.data,
+                        };
+                    }),
+                );
+              
+                setLoading(false)
                 setMatches(matches);
+                
                 if (match && matches[0] && matches[1])
                     if (matches.length > 0)
                         setTemplate(
@@ -192,27 +212,8 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match}) => {
                     }
                     setRanking(`${index + 1}`);
                 }
-            };
-            const fetchMatchData = async () => {
-                matches = await Promise.all(
-                    matches.map(async (match) => {
-                        const fetchData =
-                            functions.httpsCallable('calculatePoints');
-                        const pointsData = await fetchData({
-                            year,
-                            regional,
-                            team,
-                            match: match.matchNum + '',
-                        });
-                        return {
-                            ...match,
-                            ...pointsData.data,
-                        };
-                    }),
-                );
-                setMatches(matches);
-            };
-            fetchData().then(() => fetchMatchData());
+            };        
+            fetchData()
         };
 
         const fetchQualitativeData = async () => {
@@ -227,15 +228,13 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match}) => {
                 .doc('pitScoutAnswers')
                 .get()
                 .then((data) => {
-                    setPitScoutData(data.data() || {});
+                    setPitScoutData(data.data() || {});                    
                 });
         };
 
         fetchQuantitativeData()
             .then(fetchQualitativeData)
-            .then(() => {
-                setLoading(false);
-            });
+
     }, [year, regional, team]);
     const setPresetGraphs = async () => {
         await db.collection('years')
