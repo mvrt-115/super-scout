@@ -2,6 +2,7 @@ import { Heading } from '@chakra-ui/react';
 import React, { FC, useEffect, useState } from 'react';
 import { Link, useRouteMatch } from 'react-router-dom';
 import { db } from '../../firebase';
+import Search from './Search';
 
 interface DashboardHomeProps { }
 
@@ -47,6 +48,7 @@ const DashboardHome: FC<DashboardHomeProps> = () => {
                 width: '100%',
             }}
         >
+            <Search />
             {years.map((year) => (
                 <div style={{ width: '100%' }}>
                     <Heading size={'md'}>{year.year}</Heading>
