@@ -308,7 +308,7 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 </Text>
             );
         return (
-            <div style={{ width: '70%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '5%' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '5%' }}>
                 <div>
                     {table ? <Button
                         variant="outline"

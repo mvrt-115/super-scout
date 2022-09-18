@@ -1,5 +1,5 @@
 import { DeleteIcon } from '@chakra-ui/icons';
-import { HStack, IconButton, Text, Select} from '@chakra-ui/react';
+import { HStack, IconButton, Text, Select, Grid, GridItem, useMediaQuery } from '@chakra-ui/react';
 import React, { FC, useEffect, useState } from 'react';
 
 interface GraphInputProps {
@@ -29,6 +29,7 @@ const GraphInput: FC<GraphInputProps> = ({
     const [type, setType] = useState<
         'Bar' | 'Area' | 'Line' | 'Scatter' | 'Pie'
     >('Bar');
+    const [isLargerThan800] = useMediaQuery('(min-width: 800px)');
 
     useEffect(() => {
         onChange({
@@ -40,86 +41,92 @@ const GraphInput: FC<GraphInputProps> = ({
     }, [xAxis, yAxis1, yAxis2, yAxis3, type, sortBy]);
 
     return (
-        <div style={{
-            display: "flex",
-            alignItems: "center",
-            flexDirection: "row"
-        }}>
-            <Text>X-Axis:</Text>
-            <Select
-                value={xAxis}
-                onChange={(e) => setXAxis(e.target.value)}
-            >
-                {keys.map((key) => (
-                    <option key={key} value={key}>
-                        {key}
-                    </option>
-                ))}
-            </Select>
-            <Text>Y-Axis:</Text>
-            <Select
-                value={yAxis1}
-                onChange={(e) => setYAxis1(e.target.value)}
-            >
-                {keys.map((key) => (
-                    <option key={key} value={key}>
-                        {key}
-                    </option>
-                ))}
-            </Select>
-            <Select
-                value={yAxis2}
-                onChange={(e) => setYAxis2(e.target.value)}
-            >
-                <option value="none">None</option>
-                {keys.map((key) => (
-                    <option key={key} value={key}>
-                        {key}
-                    </option>
-                ))}
-            </Select>
-            <Select
-                value={yAxis3}
-                onChange={(e) => setYAxis3(e.target.value)}
-            >
-                <option value="none">None</option>
-                {keys.map((key) => (
-                    <option key={key} value={key}>
-                        {key}
-                    </option>
-                ))}
-            </Select>
-            <Text>Sort By:</Text>
-            <Select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-            >
-                <option value="none">None</option>
-                {keys.map((key) => (
-                    <option key={key} value={key}>
-                        {key}
-                    </option>
-                ))}
-            </Select>
-            <Text>Graph Type:</Text>
-            <Select
-                onChange={(e) => {
-                    const val: any = e.target.value;
-                    setType(val);
-                }}
-            >
-                <option value="Bar">Bar</option>
-                <option value="Area">Area</option>
-                <option value="Line">Line</option>
-                <option value="Scatter">Scatter</option>
-            </Select>
-            <IconButton
-                aria-label="delete"
-                icon={<DeleteIcon />}
-                onClick={onDelete}
-                colorScheme={'red'}
-            />
-        </div>
+        <Grid templateColumns={isLargerThan800 ? 'repeat(5, 1fr)' : 'repeat(2, 1fr)'} gap={'2%'}>
+            <GridItem>
+                <Text>X-Axis:</Text>
+                <Select
+                    value={xAxis}
+                    onChange={(e) => setXAxis(e.target.value)}
+                >
+                    {keys.map((key) => (
+                        <option key={key} value={key}>
+                            {key}
+                        </option>
+                    ))}
+                </Select>
+            </GridItem>
+            <GridItem>
+                <Text>Y-Axis:</Text>
+                <Select
+                    value={yAxis1}
+                    onChange={(e) => setYAxis1(e.target.value)}
+                >
+                    {keys.map((key) => (
+                        <option key={key} value={key}>
+                            {key}
+                        </option>
+                    ))}
+                </Select>
+                <Select
+                    value={yAxis2}
+                    onChange={(e) => setYAxis2(e.target.value)}
+                >
+                    <option value="none">None</option>
+                    {keys.map((key) => (
+                        <option key={key} value={key}>
+                            {key}
+                        </option>
+                    ))}
+                </Select>
+                <Select
+                    value={yAxis3}
+                    onChange={(e) => setYAxis3(e.target.value)}
+                >
+                    <option value="none">None</option>
+                    {keys.map((key) => (
+                        <option key={key} value={key}>
+                            {key}
+                        </option>
+                    ))}
+                </Select>
+            </GridItem>
+            <GridItem>
+                <Text>Sort By:</Text>
+                <Select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                >
+                    <option value="none">None</option>
+                    {keys.map((key) => (
+                        <option key={key} value={key}>
+                            {key}
+                        </option>
+                    ))}
+                </Select>
+            </GridItem>
+            <GridItem>
+                <Text>Graph Type:</Text>
+                <Select
+                    onChange={(e) => {
+                        const val: any = e.target.value;
+                        setType(val);
+                    }}
+                >
+                    <option value="Bar">Bar</option>
+                    <option value="Area">Area</option>
+                    <option value="Line">Line</option>
+                    <option value="Scatter">Scatter</option>
+                </Select>
+            </GridItem>
+            <GridItem>
+                <IconButton
+                    aria-label="delete"
+                    icon={<DeleteIcon />}
+                    onClick={onDelete}
+                    colorScheme={'red'}
+                />
+            </GridItem>
+        </Grid>
     );
 };
 
