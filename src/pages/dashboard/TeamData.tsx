@@ -246,14 +246,16 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match}) => {
             .get()
             .then((doc) => {
                 const temp: any[] = [];
-                doc.data()!["graphs"]?.forEach((preset: any) => {
-                    temp.push({
-                        x: preset["xAxis"],
-                        y: [preset["yAxis1"], preset["yAxis2"], preset["yAxis3"]],
-                        type: preset["graphType"],
-                        sortBy: preset["sortBy"] ? preset["sortBy"] : preset["yAxis1"]
+                if(doc.data()){
+                    doc.data()!["graphs"]?.forEach((preset: any) => {
+                        temp.push({
+                            x: preset["xAxis"],
+                            y: [preset["yAxis1"], preset["yAxis2"], preset["yAxis3"]],
+                            type: preset["graphType"],
+                            sortBy: preset["sortBy"] ? preset["sortBy"] : preset["yAxis1"]
+                        });
                     });
-                });
+                }
                 setGraphs(temp);
             });
     }
