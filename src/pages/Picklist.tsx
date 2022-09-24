@@ -12,42 +12,60 @@ interface PicklistProps { }
 const Picklist: FC<PicklistProps> = () => {
     const year = new Date().getFullYear();
     const { currentUser } = useAuth();
-    const [regional, setRegional] = useState<string>('cvr');
+    const [regional, setRegional] = useState<string>('cafr');
     const [regionals, setRegionals] = useState<string[]>([]);
     const [suggestedTeams, setSuggestedTeams] = useState<string[]>([]);
-    const [teams, setTeams] = useState<string[]>([]);
-    const [picklist, setPicklist] = useState<string[]>([]);
+    const [offenseTeams, setOffenseTeams] = useState<string[]>([]);
+    const [defenseTeams, setDefenseTeams] = useState<string[]>([]);
+    const [offensePicklist, setOffensePicklist] = useState<string[]>([]);
+    const [defensePicklist, setDefensePicklist] = useState<string[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const dragItem = useRef<number | null>();
     const dragNode = useRef<EventTarget | null>();
 
 
     useEffect(() => {
-        if (picklist.length > 0 && regional.length > 2) {
+        if (offensePicklist.length > 0 && regional.length > 2) {
             db.collection('years')
                 .doc(year + '')
                 .collection('regionals')
                 .doc(regional)
                 .collection('picklist')
-                .doc('picklist')
+                .doc('offensePicklist')
                 .set({
-                    picklist: picklist,
+                    offensePicklist: offensePicklist,
                 });
         }
-    }, [year, picklist]);
+    }, [year, offensePicklist]);
+
+    useEffect(() => {
+        if (defensePicklist.length > 0 && regional.length > 2) {
+            db.collection('years')
+                .doc(year + '')
+                .collection('regionals')
+                .doc(regional)
+                .collection('picklist')
+                .doc('defensePicklist')
+                .set({
+                    defensePicklist: defensePicklist,
+                });
+        }
+    }, [year, defensePicklist]);
 
     useEffect(() => {
         fetchRegionals()
-        fetchPicklist(regional);
-        fetchSuggestedTeams(regional);
-        fetchTeams(regional);
+        fetchPicklist(regional, 'offense');
+        fetchPicklist(regional, 'defense');
+        fetchOffenseTeams(regional);
+        fetchDefenseTeams(regional);
     }, []);
 
     useEffect(() => {
         setLoading(true);
-        fetchPicklist(regional);
-        fetchTeams(regional);
-        fetchSuggestedTeams(regional);
+        fetchPicklist(regional, 'offense');
+        fetchPicklist(regional, 'defense');
+        fetchOffenseTeams(regional);
+        fetchDefenseTeams(regional);
     }, [regional])
 
     const fetchRegionals = async () => {
@@ -64,15 +82,25 @@ const Picklist: FC<PicklistProps> = () => {
             });
     };
 
-    const addToPicklist = (team: string) => {
-        let newArray = [...picklist];
-        picklist.includes(team)
-            ? newArray.splice(picklist.indexOf(team), 1)
-            : newArray.push(team);
-        setPicklist(newArray);
+    const addToPicklist = (team: string, picklistType: string) => {
+        if(picklistType === 'offense'){
+            let newArray = [...offensePicklist];
+            offensePicklist.includes(team)
+                ? newArray.splice(offensePicklist.indexOf(team), 1)
+                : newArray.push(team);
+            setOffensePicklist(newArray);
+        }
+        else if(picklistType === 'defense'){
+            let newArray = [...defensePicklist];
+            defensePicklist.includes(team)
+                ? newArray.splice(defensePicklist.indexOf(team), 1)
+                : newArray.push(team);
+            setDefensePicklist(newArray);
+        }
     };
-    const fetchTeams = async (regionalChoice: string) => {
-        if (teams.length > 1) setTeams([]);
+
+    const fetchOffenseTeams = async (regionalChoice: string) => {
+        if (offenseTeams.length > 1) setOffenseTeams([]);
         if (regionalChoice.length < 3) return;
         //setRegional(regionalChoice);
         db.collection('years')
@@ -85,43 +113,32 @@ const Picklist: FC<PicklistProps> = () => {
                 let teams = data.docs.map((doc) => {
                     return doc.id;
                 });
-                setTeams(teams);
+                setOffenseTeams(teams);
             });
-    };
-
-    const fetchSuggestedTeams = async (regionalChoice: string) => {
-        if (regionalChoice.length < 3) return;
-        let suggested: string[] = [];
-        let teamList = db.collection('years')
-            .doc(year + '')
-            .collection('regionals')
-            .doc(regionalChoice)
-            .collection('teams');
-        teamList.get().then((data) => {
-            let handleLoop = async () => {
-                let promises: Promise<any>[] = [];
-                for (let doc of data.docs) {
-                    promises.push(
-                        teamList.doc(doc.id).collection('matches').get()
-                            .then((matchList: any) => {
-                                for (let match of matchList.docs) {
-                                    if (match.get("Suggest To Picklist")) {
-                                        suggested.push(doc.id);
-                                        break;
-                                    };
-                                };
-                            }));
-                }
-                await Promise.all(promises);
-                setSuggestedTeams(suggested);
-            }
-            handleLoop();
-        });
         setLoading(false);
     };
 
-    const fetchPicklist = async (regionalChoice: string) => {
-        setPicklist([]);
+    const fetchDefenseTeams = async (regionalChoice: string) => {
+        if (defenseTeams.length > 1) setDefenseTeams([]);
+        if (regionalChoice.length < 3) return;
+        //setRegional(regionalChoice);
+        db.collection('years')
+            .doc(year + '')
+            .collection('regionals')
+            .doc(regionalChoice)
+            .collection('teams')
+            .get()
+            .then((data) => {
+                let teams = data.docs.map((doc) => {
+                    return doc.id;
+                });
+                setDefenseTeams(teams);
+            });
+    };
+
+    const fetchPicklist = async (regionalChoice: string, picklistType: string) => {
+        setOffensePicklist([]);
+        setDefensePicklist([]);
         db.collection('years')
             .doc(year + '')
             .collection('regionals')
@@ -129,9 +146,16 @@ const Picklist: FC<PicklistProps> = () => {
             .collection('picklist')
             .get()
             .then((fields) => {
-                if (fields.docs[0]?.data().picklist?.length > 0)
-                    setPicklist(fields.docs[0].data().picklist);
-                else setPicklist([]);
+                if(picklistType === 'offense'){
+                    if (fields.docs[0]?.data().offensePicklist?.length > 0)
+                        setOffensePicklist(fields.docs[0].data().offensePicklist);
+                    else setOffensePicklist([]);
+                }
+                else if(picklistType === 'defense'){
+                    if (fields.docs[0]?.data().defensePicklist?.length > 0)
+                        setDefensePicklist(fields.docs[0].data().defensePicklist);
+                    else setDefensePicklist([]);
+                }
             });
     };
 
@@ -141,17 +165,30 @@ const Picklist: FC<PicklistProps> = () => {
         dragNode.current.addEventListener('dragend', dragEnd);
     };
 
-    const handleDragEnter = (e: SyntheticEvent, index: number) => {
+    const handleDragEnter = (e: SyntheticEvent, index: number, picklistType: string) => {
         if (e.target !== dragNode.current) {
-            setPicklist((oldPicklist) => {
-                let newPicklist = JSON.parse(JSON.stringify(oldPicklist));
-                newPicklist.splice(
-                    index,
-                    0,
-                    newPicklist.splice(dragItem.current!, 1)[0],
-                );
-                return newPicklist;
-            });
+            if(picklistType === 'offense'){
+                setOffensePicklist((oldPicklist) => {
+                    let newPicklist = JSON.parse(JSON.stringify(oldPicklist));
+                    newPicklist.splice(
+                        index,
+                        0,
+                        newPicklist.splice(dragItem.current!, 1)[0],
+                    );
+                    return newPicklist;
+                });
+            }
+            else if(picklistType === 'defense'){
+                setDefensePicklist((oldPicklist) => {
+                    let newPicklist = JSON.parse(JSON.stringify(oldPicklist));
+                    newPicklist.splice(
+                        index,
+                        0,
+                        newPicklist.splice(dragItem.current!, 1)[0],
+                    );
+                    return newPicklist;
+                });
+            }
         }
     };
 
@@ -183,9 +220,10 @@ const Picklist: FC<PicklistProps> = () => {
                         isDisabled={!currentUser}
                         onChange={(e) => {
                             setRegional(e.target.value);
-                            fetchTeams(e.target.value);
-                            fetchSuggestedTeams(e.target.value);
-                            fetchPicklist(e.target.value);
+                            fetchOffenseTeams(e.target.value);
+                            fetchDefenseTeams(e.target.value);
+                            fetchPicklist(e.target.value, 'offense');
+                            fetchPicklist(e.target.value, 'defense');
                         }}
                         size="lg"
                         variant="Unstyled"
@@ -220,10 +258,10 @@ const Picklist: FC<PicklistProps> = () => {
                             fontSize: '20px'
                         }}
                     >
-                        Current Picklist:
+                        Current Offense Picklist:
                     </h3>
                     <Flex align="center" justify="center">
-                        {picklist?.map((teamNum, index) => {
+                        {offensePicklist?.map((teamNum, index) => {
                             return (
                                 <div
                                     style={{
@@ -235,7 +273,71 @@ const Picklist: FC<PicklistProps> = () => {
                                         startDrag(e, index);
                                     }}
                                     onDragEnter={(e) =>
-                                        handleDragEnter(e, index)
+                                        handleDragEnter(e, index, 'offense')
+                                    }
+                                >
+                                    <Link
+                                        href={`./Dashboard/${year}/${regional}/${teamNum}`}
+                                        color={'white'}
+                                        styles={{
+                                            position: 'relative',
+                                            textDecoration: 'none'
+                                        }}
+                                        isExternal
+                                    >
+                                        <h2
+                                            style={{
+                                                fontSize: '2rem',
+                                                color: 'white',
+                                            }}
+                                        >
+                                            {`${index + 1}. ${teamNum}`}
+                                        </h2>
+                                    </Link>
+                                </div>
+                            );
+                        })}
+                    </Flex>
+                </div>
+            </Box >
+            <Box bg={'mv-purple.200'}>
+                <div
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        paddingTop: '10px',
+                        paddingBottom: '10px',
+                        fontWeight: 'bold',
+                    }}
+                >
+                    <h3
+                        style={{
+                            color: 'white',
+                            margin: 'auto',
+                            marginBottom: '0.35rem',
+                            marginTop: '8px',
+                            fontWeight: 'bolder',
+                            fontSize: '20px'
+                        }}
+                    >
+                        Current Defense Picklist:
+                    </h3>
+                    <Flex align="center" justify="center">
+                        {defensePicklist?.map((teamNum, index) => {
+                            return (
+                                <div
+                                    style={{
+                                        marginLeft: '15px',
+                                        marginRight: '15px',
+                                    }}
+                                    draggable
+                                    onDragStart={(e) => {
+                                        startDrag(e, index);
+                                    }}
+                                    onDragEnter={(e) =>
+                                        handleDragEnter(e, index, 'defense')
                                     }
                                 >
                                     <Link
@@ -278,9 +380,9 @@ const Picklist: FC<PicklistProps> = () => {
                         textAlign: 'center'
                     }}
                     >
-                        All Teams:
+                        Offense Picklist:
                     </h3>
-                    {teams?.map((team) => {
+                    {offenseTeams?.map((team) => {
                         return (
                             <div
                                 style={{
@@ -294,11 +396,11 @@ const Picklist: FC<PicklistProps> = () => {
                                 <Checkbox
                                     mr="10px"
                                     size="lg"
-                                    isChecked={picklist.includes(team)}
+                                    isChecked={offensePicklist.includes(team)}
                                     isDisabled={!currentUser}
                                     spacing="1rem"
                                     onChange={() => {
-                                        addToPicklist(team);
+                                        addToPicklist(team, 'offense');
                                     }}
                                 />
                                 <Link
@@ -335,19 +437,9 @@ const Picklist: FC<PicklistProps> = () => {
                             textAlign: 'center'
                         }}
                     >
-                        Suggested Teams:
+                        Defense Picklist:
                     </h3>
-                    {loading && <div
-                        style={{
-                            width: '100%',
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                        }}
-                    >
-                        <Spinner />
-                    </div>}
-                    {!loading && suggestedTeams?.map((team) => {
+                    {defenseTeams?.map((team) => {
                         return (
                             <div
                                 style={{
@@ -356,18 +448,16 @@ const Picklist: FC<PicklistProps> = () => {
                                     alignItems: 'center',
                                     justifyContent: 'flex-start',
                                     marginLeft: '20vw'
-                                    // float: 'left'
-                                    // verticalAlign: 'middle'
                                 }}
                             >
                                 <Checkbox
                                     mr="10px"
                                     size="lg"
-                                    isChecked={picklist.includes(team)}
+                                    isChecked={defensePicklist.includes(team)}
                                     isDisabled={!currentUser}
-                                    spacing="10rem"
+                                    spacing="1rem"
                                     onChange={() => {
-                                        addToPicklist(team);
+                                        addToPicklist(team, 'defense');
                                     }}
                                 />
                                 <Link
