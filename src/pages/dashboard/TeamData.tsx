@@ -52,6 +52,69 @@ interface RadarChartStat {
     max: number;
 }
 
+//const calcPoints = require("../../../functions/src/index");
+
+const calcAutonPoints = (matchData: any, year: number | string) => {
+    if (year == '2019') {
+        return matchData.autonBottom * 2 +
+            matchData.autonUpper * 4 +
+            matchData.autonInner * 6 +
+            matchData.crossedInitLine
+            ? 5
+            : 0;
+    } else if (year == '2022') {
+        let autonPoints : number = 0;
+        autonPoints += (2 * matchData['Auton Bottom']) + (4 * matchData['Auton Upper']);
+        if(matchData['Left Tarmac'] === undefined) 
+            autonPoints += (2 * +matchData['Leave Tarmac']);
+        else autonPoints += (2 * +matchData['Left Tarmac'])
+        return autonPoints;
+    }
+    return -1;
+};
+
+const calcTeleopPoints = (matchData: any, year: number | string) => {
+    if (year == '2019') {
+        return (
+            matchData.teleopBottom +
+            matchData.teleopUpper * 2 +
+            matchData.teleopInner * 4
+        );
+    } else if (year == '2022') {
+        return matchData['Teleop Bottom'] + matchData['Teleop Upper'] * 2;
+    }
+    return -1;
+};
+
+const calcEndgamePoints = (matchData: any, year: number | string) => {
+    if (year == '2019') {
+        let endgamePoints = 5;
+        if (!matchData.hangFail) endgamePoints += 20;
+        if (!matchData.levelFail) endgamePoints += 15;
+        return endgamePoints;
+    } else if (year == '2022') {
+        let climbScore: number = 0;
+        switch (matchData['Climb rung']) {
+            case 'Low':
+                climbScore = 4;
+                break;
+            case 'Mid':
+                climbScore = 6;
+                break;
+            case 'High':
+                climbScore = 10;
+                break;
+            case 'Traversal':
+                climbScore = 15;
+                break;
+            default:
+                climbScore = 0;
+        }
+        return climbScore;
+    }
+    return -1;
+};
+
 const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match}) => {
     const { year, regional, team } = match.params;
     const [matches, setMatches] = useState<any[]>([]);
@@ -115,17 +178,25 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match}) => {
 
                 matches = await Promise.all(
                     matches.map(async (match) => {
-                        const fetchData =
-                            functions.httpsCallable('calculatePoints');
-                        const pointsData = await fetchData({
-                            year,
-                            regional,
-                            team,
-                            match: match.matchNum + '',
-                        });
+                        let matchRef = await db
+                            .collection('years')
+                            .doc(year)
+                            .collection('regionals')
+                            .doc(regional)
+                            .collection('teams')
+                            .doc(team)
+                            .collection('matches')
+                            .doc(match.matchNum + '')
+                            .get();
+                        let matchData = matchRef.data();
+                        let autonPoints = calcAutonPoints(matchData, year);
+                        let teleopPoints = calcTeleopPoints(matchData, year);
+                        let endgamePoints = calcEndgamePoints(matchData, year);
                         return {
                             ...match,
-                            ...pointsData.data,
+                            autonPoints,
+                            teleopPoints,
+                            endgamePoints
                         };
                     }),
                 );

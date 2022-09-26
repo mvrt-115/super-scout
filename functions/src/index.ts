@@ -227,3 +227,5 @@ export const resetData = functions.https.onCall(async (data, context) => {
     newData.teamNum = team;
     return newData;
 });
+
+//module.exports = {calcAutonPoints, calcTeleopPoints, calcEndgamePoints} ;
