@@ -21,7 +21,7 @@ h1 {
     text-align: center;
 }
 
-form > div > div > input {
+#search > div > div > input {
     border: 1px gray solid;
     max-width: 300px;
     width: 90%;
@@ -30,7 +30,7 @@ form > div > div > input {
     padding-left: 5px;
 }
 
-form > button {
+#search > button {
     border: 1px gray solid;
     border-radius: 5px;
     padding: 2px 15px;
@@ -45,7 +45,7 @@ form > button {
     gap: 5px;
 }
 
-form {
+#search {
     width: 50%;
     display: flex;
     gap: 10px;
@@ -53,7 +53,7 @@ form {
     align-items: center;
 }
 
-form > div:first-child {
+#search > div:first-child {
     width: 100%;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));

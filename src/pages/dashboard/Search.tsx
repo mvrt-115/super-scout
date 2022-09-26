@@ -39,7 +39,7 @@ const Search = () => {
 
     return (
         <>
-            <form
+            <form id='search'
                 onSubmit={async (e) => {
                     e.preventDefault();
                     const y = new Date().getFullYear().toString()
