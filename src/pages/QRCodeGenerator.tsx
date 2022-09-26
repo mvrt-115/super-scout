@@ -19,6 +19,7 @@ import { BsFillShieldFill } from 'react-icons/bs';
 import React, { FC, SyntheticEvent, useEffect, useState } from 'react';
 import { db } from '../firebase';
 import QRCode from 'react-qr-code';
+import { subchannelAddressToString } from '@grpc/grpc-js/build/src/subchannel-address';
 
 interface QRCodeGeneratorProps { }
 
@@ -29,9 +30,9 @@ interface MatchData {
 
 const QRCodeGenerator: FC<QRCodeGeneratorProps> = () => {
     const year = new Date().getFullYear();
-    const [regionals, setRegionals] = useState<string[]>(['cafr']); // hard code regionals in the case there is no internet
+    const [regionals, setRegionals] = useState<string[]>([]); // hard code regionals in the case there is no internet
     const [qrcode, setQRCode] = useState<string>();
-    const [regional, setRegional] = useState<string>('cafr');
+    const [regional, setRegional] = useState<string>('');
     const [alliance, setAlliance] = useState<string>('b');
     const [matchNum, setMatchNum] = useState<number>(1);
     const [team1, setTeam1] = useState<string | number>('');
@@ -51,8 +52,7 @@ const QRCodeGenerator: FC<QRCodeGeneratorProps> = () => {
             if (res.docs.length > 0) setRegional(res.docs[0].id);
         };
         fetchData();
-
-        const localData = localStorage.getItem("matches");
+        const localData = localStorage.getItem("qrMatches");
         if (localData) {
             setLoadedData(JSON.parse(localData));
             setLoaded(true);
@@ -71,7 +71,7 @@ const QRCodeGenerator: FC<QRCodeGeneratorProps> = () => {
 
     const loadRegionalData = async () => {
         const regionalKey = year + regional;
-
+        console.log(regionalKey+" KEy")
         const dataRes = await fetch(
             `https://www.thebluealliance.com/api/v3/event/${regionalKey}/matches/simple`,
             {
@@ -83,16 +83,17 @@ const QRCodeGenerator: FC<QRCodeGeneratorProps> = () => {
         )
 
         const dataJson = await dataRes.json();
-
-        const filteredData = dataJson.filter((val:any) => val.comp_level=="qm").sort((a:any,b:any)=> a.match_number-b.match_number)
-
-        localStorage.setItem("matches", JSON.stringify(filteredData));
-        setLoadedData(filteredData);
-        setLoaded(true);
+        if(dataJson.length>0){
+            console.log(dataJson)
+            const filteredData = dataJson.filter((val:any) => val.comp_level=="qm").sort((a:any,b:any)=> a.match_number-b.match_number)
+            filteredData.length>0 && localStorage.setItem("qrMatches", JSON.stringify(filteredData));
+            setLoadedData(filteredData);
+            setLoaded(true);
+        }
     }
 
     const fillData = () => {
-        if (matchNum && loaded) {
+        if (matchNum && loaded && loadedData) {
             const match = loadedData[matchNum-1];
             let allianceData = null;
             if (alliance == "b") {
@@ -100,9 +101,12 @@ const QRCodeGenerator: FC<QRCodeGeneratorProps> = () => {
             } else if (alliance == "r") {
                 allianceData = match.alliances.red.team_keys;
             }
-            setTeam1(parseInt(allianceData[0].substring(3)));
-            setTeam2(parseInt(allianceData[1].substring(3)));
-            setTeam3(parseInt(allianceData[2].substring(3)));
+            const team1 = parseInt(allianceData[0].substring(3));
+            const team2 = parseInt(allianceData[1].substring(3));
+            const team3 = parseInt(allianceData[2].substring(3));
+            setTeam1(team1);
+            setTeam2(team2);
+            setTeam3(team3);
             setQRCode(
                 `${matchNum}@${regional}:${alliance}[${team1},${team2},${team3}]`,
             );
@@ -112,7 +116,7 @@ const QRCodeGenerator: FC<QRCodeGeneratorProps> = () => {
     useEffect(fillData, [loaded, alliance, matchNum]);
 
     const clearData = () => {
-        localStorage.removeItem("matches");
+        localStorage.removeItem("qrMatches");
         setTeam1('');
         setTeam2('');
         setTeam3('');
