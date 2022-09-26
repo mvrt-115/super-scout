@@ -52,9 +52,11 @@ const QRCodeGenerator: FC<QRCodeGeneratorProps> = () => {
             if (res.docs.length > 0) setRegional(res.docs[0].id);
         };
         fetchData();
-        const localData = localStorage.getItem("qrMatches");
+        let localData = localStorage.getItem("qrMatches");
         if (localData) {
-            setLoadedData(JSON.parse(localData));
+            const temp = JSON.parse(localData);
+            setLoadedData(temp.matches);
+            setRegional(temp.regional)
             setLoaded(true);
         }
     }, [year]);
@@ -71,7 +73,6 @@ const QRCodeGenerator: FC<QRCodeGeneratorProps> = () => {
 
     const loadRegionalData = async () => {
         const regionalKey = year + regional;
-        console.log(regionalKey+" KEy")
         const dataRes = await fetch(
             `https://www.thebluealliance.com/api/v3/event/${regionalKey}/matches/simple`,
             {
@@ -86,14 +87,17 @@ const QRCodeGenerator: FC<QRCodeGeneratorProps> = () => {
         if(dataJson.length>0){
             console.log(dataJson)
             const filteredData = dataJson.filter((val:any) => val.comp_level=="qm").sort((a:any,b:any)=> a.match_number-b.match_number)
-            filteredData.length>0 && localStorage.setItem("qrMatches", JSON.stringify(filteredData));
+            const temp: any = {};
+            temp.matches = filteredData;
+            temp.regional = regional; 
+            filteredData.length>0 && localStorage.setItem("qrMatches", JSON.stringify(temp));
             setLoadedData(filteredData);
             setLoaded(true);
         }
     }
 
     const fillData = () => {
-        if (matchNum && loaded && loadedData) {
+        if (matchNum && loaded && loadedData && matchNum<loadedData.length) {
             const match = loadedData[matchNum-1];
             let allianceData = null;
             if (alliance == "b") {
@@ -145,13 +149,13 @@ const QRCodeGenerator: FC<QRCodeGeneratorProps> = () => {
                 alignItems={'center'}
             >
 
-                <Button
+                {matchNum>0 && <Button
                     children={<AiOutlineArrowLeft />}
                     bg={'#FFFFFF'}
                     onClick={() => {
                         setMatchNum(matchNum-1);
                     }}
-                />
+                />}
 
                 <form onSubmit={handleSubmit}>
                     <VStack spacing={5}>
@@ -299,13 +303,13 @@ const QRCodeGenerator: FC<QRCodeGeneratorProps> = () => {
                     </VStack>
                 </form>
 
-                <Button
+                {matchNum<loadedData.length-1 && <Button
                     children={<AiOutlineArrowRight />}
                     bg={'#FFFFFF'}
                     onClick={() => {
                         setMatchNum(matchNum+1);
                     }}
-                />
+                />}
 
             </Box>
             {qrcode && (
