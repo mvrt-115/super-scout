@@ -93,18 +93,20 @@ const Teams: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
             oprsRes.json(),
             rankingsRes.json(),
         ]);
-        teamsJson.forEach((team: any, index: number) => {
-            const teamNumber: number = team['team_number'];
-            const oprVal = oprsJson['oprs'][`frc${teamNumber}`];
-            const dprVal = oprsJson['dprs'][`frc${teamNumber}`];
-            const ccwmVal = oprsJson['ccwms'][`frc${teamNumber}`];
-            oprs.push(oprVal);
-            dprs.push(dprVal);
-            ccwms.push(ccwmVal);
-        });
-        setOprs(oprs);
-        setDprs(dprs);
-        setCcwms(ccwms);
+        if(oprsJson){
+            teamsJson.forEach((team: any, index: number) => {
+                const teamNumber: number = team['team_number'];
+                const oprVal = oprsJson['oprs'][`frc${teamNumber}`];
+                const dprVal = oprsJson['dprs'][`frc${teamNumber}`];
+                const ccwmVal = oprsJson['ccwms'][`frc${teamNumber}`];
+                oprs.push(oprVal);
+                dprs.push(dprVal);
+                ccwms.push(ccwmVal);
+            });
+            setOprs(oprs);
+            setDprs(dprs);
+            setCcwms(ccwms);
+        }
     };
 
     const downloadData = async () => {

@@ -98,7 +98,7 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 oprsRe.json(),
                 rankingsRe.json(),
             ]);
-            let teams: any = [];
+            let teams: any = regionalRef.docs.map((doc)=> doc.data());
             rankingsJson.rankings.forEach(
                 (teamInfo: any, index: string | number) => {
                     const teamKey = teamInfo.team_key;

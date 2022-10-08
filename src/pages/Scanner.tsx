@@ -81,6 +81,7 @@ const Scanner: FC<ScannerProps> = () => {
             match['postGameFields'].forEach((field: any, index: number) => {
                 out[postGameFields[index]] = field;
             });
+            out.matchNum = match.matchNum;
             db.collection('years')
                 .doc(year + '')
                 .collection('regionals')

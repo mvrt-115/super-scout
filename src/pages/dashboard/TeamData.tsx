@@ -39,6 +39,7 @@ import { ThemeProvider, createTheme } from '@mui/material';
 import { AiOutlineConsoleSql } from 'react-icons/ai';
 import Card from '../../components/Card';
 import DataTable from '../../components/DataTable';
+import { getTsBuildInfoEmitOutputFilePath } from 'typescript';
 
 interface RouteParams {
     year: string;
@@ -580,7 +581,115 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match}) => {
             </div>
         );
     };
+    const renderDriveteamView = () => {
+        const teleopMade = ["Teleop Made", ((avgValues["Teleop Upper"]+avgValues["Teleop Bottom"])/(avgValues["Teleop Upper"]+avgValues["Teleop Bottom"]+avgValues["Teleop Missed"])).toFixed(2)];
+        const teleopPoints = ["teleopPoints", parseFloat(avgValues["teleopPoints"]+'').toFixed(2)];
+        const autonMade = ["Auton Made", ((avgValues["Auton Upper"]+avgValues["Auton Bottom"])/(avgValues["Auton Upper"]+avgValues["Auton Bottom"]+avgValues["Auton Missed"])).toFixed(2)];
+        const autonPoints = ["autonPoints", parseFloat(avgValues["autonPoints"]+'').toFixed(2)];
+        const relevantFields = [teleopMade, teleopPoints, autonMade, autonPoints]
+        if (!matches || !matches.length)
+            return (
+                <Text
+                    style={{
+                        marginTop: '1rem',
+                    }}
+                >
+                    No scouting data available!
+                </Text>
+            );
+        return (
+            <div
+                style={{
+                    width: '80%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '5%',
+                }}
+            >
+                <Heading
+                    textAlign={'center'}
+                    fontSize={'1.5em'}
+                    fontWeight={'bolder'}
+                >
+                    Team # {team} Rank # {ranking}
+                </Heading>
+                <div
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        marginTop: '2vh',
+                        marginBottom: '2vh',
+                        width: '100%',
+                    }}
+                >
+                    <Stack alignItems={'center'}>
+                        <HStack>
+                            <Card
+                                title="OPR"
+                                info={Math.round(oprStat.value * 100) / 10 + ''}
+                                subinfo={oprStat.percentile + '% Percentile'}
+                            ></Card>
+                            <Card
+                                title="DPR"
+                                info={Math.round(dprStat.value * 100) / 10 + ''}
+                                subinfo={dprStat.percentile + '% Percentile'}
+                            ></Card>
+                            <Card
+                                title="CCWM"
+                                info={
+                                    Math.round(ccwmStat.value * 100) / 100 + ''
+                                }
+                                subinfo={ccwmStat.percentile + '% Percentile'}
+                            ></Card>
+                        </HStack>
 
+                        <Grid
+                            // gap={1}
+                            templateColumns={
+                                'repeat(auto-fit, minmax(150px, 1fr))'
+                            }
+                            width={'65vw'}
+                        >
+                            {relevantFields.map(([key, value])=>{
+                                return( 
+                                    <Card
+                                        title={'Average ' + key}
+                                        info={
+                                            value+''
+                                        }
+                                    ></Card>
+                                )
+                            })}
+                        </Grid>
+                    </Stack>
+                </div>
+                <TeamRadarChartWrapper
+                    team={team}
+                    opr={oprStat}
+                    dpr={dprStat}
+                    ccwm={ccwmStat}
+                />
+                <Button
+                    variant="outline"
+                    aria-label="Table"
+                    onClick={() => {
+                        setTable(!table);
+                    }}
+                    width={'100%'}
+                    marginTop={4}
+                    marginBottom={4}
+                    colorScheme={'mv-purple'}
+                >
+                    View {table ? 'Graphs' : 'Table'}
+                </Button>
+                {table ? renderTable() : renderGraphs()}
+            </div>
+        );
+    }
     const renderPitScoutData = () => {
         if (Object.keys(pitScoutData).length === 0) {
             return (
