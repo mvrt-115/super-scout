@@ -1,5 +1,5 @@
 import React, { FC, useEffect } from 'react';
-import { Route, Switch, useRouteMatch } from 'react-router-dom';
+import { Link, Route, Switch, useRouteMatch } from 'react-router-dom';
 import DashboardHome from './DashboardHome';
 import RegionalData from './RegionalData';
 import TeamData from './TeamData';
@@ -26,7 +26,11 @@ const Dashboard: FC<DashboardProps> = () => {
             }}
         >
             <Heading marginBottom={'3%'} marginTop="3%" textColor={'#550575'}>
-                Dashboard
+                <Link
+                            to={`/dashboard`}
+                        >
+                            Dashboard
+                </Link>
             </Heading>
             <Switch>
                 <Route exact path={`${match.path}`} component={DashboardHome} />

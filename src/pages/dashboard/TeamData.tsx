@@ -11,7 +11,7 @@ import {
     Tooltip,
 } from '@chakra-ui/react';
 import React, { FC, useEffect, useState } from 'react';
-import { RouteComponentProps } from 'react-router-dom';
+import { Link, RouteComponentProps } from 'react-router-dom';
 import Graph from '../../components/Graph';
 import GraphInput from '../../components/GraphInput';
 import { db, functions } from '../../firebase';
@@ -261,19 +261,19 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match}) => {
                     setOprStat({
                         value: opr,
                         percentile:
-                            (oprsList.indexOf(opr) / oprsList.length) * 100,
+                            parseFloat(((oprsList.indexOf(opr) / oprsList.length) * 100).toFixed(2)),
                         max: oprsList[oprsList.length - 1],
                     });
                     setDprStat({
                         value: dpr,
                         percentile:
-                            (dprsList.indexOf(dpr) / dprsList.length) * 100,
+                            parseFloat(((dprsList.indexOf(dpr) / dprsList.length) * 100).toFixed(2)),
                         max: dprsList[dprsList.length - 1],
                     });
                     setCcwmStat({
                         value: ccwm,
                         percentile:
-                            (ccwmsList.indexOf(ccwm) / ccwmsList.length) * 100,
+                            parseFloat(((ccwmsList.indexOf(ccwm) / ccwmsList.length) * 100).toFixed(2)),
                         max: ccwmsList[ccwmsList.length - 1],
                     });
                     const rankingsList = rankingsJson.rankings;
@@ -469,8 +469,6 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match}) => {
             </ThemeProvider>
         );
     };
-    if (loading) return <Spinner />;
-
     const renderScoutingData = () => {
         if (!matches || !matches.length)
             return (
@@ -729,11 +727,25 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match}) => {
             </div>
         );
     };
-
-
+    if (loading) return <Spinner />;
     return (
         <>
             <div>
+                <div style={{
+                        paddingBottom: "1rem",
+                        margin: "none",
+                        textAlign: "center",
+                        fontWeight: "bold",
+                        fontSize: '1.5em',
+                        backgroundColor: "white",
+                        color: 'black'
+                    }}>
+                    <Link
+                        to={'../'+regional}
+                    >
+                        {regional.toUpperCase()} {year}
+                    </Link>
+                </div>
                 <Button
                     onClick={() => {
                         setPitScout(!pitScout);

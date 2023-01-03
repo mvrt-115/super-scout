@@ -346,8 +346,8 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
     return (
         <>
             <div>
-                <li className="link" style={{
-                    padding: "none",
+                <div style={{
+                    paddingBottom: "1rem",
                     margin: "none",
                     textAlign: "center",
                     fontWeight: "bold",
@@ -360,7 +360,7 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                     >
                         {regional.toUpperCase()} {year}
                     </Link>
-                </li>
+                </div>
                 {<Button
                     onClick={() => {
                         setPitScout(!pitScout);
