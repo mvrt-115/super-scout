@@ -69,7 +69,7 @@ const Home: FC<HomeProps> = () => {
                                     rounded={'full'}
                                     color={'white'}
                                 >
-                                    Dashboard
+                                    <Link to="/dashboard">Dashboard</Link>
                                 </Button>
                                 <Button
                                     bg={'whiteAlpha.300'}
@@ -77,7 +77,7 @@ const Home: FC<HomeProps> = () => {
                                     color={'white'}
                                     _hover={{ bg: 'whiteAlpha.500' }}
                                 >
-                                    Scanner
+                                    <Link to="/scanner">Scanner</Link>
                                 </Button>
                             </Stack>
                         </Stack>
