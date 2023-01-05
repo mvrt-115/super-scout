@@ -7,13 +7,12 @@ import {
     Spinner,
     VStack,
 } from '@chakra-ui/react';
-import { AnyPointerEvent } from 'framer-motion/types/gestures/PanSession';
 import React, { FC, useEffect, useState } from 'react';
 import ScoutInputInput from '../components/ScoutInputInput';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../firebase';
 
-interface ScoutingInputsProps { }
+interface ScoutingInputsProps {}
 
 const ScoutingInputs: FC<ScoutingInputsProps> = () => {
     const year = new Date().getFullYear();
@@ -79,7 +78,7 @@ const ScoutingInputs: FC<ScoutingInputsProps> = () => {
             .collection('scouting')
             .doc('endgame')
             .set(endgameInputsToSave);
-    }
+    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -117,8 +116,8 @@ const ScoutingInputs: FC<ScoutingInputsProps> = () => {
                 const autonData: any =
                     Object.keys(auatonRef.data() || {}).length === 0
                         ? {
-                            key: 'counter',
-                        }
+                              key: 'counter',
+                          }
                         : auatonRef.data();
                 setAutonInputs(
                     Object.keys(autonData).map((key) => {
@@ -138,8 +137,8 @@ const ScoutingInputs: FC<ScoutingInputsProps> = () => {
                 const teleopData: any =
                     Object.keys(teleopRef.data() || {}).length === 0
                         ? {
-                            key: 'counter',
-                        }
+                              key: 'counter',
+                          }
                         : teleopRef.data();
                 setTeleopInputs(
                     Object.keys(teleopData).map((key) => {
@@ -147,9 +146,9 @@ const ScoutingInputs: FC<ScoutingInputsProps> = () => {
                             return {
                                 key,
                                 type: 'dropdown',
-                                choices: teleopData[key].map((key2: any) =>{
+                                choices: teleopData[key].map((key2: any) => {
                                     return JSON.stringify(key2);
-                                })
+                                }),
                             };
                         return {
                             key,
@@ -161,8 +160,8 @@ const ScoutingInputs: FC<ScoutingInputsProps> = () => {
                 const endgameData: any =
                     Object.keys(endgameRef.data() || {}).length === 0
                         ? {
-                            key: 'counter',
-                        }
+                              key: 'counter',
+                          }
                         : endgameRef.data();
                 setEndgameInputs(
                     Object.keys(endgameData).map((key) => {
@@ -219,7 +218,11 @@ const ScoutingInputs: FC<ScoutingInputsProps> = () => {
                 <VStack>
                     <Heading textColor={'#550575'}>Match QR Code Data</Heading>
                     <div style={{ width: '100%' }}>
-                        <Heading size="sm" textAlign={'left'} textColor={'#550575'}>
+                        <Heading
+                            size="sm"
+                            textAlign={'left'}
+                            textColor={'#550575'}
+                        >
                             Auton
                         </Heading>
                         {autonInputs.map((autonInput, index) => (
@@ -260,7 +263,11 @@ const ScoutingInputs: FC<ScoutingInputsProps> = () => {
                         )}
                     </div>
                     <div style={{ width: '100%' }}>
-                        <Heading size="sm" textAlign={'left'} textColor={'#550575'}>
+                        <Heading
+                            size="sm"
+                            textAlign={'left'}
+                            textColor={'#550575'}
+                        >
                             Teleop
                         </Heading>
                         {teleopInputs.map((teleopInput, index) => (
@@ -301,7 +308,11 @@ const ScoutingInputs: FC<ScoutingInputsProps> = () => {
                         )}
                     </div>
                     <div style={{ width: '100%' }}>
-                        <Heading size="sm" textAlign={'left'} textColor={'#550575'}>
+                        <Heading
+                            size="sm"
+                            textAlign={'left'}
+                            textColor={'#550575'}
+                        >
                             Endgame
                         </Heading>
                         {endgameInputs.map((endgameInput, index) => (

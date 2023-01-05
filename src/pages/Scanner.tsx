@@ -18,13 +18,11 @@ import {
 import React, { FC, useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import NeedAccount from './NeedAccount';
-import QRScan from 'qrscan';
 import QRScanner from '../components/QRScanner';
 import { DeleteIcon } from '@chakra-ui/icons';
 import { db } from '../firebase';
-import { Stream } from 'stream';
 
-interface ScannerProps { }
+interface ScannerProps {}
 
 const Scanner: FC<ScannerProps> = () => {
     const [qrVisible, setQrVisible] = useState<boolean>(false);
@@ -48,52 +46,62 @@ const Scanner: FC<ScannerProps> = () => {
                 .get();
             if (!teamDoc.exists) await teamDoc.ref.set({});
             await pushData(match);
-            localStorage.setItem('matches', '[]')
+            localStorage.setItem('matches', '[]');
         });
     };
     const pushData = async (match: any) => {
-        db.collection('years').doc(year + '').collection('scouting').get().then((data) => {
-            let autonFields = Object.values(data.docs[0].data().autonFields || {}).map((field: any) => {
-                if (typeof field === 'object') {
-                    return Object.keys(field)[0];
-                }
-                return field.split(":")[0].trim();
+        db.collection('years')
+            .doc(year + '')
+            .collection('scouting')
+            .get()
+            .then((data) => {
+                let autonFields = Object.values(
+                    data.docs[0].data().autonFields || {},
+                ).map((field: any) => {
+                    if (typeof field === 'object') {
+                        return Object.keys(field)[0];
+                    }
+                    return field.split(':')[0].trim();
+                });
+                let teleopFields = Object.values(
+                    data.docs[3].data().teleopFields || {},
+                ).map((field: any) => {
+                    if (typeof field === 'object') {
+                        return Object.keys(field)[0];
+                    }
+                    return field.split(':')[0].trim();
+                });
+                let postGameFields = Object.values(
+                    data.docs[1].data().endgameFields || {},
+                ).map((field: any) => {
+                    if (typeof field === 'object') {
+                        return Object.keys(field)[0];
+                    }
+                    return field.split(':')[0].trim();
+                });
+                const out: any = {};
+                match['autonFields'].forEach((field: any, index: number) => {
+                    out[autonFields[index]] = field;
+                });
+                match['teleopFields'].forEach((field: any, index: number) => {
+                    out[teleopFields[index]] = field;
+                });
+                match['postGameFields'].forEach((field: any, index: number) => {
+                    out[postGameFields[index]] = field;
+                });
+                out.matchNum = match.matchNum;
+                db.collection('years')
+                    .doc(year + '')
+                    .collection('regionals')
+                    .doc(match.regional)
+                    .collection('teams')
+                    .doc(match.teamNum)
+                    .collection('matches')
+                    .doc(match.matchNum)
+                    .set(out);
             });
-            let teleopFields = Object.values(data.docs[3].data().teleopFields || {}).map((field: any) => {
-                if (typeof field === 'object') {
-                    return Object.keys(field)[0];
-                }
-                return field.split(":")[0].trim();
-            })
-            let postGameFields = Object.values(data.docs[1].data().endgameFields || {}).map((field: any) => {
-                if (typeof field === 'object') {
-                    return Object.keys(field)[0];
-                }
-                return field.split(":")[0].trim();
-            });
-            const out: any = {};
-            match['autonFields'].forEach((field: any, index: number) => {
-                out[autonFields[index]] = field;
-            })
-            match['teleopFields'].forEach((field: any, index: number) => {
-                out[teleopFields[index]] = field;
-            })
-            match['postGameFields'].forEach((field: any, index: number) => {
-                out[postGameFields[index]] = field;
-            });
-            out.matchNum = match.matchNum;
-            db.collection('years')
-                .doc(year + '')
-                .collection('regionals')
-                .doc(match.regional)
-                .collection('teams')
-                .doc(match.teamNum)
-                .collection('matches')
-                .doc(match.matchNum)
-                .set(out);
-        });
         setData([]);
-    }
+    };
 
     if (!currentUser) return <NeedAccount />;
     return (
@@ -122,9 +130,8 @@ const Scanner: FC<ScannerProps> = () => {
                             setData([...data, matchData]);
                             localStorage.setItem(
                                 'matches',
-                                JSON.stringify([...data, matchData])
+                                JSON.stringify([...data, matchData]),
                             );
-
                         }}
                     />
                 ) : (
