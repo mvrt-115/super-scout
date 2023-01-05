@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import {
     Box,
     Flex,
@@ -17,9 +17,10 @@ import {
     MenuList,
     Spacer,
     Text,
+    Button,
 } from '@chakra-ui/react';
 import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons';
-import { Link } from 'react-router-dom';
+import { Link, useHistory, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { IoExitOutline } from 'react-icons/io5';
 
@@ -44,11 +45,11 @@ const Links: LinkType[] = [
     {
         href: '/scouting-inputs',
         label: 'Scouting Inputs',
-    }, 
+    },
     {
-        href: '/picklist', 
+        href: '/picklist',
         label: 'Picklist',
-    }
+    },
 ];
 
 const NavLink = ({ children, href }: { children: ReactNode; href: string }) => (
@@ -58,6 +59,8 @@ const NavLink = ({ children, href }: { children: ReactNode; href: string }) => (
         rounded={'md'}
         _hover={{
             textDecoration: 'none',
+            // backgroundColor: '#dab0ec',
+            fontSize: '110%',
         }}
         as={Link}
         to={href}
@@ -66,13 +69,67 @@ const NavLink = ({ children, href }: { children: ReactNode; href: string }) => (
     </StyledLink>
 );
 
+const ProfileButton = () => {
+    const { logout } = useAuth();
+    return (
+        <Menu>
+            <MenuButton as={Avatar} backgroundColor="mv-purple.500" />
+            <MenuList>
+                <MenuItem onClick={logout}>
+                    <Flex
+                        width="inherit"
+                        justifyContent="center"
+                        alignItems="center"
+                        color={'black'}
+                    >
+                        <Text>Log Out</Text>
+                        <Spacer />
+                        <Icon as={IoExitOutline} height="100%" />
+                    </Flex>
+                </MenuItem>
+            </MenuList>
+        </Menu>
+    );
+};
+
+const AuthButtons = () => {
+    const history = useHistory();
+    return (
+        <>
+            <Button
+                variant={'outline'}
+                _hover={{
+                    backgroundColor: '#765d80',
+                }}
+                onClick={() => history.push('/login')}
+            >
+                Log In
+            </Button>
+            <Button
+                variant={'solid'}
+                colorScheme="purple"
+                onClick={() => history.push('/sign-up')}
+            >
+                Sign Up
+            </Button>
+        </>
+    );
+};
+
 export default function Navbar() {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const { currentUser, logout } = useAuth();
+    const [bg, setBg] = useState<string>('#550575');
+    const location = useLocation();
+
+    useEffect(() => {
+        if (location.pathname === '/') setBg('');
+        else setBg('#550575');
+    }, [location]);
 
     return (
         <>
-            <Box bg={'mv-purple.500'} px={4} color={'white'}>
+            <Box bg={bg} px={4} color={'white'}>
                 <Flex
                     h={16}
                     alignItems={'center'}
@@ -86,53 +143,22 @@ export default function Navbar() {
                         onClick={isOpen ? onClose : onOpen}
                         bg={'transpernt'}
                     />
-                    <HStack spacing={8} alignItems={'center'}>
-                        <Box as={Link} to="/">
-                            <Heading size="md">MVRT Super Scout</Heading>
-                        </Box>
-                        <HStack
-                            as={'nav'}
-                            spacing={4}
-                            display={{ base: 'none', md: 'flex' }}
-                        >
-                            {Links.map((link, index) => (
-                                <NavLink key={index} href={link.href}>
-                                    {link.label}
-                                </NavLink>
-                            ))}
-                        </HStack>
+                    <Box as={Link} to="/">
+                        <Heading size="md">MVRT Super Scout</Heading>
+                    </Box>
+                    <HStack
+                        as={'nav'}
+                        spacing={4}
+                        display={{ base: 'none', md: 'flex' }}
+                    >
+                        {Links.map((link, index) => (
+                            <NavLink key={index} href={link.href}>
+                                {link.label}
+                            </NavLink>
+                        ))}
                     </HStack>
                     <HStack>
-                        {currentUser ? (
-                            <Menu>
-                                <MenuButton
-                                    as={Avatar}
-                                    backgroundColor="mv-purple.500"
-                                />
-                                <MenuList>
-                                    <MenuItem onClick={logout}>
-                                        <Flex
-                                            width="inherit"
-                                            justifyContent="center"
-                                            alignItems="center"
-                                            color={'black'}
-                                        >
-                                            <Text>Log Out</Text>
-                                            <Spacer />
-                                            <Icon
-                                                as={IoExitOutline}
-                                                height="100%"
-                                            />
-                                        </Flex>
-                                    </MenuItem>
-                                </MenuList>
-                            </Menu>
-                        ) : (
-                            <>
-                                <NavLink href="/login">Login</NavLink>
-                                <NavLink href="/sign-up">Signup</NavLink>
-                            </>
-                        )}
+                        {currentUser ? <ProfileButton /> : <AuthButtons />}
                     </HStack>
                 </Flex>
 

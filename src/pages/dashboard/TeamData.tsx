@@ -64,11 +64,12 @@ const calcAutonPoints = (matchData: any, year: number | string) => {
             ? 5
             : 0;
     } else if (year == '2022') {
-        let autonPoints : number = 0;
-        autonPoints += (2 * matchData['Auton Bottom']) + (4 * matchData['Auton Upper']);
-        if(matchData['Left Tarmac'] === undefined) 
-            autonPoints += (2 * +matchData['Leave Tarmac']);
-        else autonPoints += (2 * +matchData['Left Tarmac'])
+        let autonPoints: number = 0;
+        autonPoints +=
+            2 * matchData['Auton Bottom'] + 4 * matchData['Auton Upper'];
+        if (matchData['Left Tarmac'] === undefined)
+            autonPoints += 2 * +matchData['Leave Tarmac'];
+        else autonPoints += 2 * +matchData['Left Tarmac'];
         return autonPoints;
     }
     return -1;
@@ -116,19 +117,17 @@ const calcEndgamePoints = (matchData: any, year: number | string) => {
     return -1;
 };
 
-const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match}) => {
+const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
     const { year, regional, team } = match.params;
     const [matches, setMatches] = useState<any[]>([]);
-    const [graphs, setGraphs] = useState<GraphData[]>(
-        [
-            {
-                x: 'matchNum',
-                y: ['teamNum', 'none', 'none'],
-                sortBy: 'ccwm',
-                type: 'Bar',
-            },
-        ]
-    );
+    const [graphs, setGraphs] = useState<GraphData[]>([
+        {
+            x: 'matchNum',
+            y: ['teamNum', 'none', 'none'],
+            sortBy: 'ccwm',
+            type: 'Bar',
+        },
+    ]);
     const [oprStat, setOprStat] = useState<RadarChartStat>({
         value: 0,
         percentile: 0,
@@ -155,8 +154,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match}) => {
     useEffect(() => {
         const teamDisplay = localStorage.getItem('teamDisplay' + year);
         if (teamDisplay) setGraphs(JSON.parse(teamDisplay));
-        else
-            setPresetGraphs();
+        else setPresetGraphs();
     }, [year]);
 
     useEffect(() => {
@@ -170,7 +168,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match}) => {
                     .doc(regional)
                     .collection('teams')
                     .doc(team);
-                const avgs = await path.get();                
+                const avgs = await path.get();
                 setAvgValues(avgs!.data());
                 const matchesCollection = await path
                     .collection('matches')
@@ -197,21 +195,21 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match}) => {
                             ...match,
                             autonPoints,
                             teleopPoints,
-                            endgamePoints
+                            endgamePoints,
                         };
                     }),
                 );
-              
-                setLoading(false)
+
+                setLoading(false);
                 setMatches(matches);
-                
+
                 if (match && matches[0] && matches[1])
                     if (matches.length > 0)
                         setTemplate(
                             Object.keys(matches[0]).length >
                                 Object.keys(matches[1]).length
                                 ? Object.keys(matches[0])
-                                : Object.keys(matches[1])
+                                : Object.keys(matches[1]),
                         );
                 const regionalKey = year + regional;
 
@@ -261,19 +259,19 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match}) => {
                     setOprStat({
                         value: opr,
                         percentile:
-                            parseFloat(((oprsList.indexOf(opr) / oprsList.length) * 100).toFixed(2)),
+                            (oprsList.indexOf(opr) / oprsList.length) * 100,
                         max: oprsList[oprsList.length - 1],
                     });
                     setDprStat({
                         value: dpr,
                         percentile:
-                            parseFloat(((dprsList.indexOf(dpr) / dprsList.length) * 100).toFixed(2)),
+                            (dprsList.indexOf(dpr) / dprsList.length) * 100,
                         max: dprsList[dprsList.length - 1],
                     });
                     setCcwmStat({
                         value: ccwm,
                         percentile:
-                            parseFloat(((ccwmsList.indexOf(ccwm) / ccwmsList.length) * 100).toFixed(2)),
+                            (ccwmsList.indexOf(ccwm) / ccwmsList.length) * 100,
                         max: ccwmsList[ccwmsList.length - 1],
                     });
                     const rankingsList = rankingsJson.rankings;
@@ -283,9 +281,10 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match}) => {
                             index = i;
                     }
                     setRanking(`${index + 1}`);
+                    console.log(avgValues);
                 }
-            };        
-            fetchData()
+            };
+            fetchData();
         };
 
         const fetchQualitativeData = async () => {
@@ -300,37 +299,42 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match}) => {
                 .doc('pitScoutAnswers')
                 .get()
                 .then((data) => {
-                    setPitScoutData(data.data() || {});                    
+                    setPitScoutData(data.data() || {});
                 });
         };
 
-        fetchQuantitativeData()
-            .then(fetchQualitativeData)
-
+        fetchQuantitativeData().then(fetchQualitativeData);
     }, [year, regional, team]);
     const setPresetGraphs = async () => {
-        await db.collection('years')
+        await db
+            .collection('years')
             .doc(year)
             .collection('regionals')
             .doc(regional)
-            .collection("presetGraphs")
+            .collection('presetGraphs')
             .doc('team')
             .get()
             .then((doc) => {
                 const temp: any[] = [];
-                if(doc.data()){
-                    doc.data()!["graphs"]?.forEach((preset: any) => {
+                if (doc.data()) {
+                    doc.data()!['graphs']?.forEach((preset: any) => {
                         temp.push({
-                            x: preset["xAxis"],
-                            y: [preset["yAxis1"], preset["yAxis2"], preset["yAxis3"]],
-                            type: preset["graphType"],
-                            sortBy: preset["sortBy"] ? preset["sortBy"] : preset["yAxis1"]
+                            x: preset['xAxis'],
+                            y: [
+                                preset['yAxis1'],
+                                preset['yAxis2'],
+                                preset['yAxis3'],
+                            ],
+                            type: preset['graphType'],
+                            sortBy: preset['sortBy']
+                                ? preset['sortBy']
+                                : preset['yAxis1'],
                         });
                     });
                 }
                 setGraphs(temp);
             });
-    }
+    };
     const renderClimbData = () => {
         const data: any = [
             { name: 'Low', count: 0, fill: '#260235' },
@@ -385,7 +389,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match}) => {
                                 (key) =>
                                     typeof matches[0][key] === 'number' ||
                                     Number.parseInt(matches[0][key]) ==
-                                    matches[0][key],
+                                        matches[0][key],
                             )}
                             graphData={graph}
                             onChange={(graphData) => {
@@ -418,7 +422,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match}) => {
                                         'endgamePoints',
                                     ],
                                     type: 'Bar',
-                                    sortBy: 'teleopPoints'
+                                    sortBy: 'teleopPoints',
                                 }
                             }
                         />
@@ -438,9 +442,8 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match}) => {
                                     sortBy: 'ccwm',
                                     type: 'Bar',
                                 },
-                            ])
-                        }
-                        }
+                            ]);
+                        }}
                         colorScheme="green"
                         width="100%"
                     />
@@ -461,11 +464,15 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match}) => {
             </>
         );
     };
-    
+
     const renderTable = () => {
         return (
             <ThemeProvider theme={createTheme()}>
-                <DataTable pTemplate={template} pList={matches} base="matchNum"/>
+                <DataTable
+                    pTemplate={template}
+                    pList={matches}
+                    base="matchNum"
+                />
             </ThemeProvider>
         );
     };
@@ -513,20 +520,29 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match}) => {
                         <HStack>
                             <Card
                                 title="OPR"
-                                info={Math.round(oprStat.value * 100) / 10 + ''}
-                                subinfo={oprStat.percentile + '% Percentile'}
+                                info={Math.round(oprStat.value * 10) / 10 + ''}
+                                subinfo={
+                                    Math.round(oprStat.percentile * 10) / 10 +
+                                    '% Percentile'
+                                }
                             ></Card>
                             <Card
                                 title="DPR"
                                 info={Math.round(dprStat.value * 100) / 10 + ''}
-                                subinfo={dprStat.percentile + '% Percentile'}
+                                subinfo={
+                                    Math.round(dprStat.percentile * 10) / 10 +
+                                    '% Percentile'
+                                }
                             ></Card>
                             <Card
                                 title="CCWM"
                                 info={
                                     Math.round(ccwmStat.value * 100) / 100 + ''
                                 }
-                                subinfo={ccwmStat.percentile + '% Percentile'}
+                                subinfo={
+                                    Math.round(ccwmStat.percentile * 10) / 10 +
+                                    '% Percentile'
+                                }
                             ></Card>
                         </HStack>
 
@@ -537,7 +553,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match}) => {
                             }
                             width={'65vw'}
                         >
-                            {Object.entries(avgValues).map(([key, value]) => {
+                            {/* {Object.entries(avgValues).map(([key, value]) => {
                                 if (
                                     key.indexOf('match') == -1 &&
                                     key !== 'teamNum'
@@ -552,7 +568,31 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match}) => {
                                             }
                                         ></Card>
                                     );
-                            })}
+                            })} */}
+                            <Card
+                                title={'Average Auton Points'}
+                                info={
+                                    parseFloat(
+                                        avgValues.autonPoints + '',
+                                    ).toFixed(3) + ''
+                                }
+                            />
+                            <Card
+                                title={'Average Teleop Points'}
+                                info={
+                                    parseFloat(
+                                        avgValues.teleopPoints + '',
+                                    ).toFixed(3) + ''
+                                }
+                            />
+                            <Card
+                                title={'Average Endgame Points'}
+                                info={
+                                    parseFloat(
+                                        avgValues.endgamePoints + '',
+                                    ).toFixed(3) + ''
+                                }
+                            />
                         </Grid>
                     </Stack>
                 </div>
@@ -580,11 +620,38 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match}) => {
         );
     };
     const renderDriveteamView = () => {
-        const teleopMade = ["Teleop Made", ((avgValues["Teleop Upper"]+avgValues["Teleop Bottom"])/(avgValues["Teleop Upper"]+avgValues["Teleop Bottom"]+avgValues["Teleop Missed"])).toFixed(2)];
-        const teleopPoints = ["teleopPoints", parseFloat(avgValues["teleopPoints"]+'').toFixed(2)];
-        const autonMade = ["Auton Made", ((avgValues["Auton Upper"]+avgValues["Auton Bottom"])/(avgValues["Auton Upper"]+avgValues["Auton Bottom"]+avgValues["Auton Missed"])).toFixed(2)];
-        const autonPoints = ["autonPoints", parseFloat(avgValues["autonPoints"]+'').toFixed(2)];
-        const relevantFields = [teleopMade, teleopPoints, autonMade, autonPoints]
+        const teleopMade = [
+            'Teleop Made',
+            (
+                (avgValues['Teleop Upper'] + avgValues['Teleop Bottom']) /
+                (avgValues['Teleop Upper'] +
+                    avgValues['Teleop Bottom'] +
+                    avgValues['Teleop Missed'])
+            ).toFixed(2),
+        ];
+        const teleopPoints = [
+            'teleopPoints',
+            parseFloat(avgValues['teleopPoints'] + '').toFixed(2),
+        ];
+        const autonMade = [
+            'Auton Made',
+            (
+                (avgValues['Auton Upper'] + avgValues['Auton Bottom']) /
+                (avgValues['Auton Upper'] +
+                    avgValues['Auton Bottom'] +
+                    avgValues['Auton Missed'])
+            ).toFixed(2),
+        ];
+        const autonPoints = [
+            'autonPoints',
+            parseFloat(avgValues['autonPoints'] + '').toFixed(2),
+        ];
+        const relevantFields = [
+            teleopMade,
+            teleopPoints,
+            autonMade,
+            autonPoints,
+        ];
         if (!matches || !matches.length)
             return (
                 <Text
@@ -652,15 +719,13 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match}) => {
                             }
                             width={'65vw'}
                         >
-                            {relevantFields.map(([key, value])=>{
-                                return( 
+                            {relevantFields.map(([key, value]) => {
+                                return (
                                     <Card
                                         title={'Average ' + key}
-                                        info={
-                                            value+''
-                                        }
+                                        info={value + ''}
                                     ></Card>
-                                )
+                                );
                             })}
                         </Grid>
                     </Stack>
@@ -687,7 +752,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match}) => {
                 {table ? renderTable() : renderGraphs()}
             </div>
         );
-    }
+    };
     const renderPitScoutData = () => {
         if (Object.keys(pitScoutData).length === 0) {
             return (
@@ -731,21 +796,6 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match}) => {
     return (
         <>
             <div>
-                <div style={{
-                        paddingBottom: "1rem",
-                        margin: "none",
-                        textAlign: "center",
-                        fontWeight: "bold",
-                        fontSize: '1.5em',
-                        backgroundColor: "white",
-                        color: 'black'
-                    }}>
-                    <Link
-                        to={'../'+regional}
-                    >
-                        {regional.toUpperCase()} {year}
-                    </Link>
-                </div>
                 <Button
                     onClick={() => {
                         setPitScout(!pitScout);
@@ -774,13 +824,18 @@ const TeamRadarChartWrapper: React.FC<{
     const radarData: RadarDataStruct[] = [
         { stat: 'OPR', value: parseFloat(opr.value.toFixed(3)), max: opr.max },
         { stat: 'DPR', value: parseFloat(dpr.value.toFixed(3)), max: dpr.max },
-        { stat: 'CCWM', value: parseFloat(ccwm.value.toFixed(3)), max: ccwm.max },
+        {
+            stat: 'CCWM',
+            value: parseFloat(ccwm.value.toFixed(3)),
+            max: ccwm.max,
+        },
     ];
     const getToolTip = (stat: string) => {
         return {
             name: stat,
-            value: `${stat}: ${radarData.find((data) => data.stat === stat)?.value
-                }`,
+            value: `${stat}: ${
+                radarData.find((data) => data.stat === stat)?.value
+            }`,
         };
     };
 

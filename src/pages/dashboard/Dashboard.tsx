@@ -8,10 +8,9 @@ import './Dashboard.css';
 import { Heading, useEventListener } from '@chakra-ui/react';
 import { db } from '../../firebase';
 
-interface DashboardProps { }
+interface DashboardProps {}
 
 const Dashboard: FC<DashboardProps> = () => {
-
     const match = useRouteMatch();
     return (
         <div

@@ -13,11 +13,11 @@ const theme = extendTheme({
             700: '#3e0a5f',
             800: '#2f064b',
             900: '#1f0136',
-            1000: '#260235'
+            1000: '#260235',
         },
         'mv-gold': '#ffc410',
     },
-    fonts: { heading: 'Roboto', body: 'Roboto', title: 'Pirulen'},
+    fonts: { heading: 'Roboto', body: 'Roboto', title: 'Pirulen' },
 });
 
 export default theme;
