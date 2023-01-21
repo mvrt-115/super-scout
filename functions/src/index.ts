@@ -118,6 +118,19 @@ const calcAutonPoints = (matchData: any, year: number | string) => {
         else autonPoints += (2 * +matchData['Left Tarmac'])
         return autonPoints;
     }
+    else if(year=='2023'){
+        let autonPoints: number = 6*(matchData['Auton Upper Cone']+matchData['Auton Upper Cube'])+4*(matchData['Auton Mid Cone']+matchData['Auton Mid Cube'])+3*(matchData['Auton Lower Shot'])
+        if(matchData['Auton Engaged']){
+            autonPoints+=12;
+        }
+        else if(matchData['Auton Docked']){
+            autonPoints+=8;
+        }
+        if(matchData["Mobility"]){
+            autonPoints+=3;
+        }
+        return autonPoints;
+    }
     return -1;
 };
 
@@ -130,6 +143,9 @@ const calcTeleopPoints = (matchData: any, year: number | string) => {
         );
     } else if (year == '2022') {
         return matchData['Teleop Bottom'] + matchData['Teleop Upper'] * 2;
+    }
+    else if(year=='2023'){
+        return 5*(matchData['Teleop Upper Cone']+matchData['Teleop Upper Cube'])+3*(matchData['Teleop Mid Cone']+matchData['Teleop Mid Cube'])+2*(matchData['Teleop Lower Shot']);
     }
     return -1;
 };
@@ -159,6 +175,19 @@ const calcEndgamePoints = (matchData: any, year: number | string) => {
                 climbScore = 0;
         }
         return climbScore;
+    }
+    else if(year='2023'){
+        let endgamePoints: number = 0;
+        if(matchData['Endgame Engaged']){
+            endgamePoints+=10;
+        }
+        else if(matchData['Endgame Docked']){
+            endgamePoints+=6;
+        }
+        if(matchData['Parked']){
+            endgamePoints+=2;
+        }
+        return endgamePoints;
     }
     return -1;
 };
