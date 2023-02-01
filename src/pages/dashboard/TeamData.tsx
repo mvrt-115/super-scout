@@ -1,12 +1,9 @@
-//year is manually set to '2023'
-
 import { AddIcon } from '@chakra-ui/icons';
 import {
     Box,
     Button,
     Center,
     Grid,
-    GridItem,
     Heading,
     HStack,
     IconButton,
@@ -123,9 +120,7 @@ const calcEndgamePoints = (matchData: any, year: number | string) => {
 };
 
 const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
-    const { regional, team } = match.params;
-    var k = '2023';
-    const year = k;
+    const {year, regional, team} = match.params;
     const [matches, setMatches] = useState<any[]>([]);
     const [graphs, setGraphs] = useState<GraphData[]>([
         {
@@ -388,7 +383,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
     };
     const renderHeatMap = () => {
         interface HeatmapData {
-            name: string; count: number; fill: any; textfill:string;
+            name: string; count: number; fill: string; textfill:string;
         }
         //color scheme
         const colors : any = ["#edf8e9", "#c7e9c0", "#a1d99b", "#74c476", "#31a354", "#006d2c"]
@@ -408,37 +403,16 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 data[3]['count'] += match["Teleop Mid Cube"] + match["Auton Mid Cube"];
                 data[4]['count'] += match["Teleop Lower Shot"] + match["Auton Lower Shot"];
             });
-            var max_count=  0;
-            for(var i=0; i<5; i++){
-                max_count = Math.max(max_count, data[i]['count']);
-            }
-            console.log(max_count);
+            const max_count = Math.max(...data.map((d: HeatmapData) => d.count));
             //determine fill/colors based on count
             data.forEach(
                 (option: HeatmapData) => {
-                    if(option.count<(1/6)*max_count){
-                        option.fill=colors[0];
-                        option.textfill = textcolors[0];
-                    }
-                    else if(option.count<(2/6)*max_count){
-                        option.fill=colors[1];
-                        option.textfill = textcolors[1];
-                    }
-                    else if(option.count<(3/6)*max_count){
-                        option.fill=colors[2];
-                        option.textfill = textcolors[2];
-                    }
-                    else if(option.count<(4/6)*max_count){
-                        option.fill=colors[3];
-                        option.textfill = textcolors[3];
-                    }
-                    else if(option.count<(5/6)*max_count){
-                        option.fill=colors[4];
-                        option.textfill = textcolors[4];
-                    }
-                    else{
-                        option.fill=colors[5];
-                        option.textfill = textcolors[5];
+                    for(var i=0; i<=5; i++){
+                        if(option.count<=(1/(6-i))*max_count){
+                            option.fill=colors[i];
+                            option.textfill=textcolors[i];
+                            break;
+                        }
                     }
                 }); 
             const rendbox = (element: HeatmapData) => {
