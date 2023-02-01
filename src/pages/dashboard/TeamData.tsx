@@ -42,6 +42,7 @@ import { AiOutlineConsoleSql } from 'react-icons/ai';
 import Card from '../../components/Card';
 import DataTable from '../../components/DataTable';
 import { getTsBuildInfoEmitOutputFilePath } from 'typescript';
+import { color } from '@mui/system';
 
 interface RouteParams {
     year: string;
@@ -385,9 +386,9 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
         interface HeatmapData {
             name: string; count: number; fill: string; textfill:string;
         }
-        //color scheme
+        //color scheme, can be any length
         const colors : any = ["#edf8e9", "#c7e9c0", "#a1d99b", "#74c476", "#31a354", "#006d2c"]
-        const textcolors : any = ["#0010d9", "#1d3bef", "#3956df", "#5b6da6", "#b0c4d8", "#dfdfff"];
+        const textcolors : any = ["#0010d9", "#1d3bef", "#3956df", "#5b6da6", "#b0c4d8", "#dfdfff"]
         //Collect/preprocess data
             const data: any = [
                 { name: 'Upper Cone', count: 1, fill: '', textfill: '' },
@@ -407,8 +408,8 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
             //determine fill/colors based on count
             data.forEach(
                 (option: HeatmapData) => {
-                    for(var i=0; i<=5; i++){
-                        if(option.count<=(1/(6-i))*max_count){
+                    for(var i=0; i<colors.length; i++){
+                        if(option.count<=((1+i)/colors.length)*max_count){
                             option.fill=colors[i];
                             option.textfill=textcolors[i];
                             break;
@@ -416,6 +417,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                     }
                 }); 
             const rendbox = (element: HeatmapData) => {
+                console.log(element['fill'])
                 return (
                 <Box borderRadius = 'md' alignItems='center' w='100px' h='100px' bg={element["fill"]} color = {element['textfill']}>
                     <Center w='100px' h='100px'>
