@@ -40,6 +40,8 @@ import { AiOutlineConsoleSql } from 'react-icons/ai';
 import Card from '../../components/Card';
 import DataTable from '../../components/DataTable';
 import { getTsBuildInfoEmitOutputFilePath } from 'typescript';
+import { storage } from 'firebase-functions/v1';
+import firebase from 'firebase';
 
 interface RouteParams {
     year: string;
@@ -150,6 +152,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
     const [avgValues, setAvgValues] = useState<any>();
     const [pitScoutData, setPitScoutData] = useState<any>({});
     const [pitScout, setPitScout] = useState<boolean>(false);
+    const [teamImage, setTeamImage] = useState("");
 
     useEffect(() => {
         const teamDisplay = localStorage.getItem('teamDisplay' + year);
@@ -303,8 +306,22 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 });
         };
 
-        fetchQuantitativeData().then(fetchQualitativeData);
-    }, [year, regional, team]);
+        const fetchTeamImage = async () => {
+            console.log(regional);  
+            let result = await firebase.storage().ref().child(`robotImages/${year}/${regional}/${team}`).getDownloadURL();
+            console.log(result);
+            return result;
+//            let urlPromise = result.items.map((imageRef) => imageRef.getDownloadURL());
+//            return Promise.all(urlPromise);
+        };
+        const loadImages = async() => {
+            const url = await fetchTeamImage();
+            setTeamImage(url);
+ //           console.log(url[0]);
+        }
+        fetchQuantitativeData().then(fetchQualitativeData).then(loadImages);
+    } , [year, regional, team]);
+
     const setPresetGraphs = async () => {
         await db
             .collection('years')
@@ -476,6 +493,12 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
             </ThemeProvider>
         );
     };
+    const renderImage = () => {
+        console.log(teamImage);
+        return(
+            <img src={teamImage} width="350px"  alt="team" style={{border: '2px',}}/>
+            )
+        }
     const renderScoutingData = () => {
         if (!matches || !matches.length)
             return (
@@ -516,6 +539,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                         width: '100%',
                     }}
                 >
+                    {teamImage!== '' && renderImage()}
                     <Stack alignItems={'center'}>
                         <HStack>
                             <Card
