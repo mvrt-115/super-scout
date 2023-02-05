@@ -68,4 +68,5 @@ const HeatMap: FC<HeatmapProps> = ({ matches }) => {
         );
 };
 
+//exporting HeatMap as component
 export default HeatMap;
