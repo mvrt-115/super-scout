@@ -18,11 +18,11 @@ const HeatMap: FC<HeatmapProps> = ({ matches }) => {
     const textcolors : any = ["#0010d9", "#1d3bef", "#3956df", "#5b6da6", "#b0c4d8", "#dfdfff"]
     //Collect/preprocess data
         const data: any = [
-            { name: 'Upper Cone', count: 1, fill: '', textfill: '' },
-            { name: 'Upper Cube', count: 2, fill: '', textfill: '' },
-            { name: 'Mid Cone', count: 3, fill: '', textfill: '' },
-            { name: 'Mid Cube', count: 4, fill: '', textfill: '' },
-            { name: 'Lower', count: 5, fill: '', textfill: '' },
+            { name: 'Upper Cone', count: 0, fill: '', textfill: '' },
+            { name: 'Upper Cube', count: 0, fill: '', textfill: '' },
+            { name: 'Mid Cone', count: 0, fill: '', textfill: '' },
+            { name: 'Mid Cube', count: 0, fill: '', textfill: '' },
+            { name: 'Lower', count: 0, fill: '', textfill: '' },
         ];
         matches.forEach((match) => {
             data[0]['count'] += match["Teleop Upper Cone"] + match["Auton Upper Cone"];
@@ -68,5 +68,4 @@ const HeatMap: FC<HeatmapProps> = ({ matches }) => {
         );
 };
 
-//exporting HeatMap as component
 export default HeatMap;
