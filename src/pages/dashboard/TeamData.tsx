@@ -383,6 +383,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
             </PieChart>
         );
     };
+    //---
     const renderGraphs = () => {
         return (
             <>
@@ -481,6 +482,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
             </>
         );
     };
+    //--
 
     const renderTable = () => {
         return (
