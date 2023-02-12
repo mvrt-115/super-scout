@@ -2,13 +2,12 @@ import { AddIcon } from '@chakra-ui/icons';
 import { Button, Heading, IconButton, Spinner, Tooltip, Text } from '@chakra-ui/react';
 import React, { FC, useEffect, useState } from 'react';
 import { Link, RouteComponentProps } from 'react-router-dom';
-import Graph from '../../components/Graph';
-import GraphInput from '../../components/GraphInput';
+import Graph from '../../components/displays/Graph';
+import GraphInput from '../../components/displays/GraphInput';
 import { db, functions, auth } from '../../firebase';
 import Paper from '@mui/material/Paper';
-import { TableContainer, Table, TableHead, TableRow, TableBody, TableCell } from '@mui/material';
-import { ThemeProvider, createTheme } from '@mui/material';
-import DataTable from '../../components/DataTable';
+import { TableContainer, Table, TableHead, TableRow, TableBody, TableCell, ThemeProvider, createTheme } from '@mui/material';
+import DataTable from '../../components/displays/DataTable';
 interface RouteParams {
     year: string;
     regional: string;
@@ -230,14 +229,7 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
 
         );
     }
-
-    const renderTable = () => {
-        return (
-            <ThemeProvider theme={createTheme()}>
-                <DataTable pTemplate={template} pList={teams} base="teamNum"/>
-            </ThemeProvider>
-        );
-    }
+     
     const sort = (ascending: boolean, key: string) => {
         let temp = [...teams];
         temp.sort((a, b) => {
@@ -337,7 +329,7 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                             Table
                         </Button>}
                 </div>
-                {table ? renderTable() : renderGraphs()}
+                {table ? <DataTable pTemplate={template} pList={teams} base="teamNum"/> : renderGraphs()}
             </div>
         );
     }

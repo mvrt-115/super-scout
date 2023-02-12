@@ -12,8 +12,8 @@ import {
 } from '@chakra-ui/react';
 import React, { FC, useEffect, useState } from 'react';
 import { Link, RouteComponentProps } from 'react-router-dom';
-import Graph from '../../components/Graph';
-import GraphInput from '../../components/GraphInput';
+import Graph from '../../components/displays/Graph';
+import GraphInput from '../../components/displays/GraphInput';
 import { db, functions } from '../../firebase';
 import {
     RadarChart,
@@ -38,10 +38,12 @@ import {
 import { ThemeProvider, createTheme } from '@mui/material';
 import { AiOutlineConsoleSql } from 'react-icons/ai';
 import Card from '../../components/Card';
-import DataTable from '../../components/DataTable';
+import DataTable from '../../components/displays/DataTable';
 import { getTsBuildInfoEmitOutputFilePath } from 'typescript';
 import { storage } from 'firebase-functions/v1';
 import firebase from 'firebase';
+import ClimbPieChart from '../../components/displays/ClimbPieChart';
+import PitScoutData from '../../components/displays/PitScoutData';
 
 interface RouteParams {
     year: string;
@@ -307,19 +309,14 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
         };
 
         const fetchTeamImage = async () => {
-            console.log(regional);  
-            let result = await firebase.storage().ref().child(`robotImages/${year}/${regional}/${team}`).getDownloadURL();
-            console.log(result);
-            return result;
-//            let urlPromise = result.items.map((imageRef) => imageRef.getDownloadURL());
-//            return Promise.all(urlPromise);
+            await firebase.storage().ref().child(`robotImages/${year}/${regional}/${team}`).getDownloadURL()
+            .then((result)=>{
+                console.log(result);
+                setTeamImage(result);
+            })
+            .catch((err) => console.log(err));
         };
-        const loadImages = async() => {
-            const url = await fetchTeamImage();
-            setTeamImage(url);
- //           console.log(url[0]);
-        }
-        fetchQuantitativeData().then(fetchQualitativeData).then(loadImages);
+        fetchQuantitativeData().then(fetchQualitativeData).then(fetchTeamImage);
     } , [year, regional, team]);
 
     const setPresetGraphs = async () => {
@@ -352,50 +349,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 setGraphs(temp);
             });
     };
-    const renderClimbData = () => {
-        const data: any = [
-            { name: 'Low', count: 0, fill: '#260235' },
-            { name: 'Mid', count: 0, fill: '#550575' },
-            { name: 'High', count: 0, fill: '#dab0ec' },
-            { name: 'Traversal', count: 0, fill: '#ffc410' },
-            { name: 'None', count: 0, fill: '#202020' },
-        ];
-        matches.forEach((match) => {
-            switch (match['Climb rung']) {
-                case 'Low':
-                    data[0]['count'] += 1;
-                    break;
-                case 'Mid':
-                    data[1]['count'] += 1;
-                    break;
-                case 'High':
-                    data[2]['count'] += 1;
-                    break;
-                case 'Traversal':
-                    data[3]['count'] += 1;
-                    break;
-                case 'None':
-                    data[4]['count'] += 1;
-                    break;
-            }
-        });
-        return (
-            <PieChart width={400} height={400}>
-                <Pie
-                    dataKey={'count'}
-                    isAnimationActive={false}
-                    data={data}
-                    cx={200}
-                    cy={200}
-                    innerRadius={100}
-                    outerRadius={150}
-                    label
-                    paddingAngle={2}
-                />
-                <REToolTip />
-            </PieChart>
-        );
-    };
+   
     const renderGraphs = () => {
         return (
             <>
@@ -477,28 +431,11 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                         Climb data:
                     </Text>
                 )}
-                {year === '2022' && renderClimbData()}
+                {year === '2022' && <ClimbPieChart matches={matches}/>}
             </>
         );
     };
 
-    const renderTable = () => {
-        return (
-            <ThemeProvider theme={createTheme()}>
-                <DataTable
-                    pTemplate={template}
-                    pList={matches}
-                    base="matchNum"
-                />
-            </ThemeProvider>
-        );
-    };
-    const renderImage = () => {
-        console.log(teamImage);
-        return(
-            <img src={teamImage} width="350px"  alt="team" style={{border: '2px',}}/>
-            )
-        }
     const renderScoutingData = () => {
         if (!matches || !matches.length)
             return (
@@ -539,7 +476,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                         width: '100%',
                     }}
                 >
-                    {teamImage!== '' && renderImage()}
+                    {teamImage!== '' && <img src={teamImage} width="350px"  alt="team" style={{border: '2px',}}/> }
                     <Stack alignItems={'center'}>
                         <HStack>
                             <Card
@@ -577,22 +514,6 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                             }
                             width={'65vw'}
                         >
-                            {/* {Object.entries(avgValues).map(([key, value]) => {
-                                if (
-                                    key.indexOf('match') == -1 &&
-                                    key !== 'teamNum'
-                                )
-                                    return (
-                                        <Card
-                                            title={'Average ' + key}
-                                            info={
-                                                parseFloat(value + '').toFixed(
-                                                    3,
-                                                ) + ''
-                                            }
-                                        ></Card>
-                                    );
-                            })} */}
                             <Card
                                 title={'Average Auton Points'}
                                 info={
@@ -639,7 +560,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 >
                     View {table ? 'Graphs' : 'Table'}
                 </Button>
-                {table ? renderTable() : renderGraphs()}
+                {table ? <DataTable pTemplate={template} pList={matches} base="matchNum"/> : renderGraphs()}
             </div>
         );
     };
@@ -773,49 +694,11 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 >
                     View {table ? 'Graphs' : 'Table'}
                 </Button>
-                {table ? renderTable() : renderGraphs()}
+                {table ? <DataTable pTemplate={template} pList={matches} base="matchNum" /> : renderGraphs()}
             </div>
         );
     };
-    const renderPitScoutData = () => {
-        if (Object.keys(pitScoutData).length === 0) {
-            return (
-                <div
-                    style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                    }}
-                >
-                    <Text style={{ fontWeight: 'bolder' }}>
-                        No pit scouting data available.
-                    </Text>
-                </div>
-            );
-        }
-        return (
-            <div
-                style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexDirection: 'column',
-                }}
-            >
-                {Object.keys(pitScoutData).map((field: any) => {
-                    return (
-                        <Text
-                            style={{
-                                marginTop: '1rem',
-                            }}
-                        >
-                            {`${field}: ${pitScoutData[field]}`}
-                        </Text>
-                    );
-                })}
-            </div>
-        );
-    };
+
     if (loading) return <Spinner />;
     return (
         <>
@@ -828,7 +711,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                     {pitScout ? 'View Scouting Data' : 'View Pit Scouting data'}
                 </Button>
             </div>
-            {pitScout ? renderPitScoutData() : renderScoutingData()}
+            {pitScout ? <PitScoutData data={pitScoutData} /> : renderScoutingData()}
         </>
     );
 };
