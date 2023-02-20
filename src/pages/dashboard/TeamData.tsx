@@ -467,6 +467,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 )}
                 {year === '2022' && renderClimbData()}
                 {year === '2023' && (
+                    <>
                     <Text
                         style={{
                             fontSize: '40px',
@@ -477,8 +478,10 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                     >
                         Scoring Heatmap:
                     </Text>
+                    <HeatMap matches={matches} fields = {["Auton Upper Cone", "Auton Upper Cube",  "Auton Mid Cone", "Auton Mid Cube", "Auton Lower Shot",
+                    "Teleop Upper Cone", "Teleop Upper Cube",  "Teleop Mid Cone","Teleop Mid Cube", "Teleop Lower Shot"]}/>
+                    </>
                 )}
-                {year === '2023' && <HeatMap matches={matches} />}
             </>
         );
     };
