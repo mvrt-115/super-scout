@@ -68,16 +68,17 @@ const Home: FC<HomeProps> = () => {
                                     colorScheme={'purple'}
                                     rounded={'full'}
                                     color={'white'}
-                                >
-                                    <Link to="/dashboard">Dashboard</Link>
+                                    onClick={() => history.push('/dashboard')}
+                                >Dashboard
                                 </Button>
                                 <Button
                                     bg={'whiteAlpha.300'}
                                     rounded={'full'}
                                     color={'white'}
                                     _hover={{ bg: 'whiteAlpha.500' }}
+                                    onClick={() => history.push('/scanner')}
                                 >
-                                    <Link to="/scanner">Scanner</Link>
+                                    Scanner
                                 </Button>
                             </Stack>
                         </Stack>

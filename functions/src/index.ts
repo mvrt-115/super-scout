@@ -119,7 +119,7 @@ const calcAutonPoints = (matchData: any, year: number | string) => {
         return autonPoints;
     }
     else if(year=='2023'){
-        let autonPoints: number = 6*(matchData['Auton Upper Cone']+matchData['Auton Upper Cube'])+4*(matchData['Auton Mid Cone']+matchData['Auton Mid Cube'])+3*(matchData['Auton Lower Shot'])
+        let autonPoints: number = 6*(matchData['Auton Upper Cone']+matchData['Auton Upper Cube'])+4*(matchData['Auton Mid Cone']+matchData['Auton Mid Cube'])+3*(matchData['Auton Lower Cube']+matchData['Auton Lower Cone'])
         if(matchData['Auton Engaged']){
             autonPoints+=12;
         }
