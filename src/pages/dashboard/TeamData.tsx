@@ -1,8 +1,6 @@
 import { AddIcon } from '@chakra-ui/icons';
 import {
-    Box,
     Button,
-    Center,
     Grid,
     Heading,
     HStack,
@@ -14,9 +12,8 @@ import {
 } from '@chakra-ui/react';
 import React, { FC, useEffect, useState } from 'react';
 import { Link, RouteComponentProps } from 'react-router-dom';
-import Graph from '../../components/Graph';
-import HeatMap from '../../components/Heatmap';
-import GraphInput from '../../components/GraphInput';
+import Graph from '../../components/displays/Graph';
+import GraphInput from '../../components/displays/GraphInput';
 import { db, functions } from '../../firebase';
 import {
     RadarChart,
@@ -47,7 +44,7 @@ import { storage } from 'firebase-functions/v1';
 import firebase from 'firebase';
 import ClimbPieChart from '../../components/displays/ClimbPieChart';
 import PitScoutData from '../../components/displays/PitScoutData';
-import { color } from '@mui/system';
+import HeatMap from '../../components/displays/Heatmap';
 
 interface RouteParams {
     year: string;
@@ -126,7 +123,7 @@ const calcEndgamePoints = (matchData: any, year: number | string) => {
 };
 
 const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
-    const {year, regional, team} = match.params;
+    const { year, regional, team } = match.params;
     const [matches, setMatches] = useState<any[]>([]);
     const [graphs, setGraphs] = useState<GraphData[]>([
         {
@@ -435,7 +432,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                         Climb data:
                     </Text>
                 )}
-                {year === '2022' && renderClimbData()}
+                {year === '2022' && <ClimbPieChart matches={matches}/>}
                 {year === '2023' && (
                     <>
                     <Text
@@ -449,10 +446,10 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                         Scoring Heatmap:
                     </Text>
                     <HeatMap matches={matches} fields = {
-                        ["Auton Upper Cone", "Auton Upper Cube",  "Auton Mid Cone", "Auton Mid Cube", "Auton Lower Shot",
-                    "Teleop Upper Cone", "Teleop Upper Cube",  "Teleop Mid Cone","Teleop Mid Cube", "Teleop Lower Shot"]}
+                        ["Auton Upper Cone", "Auton Upper Cube",  "Auton Mid Cone", "Auton Mid Cube", "Auton Lower Cone", "Auton Lower Cube",
+                    "Teleop Upper Cone", "Teleop Upper Cube",  "Teleop Mid Cone","Teleop Mid Cube", "Teleop Lower Cone", "Teleop Lower Cube"]}
                     rows = {2}
-                    columns = {5}
+                    columns = {6}
                     />
                     </>
                 )}
@@ -460,7 +457,6 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
         );
     };
     //--
-
     const renderScoutingData = () => {
         if (!matches || !matches.length)
             return (
