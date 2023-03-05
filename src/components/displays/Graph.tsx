@@ -60,7 +60,7 @@ const Graph: FC<GraphProps> = ({ graphInfo, data }) => {
     }
 
     return (
-        <Box m='0' resize='both' width='100%' height='250px' overflow='auto' ref={ref}  >
+        <Box m='0' resize='both' width='100%' height='250px' overflow='visible' ref={ref}  >
             <ResponsiveContainer width="100%" height="100%">
                 <ComposedChart data={graphingData}>
                     <CartesianGrid stroke="#f5f5f5" />

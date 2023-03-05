@@ -2,13 +2,17 @@ import { AddIcon } from '@chakra-ui/icons';
 import {
     Button,
     Grid,
+    GridItem,
     Heading,
     HStack,
     IconButton,
+    Image,
     Spinner,
     Stack,
     Text,
     Tooltip,
+    useBreakpointValue,
+    useMediaQuery,
 } from '@chakra-ui/react';
 import React, { FC, useEffect, useState } from 'react';
 import { Link, RouteComponentProps } from 'react-router-dom';
@@ -313,14 +317,14 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
 
         const fetchTeamImage = async () => {
             await firebase.storage().ref().child(`robotImages/${year}/${regional}/${team}`).getDownloadURL()
-            .then((result)=>{
-                console.log(result);
-                setTeamImage(result);
-            })
-            .catch((err) => console.log(err));
+                .then((result) => {
+                    console.log(result);
+                    setTeamImage(result);
+                })
+                .catch((err) => console.log(err));
         };
         fetchQuantitativeData().then(fetchQualitativeData).then(fetchTeamImage);
-    } , [year, regional, team]);
+    }, [year, regional, team]);
 
     const setPresetGraphs = async () => {
         await db
@@ -352,7 +356,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 setGraphs(temp);
             });
     };
-   
+
     const renderGraphs = () => {
         return (
             <>
@@ -363,7 +367,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                 (key) =>
                                     typeof matches[0][key] === 'number' ||
                                     Number.parseInt(matches[0][key]) ==
-                                        matches[0][key],
+                                    matches[0][key],
                             )}
                             graphData={graph}
                             onChange={(graphData) => {
@@ -434,25 +438,25 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                         Climb data:
                     </Text>
                 )}
-                {year === '2022' && <ClimbPieChart matches={matches}/>}
+                {year === '2022' && <ClimbPieChart matches={matches} />}
                 {year === '2023' && (
                     <>
-                    <Text
-                        style={{
-                            fontSize: '40px',
-                            textAlign: 'center',
-                            marginTop: '5vh',
-                            fontWeight: 'bolder',
-                        }}
-                    >
-                        Scoring Heatmap:
-                    </Text>
-                    <HeatMap matches={matches} fields = {
-                        ["Auton Upper Cone", "Auton Upper Cube",  "Auton Mid Cone", "Auton Mid Cube", "Auton Lower Cone", "Auton Lower Cube",
-                    "Teleop Upper Cone", "Teleop Upper Cube",  "Teleop Mid Cone","Teleop Mid Cube", "Teleop Lower Cone", "Teleop Lower Cube"]}
-                    rows = {2}
-                    columns = {6}
-                    />
+                        <Text
+                            style={{
+                                fontSize: '40px',
+                                textAlign: 'center',
+                                marginTop: '5vh',
+                                fontWeight: 'bolder',
+                            }}
+                        >
+                            Scoring Heatmap:
+                        </Text>
+                        <HeatMap matches={matches} fields={
+                            ["Auton Upper Cone", "Auton Upper Cube", "Auton Mid Cone", "Auton Mid Cube", "Auton Lower Cone", "Auton Lower Cube",
+                                "Teleop Upper Cone", "Teleop Upper Cube", "Teleop Mid Cone", "Teleop Mid Cube", "Teleop Lower Cone", "Teleop Lower Cube"]}
+                            rows={2}
+                            columns={6}
+                        />
                     </>
                 )}
             </>
@@ -499,69 +503,59 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                         width: '100%',
                     }}
                 >
-                    {teamImage!== '' && <img src={teamImage} width="350px"  alt="team" style={{border: '2px',}}/> }
-                    <Stack alignItems={'center'}>
-                        <HStack>
-                            <Card
-                                title="OPR"
-                                info={Math.round(oprStat.value * 10) / 10 + ''}
-                                subinfo={
-                                    Math.round(oprStat.percentile * 10) / 10 +
-                                    '% Percentile'
-                                }
-                            ></Card>
-                            <Card
-                                title="DPR"
-                                info={Math.round(dprStat.value * 100) / 10 + ''}
-                                subinfo={
-                                    Math.round(dprStat.percentile * 10) / 10 +
-                                    '% Percentile'
-                                }
-                            ></Card>
-                            <Card
-                                title="CCWM"
-                                info={
-                                    Math.round(ccwmStat.value * 100) / 100 + ''
-                                }
-                                subinfo={
-                                    Math.round(ccwmStat.percentile * 10) / 10 +
-                                    '% Percentile'
-                                }
-                            ></Card>
-                        </HStack>
-
-                        <Grid
-                            // gap={1}
-                            templateColumns={
-                                'repeat(auto-fit, minmax(150px, 1fr))'
+                    <Stack direction={['column', 'column', 'row', 'row']} spacing={['0em', '0.25em', '1em', '1em']}>
+                        <Card
+                            title="OPR"
+                            info={Math.round(oprStat.value * 10) / 10 + ''}
+                            subinfo={
+                                Math.round(oprStat.percentile * 10) / 10 +
+                                '% Percentile'
                             }
-                            width={'65vw'}
-                        >
-                            <Card
-                                title={'Average Auton Points'}
-                                info={
-                                    parseFloat(
-                                        avgValues.autonPoints + '',
-                                    ).toFixed(3) + ''
-                                }
-                            />
-                            <Card
-                                title={'Average Teleop Points'}
-                                info={
-                                    parseFloat(
-                                        avgValues.teleopPoints + '',
-                                    ).toFixed(3) + ''
-                                }
-                            />
-                            <Card
-                                title={'Average Endgame Points'}
-                                info={
-                                    parseFloat(
-                                        avgValues.endgamePoints + '',
-                                    ).toFixed(3) + ''
-                                }
-                            />
-                        </Grid>
+                        ></Card>
+                        <Card
+                            title="DPR"
+                            info={Math.round(dprStat.value * 100) / 10 + ''}
+                            subinfo={
+                                Math.round(dprStat.percentile * 10) / 10 +
+                                '% Percentile'
+                            }
+                        ></Card>
+                        <Card
+                            title="CCWM"
+                            info={
+                                Math.round(ccwmStat.value * 100) / 100 + ''
+                            }
+                            subinfo={
+                                Math.round(ccwmStat.percentile * 10) / 10 +
+                                '% Percentile'
+                            }
+                        ></Card>
+                    </Stack>
+                    <Stack direction={['column', 'column', 'row', 'row']} spacing={['0em', '0.25em', '1em', '1em']}>
+                        <Card
+                            title={'Average Auton Points'}
+                            info={
+                                parseFloat(
+                                    avgValues.autonPoints + '',
+                                ).toFixed(3) + ''
+                            }
+                        />
+                        <Card
+                            title={'Average Teleop Points'}
+                            info={
+                                parseFloat(
+                                    avgValues.teleopPoints + '',
+                                ).toFixed(3) + ''
+                            }
+                        />
+                        <Card
+                            title={'Average Endgame Points'}
+                            info={
+                                parseFloat(
+                                    avgValues.endgamePoints + '',
+                                ).toFixed(3) + ''
+                            }
+                        />
                     </Stack>
                 </div>
                 <TeamRadarChartWrapper
@@ -583,7 +577,12 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 >
                     View {table ? 'Graphs' : 'Table'}
                 </Button>
-                {table ? <DataTable pTemplate={template} pList={matches} base="matchNum"/> : renderGraphs()}
+                {table ? <DataTable pTemplate={template} pList={matches} base="matchNum" /> : renderGraphs()}
+                {teamImage !== '' && <>
+                    <Heading textAlign={'center'}> Team Picture: </Heading>
+                    {/* <img src={teamImage} width={['2em']} alt="team" style={{ border: '2px', }} /> */}
+                    <Image src={teamImage} width={['18  0px', '200px', '350px', '350px']}></Image>
+                </>}
             </div>
         );
     };
@@ -881,6 +880,9 @@ const TeamRadarChartWrapper: React.FC<{
     dpr: RadarChartStat;
     ccwm: RadarChartStat;
 }> = ({ team, opr, dpr, ccwm }) => {
+
+    const [isLargerThan400] = useMediaQuery('(min-width: 444px)');
+    const [isLargerThan500] = useMediaQuery('(min-width: 542px)');
     const radarData: RadarDataStruct[] = [
         { stat: 'OPR', value: parseFloat(opr.value.toFixed(3)), max: opr.max },
         { stat: 'DPR', value: parseFloat(dpr.value.toFixed(3)), max: dpr.max },
@@ -893,14 +895,13 @@ const TeamRadarChartWrapper: React.FC<{
     const getToolTip = (stat: string) => {
         return {
             name: stat,
-            value: `${stat}: ${
-                radarData.find((data) => data.stat === stat)?.value
-            }`,
+            value: `${stat}: ${radarData.find((data) => data.stat === stat)?.value
+                }`,
         };
     };
 
     return (
-        <RadarChart width={400} height={300} data={radarData} cx="50%" cy="50%">
+        <RadarChart width={isLargerThan400 ? (isLargerThan500 ? 350 : 250) : 200} height={isLargerThan400 ? (isLargerThan500 ? 350 : 250) : 200} data={radarData} cx="50%" cy="50%">
             <PolarGrid />
             <PolarAngleAxis dataKey="stat" />
             <PolarRadiusAxis
