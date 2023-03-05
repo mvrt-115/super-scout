@@ -86,7 +86,7 @@ const Search = () => {
                             placeholder="regional"
                             value={regional}
                             onChange={(e) => {
-                                setRegional(e.target.value);
+                                setRegional(e.target.value.trim().toLowerCase());
                             }}
                         />
                     </div>
