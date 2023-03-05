@@ -43,6 +43,7 @@ import { getTsBuildInfoEmitOutputFilePath } from 'typescript';
 import { storage } from 'firebase-functions/v1';
 import firebase from 'firebase';
 import ClimbPieChart from '../../components/displays/ClimbPieChart';
+import GenericPieChart from '../../components/displays/PieChart';
 import PitScoutData from '../../components/displays/PitScoutData';
 
 interface RouteParams {
@@ -155,6 +156,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
     const [pitScoutData, setPitScoutData] = useState<any>({});
     const [pitScout, setPitScout] = useState<boolean>(false);
     const [teamImage, setTeamImage] = useState("");
+    const [dtMode, setdtMode] = useState<boolean>(false);
 
     useEffect(() => {
         const teamDisplay = localStorage.getItem('teamDisplay' + year);
@@ -564,154 +566,284 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
             </div>
         );
     };
+
     const renderDriveteamView = () => {
-        const teleopMade = [
-            'Teleop Made',
-            (
-                (avgValues['Teleop Upper'] + avgValues['Teleop Bottom']) /
-                (avgValues['Teleop Upper'] +
-                    avgValues['Teleop Bottom'] +
-                    avgValues['Teleop Missed'])
-            ).toFixed(2),
-        ];
-        const teleopPoints = [
-            'teleopPoints',
-            parseFloat(avgValues['teleopPoints'] + '').toFixed(2),
-        ];
-        const autonMade = [
-            'Auton Made',
-            (
-                (avgValues['Auton Upper'] + avgValues['Auton Bottom']) /
-                (avgValues['Auton Upper'] +
-                    avgValues['Auton Bottom'] +
-                    avgValues['Auton Missed'])
-            ).toFixed(2),
-        ];
-        const autonPoints = [
-            'autonPoints',
-            parseFloat(avgValues['autonPoints'] + '').toFixed(2),
-        ];
-        const relevantFields = [
-            teleopMade,
-            teleopPoints,
-            autonMade,
-            autonPoints,
-        ];
-        if (!matches || !matches.length)
+        if (year == '2023'){
+            // Will turn into one loop later
+            const coneMid = matches.reduce((cones, match) => cones + match["Auton Mid Cone"] + match["Teleop Mid Cone"], 0);
+            const coneHigh = matches.reduce((cones, match) => cones + match["Auton Upper Cone"] + match["Teleop Upper Cone"], 0);
+            const cubeMid = matches.reduce((cubes, match) => cubes + match["Auton Mid Cube"] + match["Teleop Mid Cube"], 0);
+            const cubeHigh = matches.reduce((cubes, match) => cubes + match["Auton Upper Cube"] + match["Teleop Upper Cube"], 0);
+            const lower = matches.reduce((lower, match) => lower + match["Auton Lower Shot"] + match["Teleop Lower Shot"], 0);
+            const cubeMidMissed = matches.reduce((missed, match) => missed + match["Auton Mid Cube Missed"] + match["Teleop Mid Cube Missed"], 0)
+            const cubeHighMissed = matches.reduce((missed, match) => missed + match["Auton Upper Cube Missed"] + match["Teleop Upper Cube Missed"], 0)
+            const coneMidMissed = matches.reduce((missed, match) => missed + match["Auton Mid Cone Missed"] + match["Teleop Mid Cone Missed"], 0)
+            const coneHighMissed = matches.reduce((missed, match) => missed + match["Auton Upper Cone Missed"] + match["Teleop Upper Cone Missed"], 0)
+            
+            const dtType = pitScoutData["DT Type"]
+            const averagePointsPerMatch = avgValues["autonPoints"] + avgValues["endgamePoints"] + avgValues["teleopPoints"]
+            const matchesPlayed = avgValues["matches"]
+            
+            const autonCharge = matches.reduce((charged, match) => charged + match["Auton Did Charge"], 0)
+            const teleopCharge = matches.reduce((charged, match) => charged + match["Endgame Did Charge"], 0)
+            const teleopDocked = matches.reduce((docked, match) => docked + match["Endgame Docked"], 0)
+            const autonDocked = matches.reduce((docked, match) => docked + match["Auton Docked"], 0)
+            const autonEngaged = matches.reduce((engaged, match) => engaged + match["Auton Engaged"], 0)
+            const teleopEngaged = matches.reduce((engaged, match) => engaged + match["Endgame Engaged"], 0)
+            const chargeTime = matches.reduce((time, match) => time + match["Endgame Charge Time"], 0) / teleopCharge
+
+            if (!matches || !matches.length){
+                return (
+                    <Text
+                        style={{
+                            marginTop: '1rem',
+                        }}
+                    >
+                        No scouting data available!
+                    </Text>
+                );
+            }
             return (
-                <Text
-                    style={{
-                        marginTop: '1rem',
-                    }}
-                >
-                    No scouting data available!
-                </Text>
-            );
-        return (
-            <div
-                style={{
-                    width: '80%',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    padding: '5%',
-                }}
-            >
-                <Heading
-                    textAlign={'center'}
-                    fontSize={'1.5em'}
-                    fontWeight={'bolder'}
-                >
-                    Team # {team} Rank # {ranking}
-                </Heading>
                 <div
                     style={{
+                        width: '80%',
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        marginTop: '2vh',
-                        marginBottom: '2vh',
-                        width: '100%',
+                        padding: '5%',
                     }}
                 >
-                    <Stack alignItems={'center'}>
-                        <HStack>
-                            <Card
-                                title="OPR"
-                                info={Math.round(oprStat.value * 100) / 10 + ''}
-                                subinfo={oprStat.percentile + '% Percentile'}
-                            ></Card>
-                            <Card
-                                title="DPR"
-                                info={Math.round(dprStat.value * 100) / 10 + ''}
-                                subinfo={dprStat.percentile + '% Percentile'}
-                            ></Card>
-                            <Card
-                                title="CCWM"
-                                info={
-                                    Math.round(ccwmStat.value * 100) / 100 + ''
-                                }
-                                subinfo={ccwmStat.percentile + '% Percentile'}
-                            ></Card>
-                        </HStack>
+                    <Heading
+                        textAlign={'center'}
+                        fontSize={'1.7em'}
+                        fontWeight={'bolder'}
+                    >
+                        Team # {team}
+                    </Heading>
+                    <Heading
+                        textAlign={'center'}
+                        fontSize={'1.5em'}
+                        fontWeight={'bolder'}
+                    >
+                        Rank # {ranking}
+                    </Heading>
+                    <div
+                        style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            marginTop: '2vh',
+                            marginBottom: '2vh',
+                            width: '100%',
+                        }}
+                    >
+                        <Stack alignItems={'center'}>
+                            {teamImage !== '' && (
+                                <img
+                                    src={teamImage}
+                                    width="350px"
+                                    alt="team"
+                                    style={{
+                                        border: '2px',
+                                        borderRadius: '25px',
+                                    }}
+                                />
+                            )}
 
-                        <Grid
-                            // gap={1}
-                            templateColumns={
-                                'repeat(auto-fit, minmax(150px, 1fr))'
-                            }
-                            width={'65vw'}
-                        >
-                            {relevantFields.map(([key, value]) => {
-                                return (
-                                    <Card
-                                        title={'Average ' + key}
-                                        info={value + ''}
-                                    ></Card>
-                                );
-                            })}
-                        </Grid>
-                    </Stack>
+                            <Grid
+                                templateColumns={
+                                    'repeat(auto-fit, minmax(150px, 1fr))'
+                                }
+                                width={'65vw'}
+                            >
+                                <Card
+                                    title={'Drivetrain'}
+                                    info={dtType}
+                                    colorTheme={200}
+                                ></Card>
+                                <Card
+                                    title={'Average Cubes'}
+                                    info={
+                                        '' +
+                                        (
+                                            (cubeHigh + cubeMid) /
+                                            matchesPlayed
+                                        ).toFixed(2)
+                                    }
+                                    colorTheme={200}
+                                    subinfo={
+                                        'Accuracy: ' +
+                                        (
+                                            ((cubeHigh + cubeMid) /
+                                                (cubeHigh +
+                                                    cubeMid +
+                                                    cubeHighMissed +
+                                                    cubeMidMissed)) *
+                                            100
+                                        ).toFixed(0) +
+                                        '%'
+                                    }
+                                ></Card>
+                                <Card
+                                    title={'Average Cones'}
+                                    info={
+                                        '' +
+                                        (
+                                            (coneHigh + coneMid) /
+                                            matchesPlayed
+                                        ).toFixed(2)
+                                    }
+                                    colorTheme={200}
+                                    subinfo={
+                                        'Accuracy: ' +
+                                        (
+                                            ((coneHigh + coneMid) /
+                                                (coneHigh +
+                                                    coneMid +
+                                                    coneHighMissed +
+                                                    coneMidMissed)) *
+                                            100
+                                        ).toFixed(0) +
+                                        '%'
+                                    }
+                                ></Card>
+                                <Card
+                                    title={'Charge Time'}
+                                    info={chargeTime.toFixed(2) + ' s'}
+                                    colorTheme={200}
+                                ></Card>
+                                <Card
+                                    title={'Average Points Per Match'}
+                                    info={averagePointsPerMatch.toFixed(2)}
+                                    subinfo={'Matches Played: ' + matchesPlayed}
+                                    colorTheme={200}
+                                ></Card>
+                            </Grid>
+                            <Text
+                                style={{
+                                    fontSize: '30px',
+                                    textAlign: 'center',
+                                    marginTop: '5vh',
+                                    fontWeight: 'bolder',
+                                }}
+                            >
+                                Score Distribution:
+                            </Text>
+                            <GenericPieChart
+                                valueObject={{
+                                    Low: lower,
+                                    Mid: coneMid + cubeMid,
+                                    High: coneHigh + cubeHigh,
+                                }}
+                                colors={{
+                                    Low: '800',
+                                    Mid: '200',
+                                    High: '1',
+                                }}
+                            ></GenericPieChart>
+                            <Text
+                                style={{
+                                    fontSize: '30px',
+                                    textAlign: 'center',
+                                    marginTop: '5vh',
+                                    fontWeight: 'bolder',
+                                }}
+                            >
+                                Cone/Cube Distribution:
+                            </Text>
+                            <GenericPieChart
+                                valueObject={{
+                                    'Mid Cone': coneMid,
+                                    'High Cone': coneHigh,
+                                    'High Cube': cubeHigh,
+                                    'Mid Cube': cubeMid,
+                                }}
+                                colors={{
+                                    'Mid Cone': '1000',
+                                    'High Cone': '700',
+                                    'High Cube': '100',
+                                    'Mid Cube': '300',
+                                }}
+                            ></GenericPieChart>
+
+                            <Grid
+                                templateColumns={
+                                    'repeat(auto-fit, minmax(150px, 1fr))'
+                                }
+                                width={'65vw'}
+                            >
+                                <Stack alignItems={'center'} marginRight={'15px'}>
+                                    <Text
+                                        style={{
+                                            fontSize: '25px',
+                                            textAlign: 'center',
+                                            marginTop: '5vh',
+                                            fontWeight: 'bolder',
+                                        }}
+                                    >
+                                        Auton Charge:
+                                    </Text>
+                                    <GenericPieChart radius={100} valueObject={{"No Attempt" : matchesPlayed - autonCharge, "Failed" : autonCharge-autonDocked, "Docked" : autonDocked - autonEngaged, "Engaged" : autonEngaged}} colors={{"No Attempt" : '1000', "Failed" : '600', "Docked" : '100', "Engaged" : '1'}}></GenericPieChart>
+                                </Stack>
+
+                                <Stack alignItems={'center'} marginLeft={'15px'}>
+                                    <Text
+                                        style={{
+                                            fontSize: '25px',
+                                            textAlign: 'center',
+                                            marginTop: '5vh',
+                                            fontWeight: 'bolder',
+                                        }}
+                                    >
+                                        Teleop Charge:
+                                    </Text>
+                                    <GenericPieChart radius={100} valueObject={{"No Attempt" : matchesPlayed - teleopCharge, "Failed" : teleopCharge-teleopCharge, "Docked" : teleopDocked - teleopEngaged, "Engaged" : teleopEngaged}} colors={{"No Attempt" : '1000', "Failed" : '600', "Docked" : '100', "Engaged" : '1'}}></GenericPieChart>
+                                </Stack>
+
+                            </Grid>
+                        </Stack>
+                    </div>
                 </div>
-                <TeamRadarChartWrapper
-                    team={team}
-                    opr={oprStat}
-                    dpr={dprStat}
-                    ccwm={ccwmStat}
-                />
-                <Button
-                    variant="outline"
-                    aria-label="Table"
-                    onClick={() => {
-                        setTable(!table);
-                    }}
-                    width={'100%'}
-                    marginTop={4}
-                    marginBottom={4}
-                    colorScheme={'mv-purple'}
-                >
-                    View {table ? 'Graphs' : 'Table'}
-                </Button>
-                {table ? <DataTable pTemplate={template} pList={matches} base="matchNum" /> : renderGraphs()}
-            </div>
-        );
+            );
+        }
     };
 
     if (loading) return <Spinner />;
     return (
         <>
-            <div>
+            <div
+                style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: "5px"
+                }}
+            >
+                {year === '2023' ?
                 <Button
                     onClick={() => {
-                        setPitScout(!pitScout);
+                        setdtMode(!dtMode);
                     }}
+                    width={"100%"}
                 >
-                    {pitScout ? 'View Scouting Data' : 'View Pit Scouting data'}
+                    {dtMode ? "Disable Driveteam Mode" : "Enable Driveteam Mode"}
                 </Button>
+                : <></>}
+                {!dtMode ? 
+                    <Button
+                        onClick={() => {
+                            setPitScout(!pitScout);
+                        }}
+                        width={'100%'}
+                    >
+                        {pitScout ? 'View Scouting Data' : 'View Pit Scouting data'}
+                    </Button>
+                : <></>}
             </div>
-            {pitScout ? <PitScoutData data={pitScoutData} /> : renderScoutingData()}
+            {dtMode ? renderDriveteamView() : pitScout ? <PitScoutData data={pitScoutData} /> : renderScoutingData()}
         </>
     );
 };
