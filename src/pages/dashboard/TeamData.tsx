@@ -45,6 +45,7 @@ import firebase from 'firebase';
 import ClimbPieChart from '../../components/displays/ClimbPieChart';
 import GenericPieChart from '../../components/displays/PieChart';
 import PitScoutData from '../../components/displays/PitScoutData';
+import HeatMap from '../../components/displays/Heatmap';
 
 interface RouteParams {
     year: string;
@@ -434,10 +435,30 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                     </Text>
                 )}
                 {year === '2022' && <ClimbPieChart matches={matches}/>}
+                {year === '2023' && (
+                    <>
+                    <Text
+                        style={{
+                            fontSize: '40px',
+                            textAlign: 'center',
+                            marginTop: '5vh',
+                            fontWeight: 'bolder',
+                        }}
+                    >
+                        Scoring Heatmap:
+                    </Text>
+                    <HeatMap matches={matches} fields = {
+                        ["Auton Upper Cone", "Auton Upper Cube",  "Auton Mid Cone", "Auton Mid Cube", "Auton Lower Cone", "Auton Lower Cube",
+                    "Teleop Upper Cone", "Teleop Upper Cube",  "Teleop Mid Cone","Teleop Mid Cube", "Teleop Lower Cone", "Teleop Lower Cube"]}
+                    rows = {2}
+                    columns = {6}
+                    />
+                    </>
+                )}
             </>
         );
     };
-
+    //--
     const renderScoutingData = () => {
         if (!matches || !matches.length)
             return (

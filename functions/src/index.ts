@@ -119,7 +119,7 @@ const calcAutonPoints = (matchData: any, year: number | string) => {
         return autonPoints;
     }
     else if(year=='2023'){
-        let autonPoints: number = 6*(matchData['Auton Upper Cone']+matchData['Auton Upper Cube'])+4*(matchData['Auton Mid Cone']+matchData['Auton Mid Cube'])+3*(matchData['Auton Lower Shot'])
+        let autonPoints: number = 6*(matchData['Auton Upper Cone']+matchData['Auton Upper Cube'])+4*(matchData['Auton Mid Cone']+matchData['Auton Mid Cube'])+3*(matchData['Auton Lower Cube']+matchData['Auton Lower Cone'])
         if(matchData['Auton Engaged']){
             autonPoints+=12;
         }
@@ -145,7 +145,7 @@ const calcTeleopPoints = (matchData: any, year: number | string) => {
         return matchData['Teleop Bottom'] + matchData['Teleop Upper'] * 2;
     }
     else if(year=='2023'){
-        return 5*(matchData['Teleop Upper Cone']+matchData['Teleop Upper Cube'])+3*(matchData['Teleop Mid Cone']+matchData['Teleop Mid Cube'])+2*(matchData['Teleop Lower Shot']);
+        return 5*(matchData['Teleop Upper Cone']+matchData['Teleop Upper Cube'])+3*(matchData['Teleop Mid Cone']+matchData['Teleop Mid Cube'])+2*(matchData['Teleop Lower Cone']+matchData['Teleop Lower Cube']);
     }
     return -1;
 };
