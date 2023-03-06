@@ -43,23 +43,31 @@ const HeatMap: FC<HeatmapProps> = ({ matches, fields , columns, rows}) => {
             }); 
         //heatmap boxes
         const rendbox = (element: HeatMapData) => {
+            //kind of arbitrary
+            const dimensions = [55,61,105,115,120] //60 doesn't work so 61 
+            const fontsizes = [10,11,15,16,18]
+            const margins = [1,1,1,1.5,2]
+            const padding = [0.5,1.5,2,2.5,3]
             return (
             <Box 
             borderRadius = 'md' 
             textAlign ='center' 
-            padding = '5px' 
-            w='120px' 
-            h='120px' 
+            padding = {padding}
+            margin = {margins}
+            w={dimensions} 
+            h={dimensions}
             bg={element["fill"]} 
             color = {element['textfill']} 
             opacity = {10*Math.max(element.count,0.5)/max_count}>
+                <Text fontSize={fontsizes}>
                     {element.name+": "}
                     {element.count}
+                </Text>
             </Box>
             )};
         //heatmap
         return(
-            <Grid templateRows={`repeat(${rows}, 1fr)`} templateColumns={`repeat(${columns}, 1fr)`} gap = '10px'>
+            <Grid templateRows={`repeat(${rows}, 1fr)`} templateColumns={`repeat(${columns}, 1fr)`} >
                 {data.map((e)=>rendbox(e))}
             </Grid>
         );
