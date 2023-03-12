@@ -478,15 +478,35 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                     >
                         Scoring Heatmap:
                     </Text>
+                    <Text
+                        style={{
+                            fontSize: '30px',
+                            textAlign: 'center',
+                            marginTop: '5vh',
+                            fontWeight: 'bolder',
+                        }}
+                    >
+                        Auton:
+                    </Text>
                     <HeatMap matches={matches} fields = {
                         ["Auton Upper Cone", "Auton Upper Cube",  "Auton Mid Cone", "Auton Mid Cube", "Auton Lower Cone", "Auton Lower Cube"]}
-                    rows = {1}
-                    columns = {6}
+                    rows = {3}
+                    columns = {2}
                     />
+                    <Text
+                        style={{
+                            fontSize: '30px',
+                            textAlign: 'center',
+                            marginTop: '5vh',
+                            fontWeight: 'bolder',
+                        }}
+                    >
+                        Teleop:
+                    </Text>
                     <HeatMap matches={matches} fields = {
                         ["Teleop Upper Cone", "Teleop Upper Cube",  "Teleop Mid Cone","Teleop Mid Cube", "Teleop Lower Cone", "Teleop Lower Cube"]}
-                    rows = {1}
-                    columns = {6}
+                    rows = {3}
+                    columns = {2}
                     />
                     </>
                 )}
