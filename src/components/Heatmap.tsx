@@ -60,7 +60,7 @@ const HeatMap: FC<HeatmapProps> = ({ matches, fields , columns, rows}) => {
             color = {element['textfill']} 
             opacity = {10*Math.max(element.count,0.5)/max_count}>
                 <Text fontSize={fontsizes}>
-                    {element.name+": "}
+                    {element.name.substring(6)+": "}
                     {element.count}
                 </Text>
             </Box>
