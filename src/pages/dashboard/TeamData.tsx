@@ -839,13 +839,11 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
             }
             return (
                 <div>
-                    <Flex flexDir={'row'} justifyContent="flex-start">
-                        <Flex flexDir={'column'} justifyContent="flex-start">
+                    <Flex flexDir={['column', 'column', 'row', 'row']} justifyContent="flex-start">
+                        <Flex flexDir={'column'} justifyContent="flex-start" p={'5%'}>
                             {renderGeneralInfo()}
                             <Grid
-                                templateColumns={
-                                    'repeat(3, minmax(150px, 1fr))'
-                                }
+                                templateColumns={['repeat(2, minmax(150px, 1fr))', 'repeat(2, minmax(150px, 1fr))', 'repeat(3, minmax(150px, 1fr))', 'repeat(3, minmax(150px, 1fr))']}
                             >
                                 <Card
                                     height="150px"
@@ -922,7 +920,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                             </Grid>
                         </Flex>
 
-                        <HStack>
+                        <Stack direction={['column', 'column', 'row', 'row']}>
                             <Stack>
                                 <Heading textAlign="center" size={'md'}>
                                     Score Distribution:
@@ -1009,7 +1007,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                     }}
                                 ></GenericPieChart>
                             </Stack>
-                        </HStack>
+                        </Stack>
                     </Flex>
 
                     <div>
