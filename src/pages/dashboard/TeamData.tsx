@@ -1,8 +1,9 @@
 import { AddIcon } from '@chakra-ui/icons';
 import {
     Button,
+    Center,
+    Flex,
     Grid,
-    GridItem,
     Heading,
     HStack,
     IconButton,
@@ -11,7 +12,6 @@ import {
     Stack,
     Text,
     Tooltip,
-    useBreakpointValue,
     useMediaQuery,
 } from '@chakra-ui/react';
 import React, { FC, useEffect, useState } from 'react';
@@ -128,6 +128,7 @@ const calcEndgamePoints = (matchData: any, year: number | string) => {
 };
 
 const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
+    const [isLargerThan800] = useMediaQuery('(min-width: 770px)');
     const { year, regional, team } = match.params;
     const [matches, setMatches] = useState<any[]>([]);
     const [graphs, setGraphs] = useState<GraphData[]>([
@@ -160,7 +161,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
     const [avgValues, setAvgValues] = useState<any>();
     const [pitScoutData, setPitScoutData] = useState<any>({});
     const [pitScout, setPitScout] = useState<boolean>(false);
-    const [teamImage, setTeamImage] = useState("");
+    const [teamImage, setTeamImage] = useState('');
     const [dtMode, setdtMode] = useState<boolean>(false);
 
     useEffect(() => {
@@ -316,7 +317,11 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
         };
 
         const fetchTeamImage = async () => {
-            await firebase.storage().ref().child(`robotImages/${year}/${regional}/${team}`).getDownloadURL()
+            await firebase
+                .storage()
+                .ref()
+                .child(`robotImages/${year}/${regional}/${team}`)
+                .getDownloadURL()
                 .then((result) => {
                     console.log(result);
                     setTeamImage(result);
@@ -356,12 +361,110 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 setGraphs(temp);
             });
     };
+    const renderClimbData = () => {
+        const data: any = [
+            { name: 'Low', count: 0, fill: '#260235' },
+            { name: 'Mid', count: 0, fill: '#550575' },
+            { name: 'High', count: 0, fill: '#dab0ec' },
+            { name: 'Traversal', count: 0, fill: '#ffc410' },
+            { name: 'None', count: 0, fill: '#202020' },
+        ];
+        matches.forEach((match) => {
+            switch (match['Climb rung']) {
+                case 'Low':
+                    data[0]['count'] += 1;
+                    break;
+                case 'Mid':
+                    data[1]['count'] += 1;
+                    break;
+                case 'High':
+                    data[2]['count'] += 1;
+                    break;
+                case 'Traversal':
+                    data[3]['count'] += 1;
+                    break;
+                case 'None':
+                    data[4]['count'] += 1;
+                    break;
+            }
+        });
+        return (
+            <PieChart width={400} height={400}>
+                <Pie
+                    dataKey={'count'}
+                    isAnimationActive={false}
+                    data={data}
+                    cx={200}
+                    cy={200}
+                    innerRadius={100}
+                    outerRadius={150}
+                    label
+                    paddingAngle={2}
+                />
+                <REToolTip />
+            </PieChart>
+        );
+    };
 
+    const renderHeatmap = () => {
+        if (year === '2023')
+            return (
+                <Stack justifyContent={'center'} alignItems="center">
+                    <Heading size="md" textAlign={'center'}>
+                        Scoring Heatmap:
+                    </Heading>
+                    <Flex
+                        flexDir={'row'}
+                        justifyContent="space-between"
+                        width={'80%'}
+                    >
+                        <Stack alignItems={'center'}>
+                            <Heading size="md">Auton:</Heading>
+                            <HeatMap
+                                matches={matches}
+                                fields={[
+                                    'Auton Upper Cone',
+                                    'Auton Upper Cube',
+                                    'Auton Mid Cone',
+                                    'Auton Mid Cube',
+                                    'Auton Lower Cone',
+                                    'Auton Lower Cube',
+                                ]}
+                                rows={3}
+                                columns={2}
+                            />
+                        </Stack>
+                        <Stack alignItems={'center'}>
+                            <Heading size="md">Teleop:</Heading>
+                            <HeatMap
+                                matches={matches}
+                                fields={[
+                                    'Teleop Upper Cone',
+                                    'Teleop Upper Cube',
+                                    'Teleop Mid Cone',
+                                    'Teleop Mid Cube',
+                                    'Teleop Lower Cone',
+                                    'Teleop Lower Cube',
+                                ]}
+                                rows={3}
+                                columns={2}
+                            />
+                        </Stack>
+                    </Flex>
+                </Stack>
+            );
+        return <></>;
+    };
+    //---
     const renderGraphs = () => {
         return (
             <>
                 {graphs.map((graph, index) => (
-                    <>
+                    <Flex
+                        flexDir="column"
+                        justifyContent="center"
+                        alignItems={'center'}
+                    >
                         <GraphInput
                             keys={Object.keys(matches[0]).filter(
                                 (key) =>
@@ -404,7 +507,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                 }
                             }
                         />
-                    </>
+                    </Flex>
                 ))}
                 <Tooltip label="Add Graph">
                     <IconButton
@@ -439,26 +542,6 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                     </Text>
                 )}
                 {year === '2022' && <ClimbPieChart matches={matches} />}
-                {year === '2023' && (
-                    <>
-                        <Text
-                            style={{
-                                fontSize: '40px',
-                                textAlign: 'center',
-                                marginTop: '5vh',
-                                fontWeight: 'bolder',
-                            }}
-                        >
-                            Scoring Heatmap:
-                        </Text>
-                        <HeatMap matches={matches} fields={
-                            ["Auton Upper Cone", "Auton Upper Cube", "Auton Mid Cone", "Auton Mid Cube", "Auton Lower Cone", "Auton Lower Cube",
-                                "Teleop Upper Cone", "Teleop Upper Cube", "Teleop Mid Cone", "Teleop Mid Cube", "Teleop Lower Cone", "Teleop Lower Cube"]}
-                            rows={2}
-                            columns={6}
-                        />
-                    </>
-                )}
             </>
         );
     };
@@ -475,95 +558,95 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 </Text>
             );
         return (
-            <div
-                style={{
-                    width: '80%',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    padding: '5%',
-                }}
-            >
-                <Heading
-                    textAlign={'center'}
-                    fontSize={'1.5em'}
-                    fontWeight={'bolder'}
+            <div>
+                <Flex
+                    flexDirection="column"
+                    alignItems="center"
+                    justifyContent="center"
+                    width="100%"
                 >
-                    Team # {team} Rank # {ranking}
-                </Heading>
-                <div
-                    style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        marginTop: '2vh',
-                        marginBottom: '2vh',
-                        width: '100%',
-                    }}
-                >
-                    <Stack direction={['column', 'column', 'row', 'row']} spacing={['0em', '0.25em', '1em', '1em']}>
-                        <Card
-                            title="OPR"
-                            info={Math.round(oprStat.value * 10) / 10 + ''}
-                            subinfo={
-                                Math.round(oprStat.percentile * 10) / 10 +
-                                '% Percentile'
-                            }
-                        ></Card>
-                        <Card
-                            title="DPR"
-                            info={Math.round(dprStat.value * 100) / 10 + ''}
-                            subinfo={
-                                Math.round(dprStat.percentile * 10) / 10 +
-                                '% Percentile'
-                            }
-                        ></Card>
-                        <Card
-                            title="CCWM"
-                            info={
-                                Math.round(ccwmStat.value * 100) / 100 + ''
-                            }
-                            subinfo={
-                                Math.round(ccwmStat.percentile * 10) / 10 +
-                                '% Percentile'
-                            }
-                        ></Card>
-                    </Stack>
-                    <Stack direction={['column', 'column', 'row', 'row']} spacing={['0em', '0.25em', '1em', '1em']}>
-                        <Card
-                            title={'Average Auton Points'}
-                            info={
-                                parseFloat(
-                                    avgValues.autonPoints + '',
-                                ).toFixed(3) + ''
-                            }
-                        />
-                        <Card
-                            title={'Average Teleop Points'}
-                            info={
-                                parseFloat(
-                                    avgValues.teleopPoints + '',
-                                ).toFixed(3) + ''
-                            }
-                        />
-                        <Card
-                            title={'Average Endgame Points'}
-                            info={
-                                parseFloat(
-                                    avgValues.endgamePoints + '',
-                                ).toFixed(3) + ''
-                            }
-                        />
-                    </Stack>
-                </div>
-                <TeamRadarChartWrapper
-                    team={team}
-                    opr={oprStat}
-                    dpr={dprStat}
-                    ccwm={ccwmStat}
-                />
+                    <Flex
+                        flexDirection={isLargerThan800 ? 'row' : 'column'}
+                        justifyContent="center"
+                        width="100%"
+                    >
+                        <div>
+                            {renderGeneralInfo()}
+                            <HStack>
+                                <Card
+                                    title="OPR"
+                                    info={
+                                        Math.round(oprStat.value * 10) / 10 + ''
+                                    }
+                                    subinfo={
+                                        Math.round(oprStat.percentile * 10) /
+                                        10 +
+                                        '% Percentile'
+                                    }
+                                />
+                                <Card
+                                    title="DPR"
+                                    info={
+                                        Math.round(dprStat.value * 10) / 10 + ''
+                                    }
+                                    subinfo={
+                                        Math.round(dprStat.percentile * 10) /
+                                        10 +
+                                        '% Percentile'
+                                    }
+                                />
+                                <Card
+                                    title="CCWM"
+                                    info={
+                                        Math.round(ccwmStat.value * 10) / 10 +
+                                        ''
+                                    }
+                                    subinfo={
+                                        Math.round(ccwmStat.percentile * 10) /
+                                        10 +
+                                        '% Percentile'
+                                    }
+                                />
+                            </HStack>
+                            <HStack>
+                                <Card
+                                    title={'Average Auton Points'}
+                                    info={
+                                        parseFloat(
+                                            avgValues.autonPoints + '',
+                                        ).toFixed(1) + ''
+                                    }
+                                />
+                                <Card
+                                    title={'Average Teleop Points'}
+                                    info={
+                                        parseFloat(
+                                            avgValues.teleopPoints + '',
+                                        ).toFixed(1) + ''
+                                    }
+                                />
+                                <Card
+                                    title={'Average Endgame Points'}
+                                    info={
+                                        parseFloat(
+                                            avgValues.endgamePoints + '',
+                                        ).toFixed(1) + ''
+                                    }
+                                />
+                            </HStack>
+                        </div>
+                        <Stack justifyContent={'center'} alignItems={'center'}>
+                            {renderHeatmap()}
+                            {/* <TeamRadarChartWrapper
+                                team={team}
+                                opr={oprStat}
+                                dpr={dprStat}
+                                ccwm={ccwmStat}
+                            /> */}
+                        </Stack>
+                    </Flex>
+                </Flex>
+
                 <Button
                     variant="outline"
                     aria-label="Table"
@@ -577,42 +660,143 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 >
                     View {table ? 'Graphs' : 'Table'}
                 </Button>
-                {table ? <DataTable pTemplate={template} pList={matches} base="matchNum" /> : renderGraphs()}
-                {teamImage !== '' && <>
-                    <Heading textAlign={'center'}> Team Picture: </Heading>
-                    {/* <img src={teamImage} width={['2em']} alt="team" style={{ border: '2px', }} /> */}
-                    <Image src={teamImage} width={['18  0px', '200px', '350px', '350px']}></Image>
-                </>}
+                {table ? (
+                    <DataTable
+                        pTemplate={template}
+                        pList={matches}
+                        base="matchNum"
+                    />
+                ) : (
+                    renderGraphs()
+                )}
             </div>
         );
     };
 
     const renderDriveteamView = () => {
-        if (year == '2023'){
+        if (year == '2023') {
             // Will turn into one loop later
-            const coneMid = matches.reduce((cones, match) => cones + match["Auton Mid Cone"] + match["Teleop Mid Cone"], 0);
-            const coneHigh = matches.reduce((cones, match) => cones + match["Auton Upper Cone"] + match["Teleop Upper Cone"], 0);
-            const cubeMid = matches.reduce((cubes, match) => cubes + match["Auton Mid Cube"] + match["Teleop Mid Cube"], 0);
-            const cubeHigh = matches.reduce((cubes, match) => cubes + match["Auton Upper Cube"] + match["Teleop Upper Cube"], 0);
-            const lower = matches.reduce((lower, match) => lower + match["Auton Lower Shot"] + match["Teleop Lower Shot"], 0);
-            const cubeMidMissed = matches.reduce((missed, match) => missed + match["Auton Mid Cube Missed"] + match["Teleop Mid Cube Missed"], 0)
-            const cubeHighMissed = matches.reduce((missed, match) => missed + match["Auton Upper Cube Missed"] + match["Teleop Upper Cube Missed"], 0)
-            const coneMidMissed = matches.reduce((missed, match) => missed + match["Auton Mid Cone Missed"] + match["Teleop Mid Cone Missed"], 0)
-            const coneHighMissed = matches.reduce((missed, match) => missed + match["Auton Upper Cone Missed"] + match["Teleop Upper Cone Missed"], 0)
-            
-            const dtType = pitScoutData["DT Type"]
-            const averagePointsPerMatch = avgValues["autonPoints"] + avgValues["endgamePoints"] + avgValues["teleopPoints"]
-            const matchesPlayed = avgValues["matches"]
-            
-            const autonCharge = matches.reduce((charged, match) => charged + match["Auton Did Charge"], 0)
-            const teleopCharge = matches.reduce((charged, match) => charged + match["Endgame Did Charge"], 0)
-            const teleopDocked = matches.reduce((docked, match) => docked + match["Endgame Docked"], 0)
-            const autonDocked = matches.reduce((docked, match) => docked + match["Auton Docked"], 0)
-            const autonEngaged = matches.reduce((engaged, match) => engaged + match["Auton Engaged"], 0)
-            const teleopEngaged = matches.reduce((engaged, match) => engaged + match["Endgame Engaged"], 0)
-            const chargeTime = matches.reduce((time, match) => time + match["Endgame Charge Time"], 0) / teleopCharge
 
-            if (!matches || !matches.length){
+            const coneLow = matches.reduce(
+                (cones, match) =>
+                    cones + match['Auton Lower Cone'] + match['Teleop Lower Cone'],
+                0,
+            );
+
+            const coneMid = matches.reduce(
+                (cones, match) =>
+                    cones + match['Auton Mid Cone'] + match['Teleop Mid Cone'],
+                0,
+            );
+            const coneHigh = matches.reduce(
+                (cones, match) =>
+                    cones +
+                    match['Auton Upper Cone'] +
+                    match['Teleop Upper Cone'],
+                0,
+            );
+            const cubeLow = matches.reduce(
+                (cubes, match) =>
+                    cubes + match['Auton Lower Cube'] + match['Teleop Lower Cube'],
+                0,
+            );
+
+            const cubeMid = matches.reduce(
+                (cubes, match) =>
+                    cubes + match['Auton Mid Cube'] + match['Teleop Mid Cube'],
+                0,
+            );
+            const cubeHigh = matches.reduce(
+                (cubes, match) =>
+                    cubes +
+                    match['Auton Upper Cube'] +
+                    match['Teleop Upper Cube'],
+                0,
+            );
+
+            const cubeLowMissed = matches.reduce(
+                (missed, match) =>
+                    missed +
+                    match['Auton Lower Cube Missed'] +
+                    match['Teleop Lower Cube Missed'],
+                0,
+            );
+
+            const cubeMidMissed = matches.reduce(
+                (missed, match) =>
+                    missed +
+                    match['Auton Mid Cube Missed'] +
+                    match['Teleop Mid Cube Missed'],
+                0,
+            );
+            const cubeHighMissed = matches.reduce(
+                (missed, match) =>
+                    missed +
+                    match['Auton Upper Cube Missed'] +
+                    match['Teleop Upper Cube Missed'],
+                0,
+            );
+            const coneLowMissed = matches.reduce(
+                (missed, match) =>
+                    missed +
+                    match['Auton Lower Cone Missed'] +
+                    match['Teleop Lower Cone Missed'],
+                0,
+            );
+
+            const coneMidMissed = matches.reduce(
+                (missed, match) =>
+                    missed +
+                    match['Auton Mid Cone Missed'] +
+                    match['Teleop Mid Cone Missed'],
+                0,
+            );
+            const coneHighMissed = matches.reduce(
+                (missed, match) =>
+                    missed +
+                    match['Auton Upper Cone Missed'] +
+                    match['Teleop Upper Cone Missed'],
+                0,
+            );
+
+            const dtType = pitScoutData['DT Type'];
+            const averagePointsPerMatch =
+                avgValues['autonPoints'] +
+                avgValues['endgamePoints'] +
+                avgValues['teleopPoints'];
+            const matchesPlayed = avgValues['matches'];
+
+            const autonCharge = matches.reduce(
+                (charged, match) => charged + match['Auton Did Charge'],
+                0,
+            );
+            const teleopCharge = matches.reduce(
+                (charged, match) => charged + match['Endgame Did Charge'],
+                0,
+            );
+            const teleopDocked = matches.reduce(
+                (docked, match) => docked + match['Endgame Docked'],
+                0,
+            );
+            const autonDocked = matches.reduce(
+                (docked, match) => docked + match['Auton Docked'],
+                0,
+            );
+            const autonEngaged = matches.reduce(
+                (engaged, match) => engaged + match['Auton Engaged'],
+                0,
+            );
+            const teleopEngaged = matches.reduce(
+                (engaged, match) => engaged + match['Endgame Engaged'],
+                0,
+            );
+            const chargeTime =
+                matches.reduce(
+                    (time, match) => time + match['Endgame Charge Time'],
+                    0,
+                ) / teleopCharge;
+
+            if (!matches || !matches.length) {
                 return (
                     <Text
                         style={{
@@ -624,71 +808,30 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 );
             }
             return (
-                <div
-                    style={{
-                        width: '80%',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        padding: '5%',
-                    }}
-                >
-                    <Heading
-                        textAlign={'center'}
-                        fontSize={'1.7em'}
-                        fontWeight={'bolder'}
-                    >
-                        Team # {team}
-                    </Heading>
-                    <Heading
-                        textAlign={'center'}
-                        fontSize={'1.5em'}
-                        fontWeight={'bolder'}
-                    >
-                        Rank # {ranking}
-                    </Heading>
-                    <div
-                        style={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            marginTop: '2vh',
-                            marginBottom: '2vh',
-                            width: '100%',
-                        }}
-                    >
-                        <Stack alignItems={'center'}>
-                            {teamImage !== '' && (
-                                <img
-                                    src={teamImage}
-                                    width="350px"
-                                    alt="team"
-                                    style={{
-                                        border: '2px',
-                                        borderRadius: '25px',
-                                    }}
-                                />
-                            )}
-
+                <div>
+                    <Flex flexDir={'row'} justifyContent="flex-start">
+                        <Flex flexDir={'column'} justifyContent="flex-start">
+                            {renderGeneralInfo()}
                             <Grid
                                 templateColumns={
-                                    'repeat(auto-fit, minmax(150px, 1fr))'
+                                    'repeat(3, minmax(150px, 1fr))'
                                 }
-                                width={'65vw'}
                             >
                                 <Card
+                                    height="150px"
+                                    width="150px"
                                     title={'Drivetrain'}
                                     info={dtType}
                                     colorTheme={200}
-                                ></Card>
+                                />
                                 <Card
+                                    height="150px"
+                                    width="150px"
                                     title={'Average Cubes'}
                                     info={
                                         '' +
                                         (
-                                            (cubeHigh + cubeMid) /
+                                            (cubeLow + cubeHigh + cubeMid) /
                                             matchesPlayed
                                         ).toFixed(2)
                                     }
@@ -696,22 +839,24 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                     subinfo={
                                         'Accuracy: ' +
                                         (
-                                            ((cubeHigh + cubeMid) /
+                                            ((cubeHigh + cubeMid + cubeLow) /
                                                 (cubeHigh +
                                                     cubeMid +
                                                     cubeHighMissed +
-                                                    cubeMidMissed)) *
+                                                    cubeMidMissed + cubeLow + cubeLowMissed)) *
                                             100
                                         ).toFixed(0) +
                                         '%'
                                     }
                                 ></Card>
                                 <Card
+                                    height="150px"
+                                    width="150px"
                                     title={'Average Cones'}
                                     info={
                                         '' +
                                         (
-                                            (coneHigh + coneMid) /
+                                            (coneHigh + coneMid + coneLow) /
                                             matchesPlayed
                                         ).toFixed(2)
                                     }
@@ -719,110 +864,132 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                     subinfo={
                                         'Accuracy: ' +
                                         (
-                                            ((coneHigh + coneMid) /
+                                            ((coneHigh + coneMid + coneLow) /
                                                 (coneHigh +
                                                     coneMid +
                                                     coneHighMissed +
-                                                    coneMidMissed)) *
+                                                    coneMidMissed + coneLow + coneLowMissed)) *
                                             100
                                         ).toFixed(0) +
                                         '%'
                                     }
                                 ></Card>
                                 <Card
+                                    height="150px"
+                                    width="150px"
                                     title={'Charge Time'}
                                     info={chargeTime.toFixed(2) + ' s'}
                                     colorTheme={200}
                                 ></Card>
                                 <Card
+                                    height="150px"
+                                    width="150px"
                                     title={'Average Points Per Match'}
                                     info={averagePointsPerMatch.toFixed(2)}
                                     subinfo={'Matches Played: ' + matchesPlayed}
                                     colorTheme={200}
                                 ></Card>
                             </Grid>
-                            <Text
-                                style={{
-                                    fontSize: '30px',
-                                    textAlign: 'center',
-                                    marginTop: '5vh',
-                                    fontWeight: 'bolder',
-                                }}
-                            >
-                                Score Distribution:
-                            </Text>
-                            <GenericPieChart
-                                valueObject={{
-                                    Low: lower,
-                                    Mid: coneMid + cubeMid,
-                                    High: coneHigh + cubeHigh,
-                                }}
-                                colors={{
-                                    Low: '800',
-                                    Mid: '200',
-                                    High: '1',
-                                }}
-                            ></GenericPieChart>
-                            <Text
-                                style={{
-                                    fontSize: '30px',
-                                    textAlign: 'center',
-                                    marginTop: '5vh',
-                                    fontWeight: 'bolder',
-                                }}
-                            >
-                                Cone/Cube Distribution:
-                            </Text>
-                            <GenericPieChart
-                                valueObject={{
-                                    'Mid Cone': coneMid,
-                                    'High Cone': coneHigh,
-                                    'High Cube': cubeHigh,
-                                    'Mid Cube': cubeMid,
-                                }}
-                                colors={{
-                                    'Mid Cone': '1000',
-                                    'High Cone': '700',
-                                    'High Cube': '100',
-                                    'Mid Cube': '300',
-                                }}
-                            ></GenericPieChart>
+                        </Flex>
 
+                        <HStack>
+                            <Stack>
+                                <Heading textAlign="center" size={'md'}>
+                                    Score Distribution:
+                                </Heading>
+                                <GenericPieChart
+                                    radius={100}
+                                    height={275}
+                                    width={450}
+                                    valueObject={{
+                                        Low: coneLow + cubeLow,
+                                        Mid: coneMid + cubeMid,
+                                        High: coneHigh + cubeHigh,
+                                    }}
+                                    colors={{
+                                        Low: '800',
+                                        Mid: '200',
+                                        High: '1',
+                                    }}
+                                ></GenericPieChart>
+                                <Heading textAlign="center" size={'md'}>
+                                    Cone/Cube Distribution:
+                                </Heading>
+                                <GenericPieChart
+                                    height={275}
+                                    width={450}
+                                    radius={100}
+                                    valueObject={{
+                                        'Low Cone': coneLow,
+                                        'Mid Cone': coneMid,
+                                        'High Cone': coneHigh,
+                                        'High Cube': cubeHigh,
+                                        'Mid Cube': cubeMid,
+                                        'Low Cube': cubeLow
+                                    }}
+                                    colors={{
+                                        'Mid Cone': '1000',
+                                        'High Cone': '700',
+                                        'High Cube': '100',
+                                        'Mid Cube': '300',
+                                    }}
+                                ></GenericPieChart>
+                            </Stack>
+                            <Stack alignItems={'center'} marginRight={'15px'}>
+                                <Heading textAlign="center" size={'md'}>
+                                    Auton Charge:
+                                </Heading>
+                                <GenericPieChart
+                                    radius={100}
+                                    height={275}
+                                    width={450}
+                                    valueObject={{
+                                        'No Attempt':
+                                            matchesPlayed - autonCharge,
+                                        Failed: autonCharge - autonDocked,
+                                        Docked: autonDocked - autonEngaged,
+                                        Engaged: autonEngaged,
+                                    }}
+                                    colors={{
+                                        'No Attempt': '1000',
+                                        Failed: '600',
+                                        Docked: '100',
+                                        Engaged: '1',
+                                    }}
+                                ></GenericPieChart>
+                                <Heading textAlign="center" size={'md'}>
+                                    Teleop Charge:
+                                </Heading>
+                                <GenericPieChart
+                                    radius={100}
+                                    height={275}
+                                    width={450}
+                                    valueObject={{
+                                        'No Attempt':
+                                            matchesPlayed - teleopCharge,
+                                        Failed: teleopCharge - teleopCharge,
+                                        Docked: teleopDocked - teleopEngaged,
+                                        Engaged: teleopEngaged,
+                                    }}
+                                    colors={{
+                                        'No Attempt': '1000',
+                                        Failed: '600',
+                                        Docked: '100',
+                                        Engaged: '1',
+                                    }}
+                                ></GenericPieChart>
+                            </Stack>
+                        </HStack>
+                    </Flex>
+
+                    <div>
+                        <Stack alignItems={'center'}>
                             <Grid
                                 templateColumns={
                                     'repeat(auto-fit, minmax(150px, 1fr))'
                                 }
                                 width={'65vw'}
-                            >
-                                <Stack alignItems={'center'} marginRight={'15px'}>
-                                    <Text
-                                        style={{
-                                            fontSize: '25px',
-                                            textAlign: 'center',
-                                            marginTop: '5vh',
-                                            fontWeight: 'bolder',
-                                        }}
-                                    >
-                                        Auton Charge:
-                                    </Text>
-                                    <GenericPieChart radius={100} valueObject={{"No Attempt" : matchesPlayed - autonCharge, "Failed" : autonCharge-autonDocked, "Docked" : autonDocked - autonEngaged, "Engaged" : autonEngaged}} colors={{"No Attempt" : '1000', "Failed" : '600', "Docked" : '100', "Engaged" : '1'}}></GenericPieChart>
-                                </Stack>
-
-                                <Stack alignItems={'center'} marginLeft={'15px'}>
-                                    <Text
-                                        style={{
-                                            fontSize: '25px',
-                                            textAlign: 'center',
-                                            marginTop: '5vh',
-                                            fontWeight: 'bolder',
-                                        }}
-                                    >
-                                        Teleop Charge:
-                                    </Text>
-                                    <GenericPieChart radius={100} valueObject={{"No Attempt" : matchesPlayed - teleopCharge, "Failed" : teleopCharge-teleopCharge, "Docked" : teleopDocked - teleopEngaged, "Engaged" : teleopEngaged}} colors={{"No Attempt" : '1000', "Failed" : '600', "Docked" : '100', "Engaged" : '1'}}></GenericPieChart>
-                                </Stack>
-
-                            </Grid>
+                            ></Grid>
                         </Stack>
                     </div>
                 </div>
@@ -830,40 +997,76 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
         }
     };
 
+    const renderGeneralInfo = () => {
+        return (
+            <HStack alignItems={'flex-start'}>
+                {teamImage !== '' && (
+                    <Image
+                        src={teamImage}
+                        boxSize="150px"
+                        objectFit={'cover'}
+                        alt="team"
+                        border="2px"
+                        borderRadius="25px"
+                    />
+                )}
+                <Stack>
+                    <Heading
+                        textAlign={'center'}
+                        fontSize={'1.5em'}
+                        fontWeight={'bolder'}
+                    >
+                        Team # {team}
+                    </Heading>
+                    <Heading
+                        textAlign={'center'}
+                        fontSize={'0.75em'}
+                        fontWeight={'bolder'}
+                    >
+                        Rank # {ranking}
+                    </Heading>
+                    {year === '2023' ? (
+                        <Button
+                            size={'sm'}
+                            onClick={() => {
+                                setdtMode(!dtMode);
+                            }}
+                            colorScheme={dtMode ? 'mv-purple' : 'gray'}
+                        >
+                            {dtMode
+                                ? 'Disable Driveteam Mode'
+                                : 'Enable Driveteam Mode'}
+                        </Button>
+                    ) : (
+                        <></>
+                    )}
+                    {!dtMode && (
+                        <Button
+                            size={'sm'}
+                            onClick={() => {
+                                setPitScout(!pitScout);
+                            }}
+                        >
+                            {pitScout
+                                ? 'View Scouting Data'
+                                : 'View Pit Scouting data'}
+                        </Button>
+                    )}
+                </Stack>
+            </HStack>
+        );
+    };
+
     if (loading) return <Spinner />;
     return (
         <>
-            <div
-                style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: "5px"
-                }}
-            >
-                {year === '2023' ?
-                <Button
-                    onClick={() => {
-                        setdtMode(!dtMode);
-                    }}
-                    width={"100%"}
-                >
-                    {dtMode ? "Disable Driveteam Mode" : "Enable Driveteam Mode"}
-                </Button>
-                : <></>}
-                {!dtMode ? 
-                    <Button
-                        onClick={() => {
-                            setPitScout(!pitScout);
-                        }}
-                        width={'100%'}
-                    >
-                        {pitScout ? 'View Scouting Data' : 'View Pit Scouting data'}
-                    </Button>
-                : <></>}
-            </div>
-            {dtMode ? renderDriveteamView() : pitScout ? <PitScoutData data={pitScoutData} /> : renderScoutingData()}
+            {dtMode ? (
+                renderDriveteamView()
+            ) : pitScout ? (
+                <PitScoutData data={pitScoutData} />
+            ) : (
+                renderScoutingData()
+            )}
         </>
     );
 };
@@ -880,9 +1083,6 @@ const TeamRadarChartWrapper: React.FC<{
     dpr: RadarChartStat;
     ccwm: RadarChartStat;
 }> = ({ team, opr, dpr, ccwm }) => {
-
-    const [isLargerThan400] = useMediaQuery('(min-width: 444px)');
-    const [isLargerThan500] = useMediaQuery('(min-width: 542px)');
     const radarData: RadarDataStruct[] = [
         { stat: 'OPR', value: parseFloat(opr.value.toFixed(3)), max: opr.max },
         { stat: 'DPR', value: parseFloat(dpr.value.toFixed(3)), max: dpr.max },
@@ -901,7 +1101,7 @@ const TeamRadarChartWrapper: React.FC<{
     };
 
     return (
-        <RadarChart width={isLargerThan400 ? (isLargerThan500 ? 350 : 250) : 200} height={isLargerThan400 ? (isLargerThan500 ? 350 : 250) : 200} data={radarData} cx="50%" cy="50%">
+        <RadarChart width={400} height={300} data={radarData} cx="50%" cy="50%">
             <PolarGrid />
             <PolarAngleAxis dataKey="stat" />
             <PolarRadiusAxis

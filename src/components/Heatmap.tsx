@@ -56,8 +56,8 @@ const HeatMap: FC<HeatmapProps> = ({ matches, fields, columns, rows }) => {
     data.forEach((option: HeatMapData) => {
         for (var i = 0; i < colors.length; i++) {
             if (option.count <= ((1 + i) / colors.length) * max_count) {
-                // option.fill = colors[i];
-                // option.textfill = textcolors[i];
+                option.fill = colors[i];
+                option.textfill = textcolors[i];
                 break;
             }
         }
@@ -65,20 +65,23 @@ const HeatMap: FC<HeatmapProps> = ({ matches, fields, columns, rows }) => {
     //heatmap boxes
     const rendbox = (element: HeatMapData) => {
         //kind of arbitrary
-        // const dimensions = [55, 61, 105, 115, 120]; //60 doesn't work so 61
-        // const fontsizes = [10, 11, 15, 16, 18];
-        // const margins = [1, 1, 1, 1.5, 2];
-        // const padding = [0.5, 1.5, 2, 2.5, 3];
+        const dimensions = [55, 61, 105, 115, 120]; //60 doesn't work so 61
+        const fontsizes = [10, 11, 15, 16, 18];
+        const margins = [1, 1, 1, 1.5, 2];
+        const padding = [0.5, 1.5, 2, 2.5, 3];
         return (
             <Box
-                borderRadius="10%"
+                borderRadius="md"
                 textAlign="center"
-                padding={'1rem'}
-                margin=".25rem"
-                bg={`rgba(85, 5, 117, ${(element.count + 1) / 9})`}
-                color={element.count > 3 ? '#f7f7f7' : '#0a0a0a'}
+                padding={padding}
+                margin={margins}
+                w={dimensions}
+                h={dimensions}
+                bg={element['fill']}
+                color={element['textfill']}
+                opacity={(10 * Math.max(element.count, 0.5)) / max_count}
             >
-                <Text>
+                <Text fontSize={fontsizes}>
                     {element.name.substring(6) + ': '}
                     {element.count}
                 </Text>
