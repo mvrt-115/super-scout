@@ -93,6 +93,7 @@ const GenericPieChart: FC<valuesArray | valuesObject> = ({
             });
         });
     }
+    console.log(data);
 
     return (
         <PieChart width={width || 400} height={height || 400}>
@@ -104,7 +105,37 @@ const GenericPieChart: FC<valuesArray | valuesObject> = ({
                 cy={height ? height / 2 : 200}
                 innerRadius={radius ? radius - 50 : 100}
                 outerRadius={radius || 150}
-                label
+                label={({
+                    cx,
+                    cy,
+                    midAngle,
+                    innerRadius,
+                    outerRadius,
+                    value,
+                    index,
+                }) => {
+                    if (data[index].count <= 0) return <></>;
+                    const RADIAN = Math.PI / 180;
+                    // eslint-disable-next-line
+                    const radius =
+                        25 + innerRadius + (outerRadius - innerRadius);
+                    // eslint-disable-next-line
+                    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                    // eslint-disable-next-line
+                    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+                    return (
+                        <text
+                            x={x}
+                            y={y}
+                            fill="#8884d8"
+                            textAnchor={x > cx ? 'start' : 'end'}
+                            dominantBaseline="central"
+                        >
+                            {data[index].name} ({value})
+                        </text>
+                    );
+                }}
                 paddingAngle={2}
             />
             <REToolTip />

@@ -879,8 +879,8 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                 </Heading>
                                 <GenericPieChart
                                     radius={100}
-                                    height={250}
-                                    width={400}
+                                    height={275}
+                                    width={450}
                                     valueObject={{
                                         Low: lower,
                                         Mid: coneMid + cubeMid,
@@ -896,8 +896,8 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                     Cone/Cube Distribution:
                                 </Heading>
                                 <GenericPieChart
-                                    height={250}
-                                    width={400}
+                                    height={275}
+                                    width={450}
                                     radius={100}
                                     valueObject={{
                                         'Mid Cone': coneMid,
@@ -919,8 +919,8 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                 </Heading>
                                 <GenericPieChart
                                     radius={100}
-                                    height={250}
-                                    width={400}
+                                    height={275}
+                                    width={450}
                                     valueObject={{
                                         'No Attempt':
                                             matchesPlayed - autonCharge,
@@ -940,8 +940,8 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                 </Heading>
                                 <GenericPieChart
                                     radius={100}
-                                    height={250}
-                                    width={400}
+                                    height={275}
+                                    width={450}
                                     valueObject={{
                                         'No Attempt':
                                             matchesPlayed - teleopCharge,
