@@ -3,6 +3,7 @@ import {
     Box,
     Button,
     Center,
+    Flex,
     Grid,
     Heading,
     HStack,
@@ -122,7 +123,7 @@ const calcEndgamePoints = (matchData: any, year: number | string) => {
 };
 
 const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
-    const {year, regional, team} = match.params;
+    const { year, regional, team } = match.params;
     const [matches, setMatches] = useState<any[]>([]);
     const [graphs, setGraphs] = useState<GraphData[]>([
         {
@@ -375,7 +376,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                     cx={200}
                     cy={200}
                     innerRadius={100}
-                    outerRadius={150    }
+                    outerRadius={150}
                     label
                     paddingAngle={2}
                 />
@@ -468,46 +469,72 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 {year === '2022' && renderClimbData()}
                 {year === '2023' && (
                     <>
-                    <Text
-                        style={{
-                            fontSize: '40px',
-                            textAlign: 'center',
-                            marginTop: '5vh',
-                            fontWeight: 'bolder',
-                        }}
-                    >
-                        Scoring Heatmap:
-                    </Text>
-                    <Text
-                        style={{
-                            fontSize: '30px',
-                            textAlign: 'center',
-                            marginTop: '5vh',
-                            fontWeight: 'bolder',
-                        }}
-                    >
-                        Auton:
-                    </Text>
-                    <HeatMap matches={matches} fields = {
-                        ["Auton Upper Cone", "Auton Upper Cube",  "Auton Mid Cone", "Auton Mid Cube", "Auton Lower Cone", "Auton Lower Cube"]}
-                    rows = {3}
-                    columns = {2}
-                    />
-                    <Text
-                        style={{
-                            fontSize: '30px',
-                            textAlign: 'center',
-                            marginTop: '5vh',
-                            fontWeight: 'bolder',
-                        }}
-                    >
-                        Teleop:
-                    </Text>
-                    <HeatMap matches={matches} fields = {
-                        ["Teleop Upper Cone", "Teleop Upper Cube",  "Teleop Mid Cone","Teleop Mid Cube", "Teleop Lower Cone", "Teleop Lower Cube"]}
-                    rows = {3}
-                    columns = {2}
-                    />
+                        <Text
+                            style={{
+                                fontSize: '40px',
+                                textAlign: 'center',
+                                marginTop: '5vh',
+                                fontWeight: 'bolder',
+                            }}
+                        >
+                            Scoring Heatmap:
+                        </Text>
+                        <Flex
+                            flexDir={'row'}
+                            justifyContent="space-between"
+                            width="80%"
+                        >
+                            <Stack>
+                                <Text
+                                    style={{
+                                        fontSize: '30px',
+                                        textAlign: 'center',
+                                        marginTop: '5vh',
+                                        fontWeight: 'bolder',
+                                    }}
+                                >
+                                    Auton:
+                                </Text>
+                                <HeatMap
+                                    matches={matches}
+                                    fields={[
+                                        'Auton Upper Cone',
+                                        'Auton Upper Cube',
+                                        'Auton Mid Cone',
+                                        'Auton Mid Cube',
+                                        'Auton Lower Cone',
+                                        'Auton Lower Cube',
+                                    ]}
+                                    rows={3}
+                                    columns={2}
+                                />
+                            </Stack>
+                            <Stack>
+                                <Text
+                                    style={{
+                                        fontSize: '30px',
+                                        textAlign: 'center',
+                                        marginTop: '5vh',
+                                        fontWeight: 'bolder',
+                                    }}
+                                >
+                                    Teleop:
+                                </Text>
+                                <HeatMap
+                                    matches={matches}
+                                    fields={[
+                                        'Teleop Upper Cone',
+                                        'Teleop Upper Cube',
+                                        'Teleop Mid Cone',
+                                        'Teleop Mid Cube',
+                                        'Teleop Lower Cone',
+                                        'Teleop Lower Cube',
+                                    ]}
+                                    rows={3}
+                                    columns={2}
+                                />
+                            </Stack>
+                        </Flex>
                     </>
                 )}
             </>
