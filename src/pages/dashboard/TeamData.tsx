@@ -677,6 +677,13 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
     const renderDriveteamView = () => {
         if (year == '2023') {
             // Will turn into one loop later
+
+            const coneLow = matches.reduce(
+                (cones, match) =>
+                    cones + match['Auton Lower Cone'] + match['Teleop Lower Cone'],
+                0,
+            );
+
             const coneMid = matches.reduce(
                 (cones, match) =>
                     cones + match['Auton Mid Cone'] + match['Teleop Mid Cone'],
@@ -689,6 +696,12 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                     match['Teleop Upper Cone'],
                 0,
             );
+            const cubeLow = matches.reduce(
+                (cubes, match) =>
+                    cubes + match['Auton Lower Cube'] + match['Teleop Lower Cube'],
+                0,
+            );
+
             const cubeMid = matches.reduce(
                 (cubes, match) =>
                     cubes + match['Auton Mid Cube'] + match['Teleop Mid Cube'],
@@ -701,15 +714,15 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                     match['Teleop Upper Cube'],
                 0,
             );
-            const lower = matches.reduce(
-                (lower, match) =>
-                    lower +
-                    match['Auton Lower Cube'] +
-                    match['Auton Lower Cone'] +
-                    match['Teleop Lower Cube'] +
-                    match['Teleop Lower Cone'],
+            
+            const cubeLowMissed = matches.reduce(
+                (missed, match) =>
+                    missed +
+                    match['Auton Lower Cube Missed'] +
+                    match['Teleop Lower Cube Missed'],
                 0,
             );
+
             const cubeMidMissed = matches.reduce(
                 (missed, match) =>
                     missed +
@@ -724,6 +737,14 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                     match['Teleop Upper Cube Missed'],
                 0,
             );
+            const coneLowMissed = matches.reduce(
+                (missed, match) =>
+                    missed +
+                    match['Auton Lower Cone Missed'] +
+                    match['Teleop Lower Cone Missed'],
+                0,
+            );
+
             const coneMidMissed = matches.reduce(
                 (missed, match) =>
                     missed +
@@ -811,7 +832,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                     info={
                                         '' +
                                         (
-                                            (cubeHigh + cubeMid) /
+                                            (cubeLow + cubeHigh + cubeMid) /
                                             matchesPlayed
                                         ).toFixed(2)
                                     }
@@ -819,11 +840,11 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                     subinfo={
                                         'Accuracy: ' +
                                         (
-                                            ((cubeHigh + cubeMid) /
+                                            ((cubeHigh + cubeMid + cubeLow) /
                                                 (cubeHigh +
                                                     cubeMid +
                                                     cubeHighMissed +
-                                                    cubeMidMissed)) *
+                                                    cubeMidMissed + cubeLow + cubeLowMissed )) *
                                             100
                                         ).toFixed(0) +
                                         '%'
@@ -836,7 +857,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                     info={
                                         '' +
                                         (
-                                            (coneHigh + coneMid) /
+                                            (coneHigh + coneMid + coneLow) /
                                             matchesPlayed
                                         ).toFixed(2)
                                     }
@@ -844,11 +865,11 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                     subinfo={
                                         'Accuracy: ' +
                                         (
-                                            ((coneHigh + coneMid) /
+                                            ((coneHigh + coneMid + coneLow) /
                                                 (coneHigh +
                                                     coneMid +
                                                     coneHighMissed +
-                                                    coneMidMissed)) *
+                                                    coneMidMissed + coneLow + coneLowMissed)) *
                                             100
                                         ).toFixed(0) +
                                         '%'
@@ -882,7 +903,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                     height={275}
                                     width={450}
                                     valueObject={{
-                                        Low: lower,
+                                        Low: coneLow + cubeLow,
                                         Mid: coneMid + cubeMid,
                                         High: coneHigh + cubeHigh,
                                     }}
@@ -900,10 +921,12 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                     width={450}
                                     radius={100}
                                     valueObject={{
+                                        'Low Cone': coneLow,
                                         'Mid Cone': coneMid,
                                         'High Cone': coneHigh,
                                         'High Cube': cubeHigh,
                                         'Mid Cube': cubeMid,
+                                        'Low Cube': cubeLow
                                     }}
                                     colors={{
                                         'Mid Cone': '1000',
