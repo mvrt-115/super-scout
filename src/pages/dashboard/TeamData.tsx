@@ -1,6 +1,8 @@
 import { AddIcon } from '@chakra-ui/icons';
 import {
     Button,
+    Center,
+    Flex,
     Grid,
     Heading,
     HStack,
@@ -156,7 +158,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
     const [avgValues, setAvgValues] = useState<any>();
     const [pitScoutData, setPitScoutData] = useState<any>({});
     const [pitScout, setPitScout] = useState<boolean>(false);
-    const [teamImage, setTeamImage] = useState("");
+    const [teamImage, setTeamImage] = useState('');
     const [dtMode, setdtMode] = useState<boolean>(false);
 
     useEffect(() => {
@@ -312,15 +314,19 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
         };
 
         const fetchTeamImage = async () => {
-            await firebase.storage().ref().child(`robotImages/${year}/${regional}/${team}`).getDownloadURL()
-            .then((result)=>{
-                console.log(result);
-                setTeamImage(result);
-            })
-            .catch((err) => console.log(err));
+            await firebase
+                .storage()
+                .ref()
+                .child(`robotImages/${year}/${regional}/${team}`)
+                .getDownloadURL()
+                .then((result) => {
+                    console.log(result);
+                    setTeamImage(result);
+                })
+                .catch((err) => console.log(err));
         };
         fetchQuantitativeData().then(fetchQualitativeData).then(fetchTeamImage);
-    } , [year, regional, team]);
+    }, [year, regional, team]);
 
     const setPresetGraphs = async () => {
         await db
@@ -352,7 +358,51 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 setGraphs(temp);
             });
     };
-   
+    const renderClimbData = () => {
+        const data: any = [
+            { name: 'Low', count: 0, fill: '#260235' },
+            { name: 'Mid', count: 0, fill: '#550575' },
+            { name: 'High', count: 0, fill: '#dab0ec' },
+            { name: 'Traversal', count: 0, fill: '#ffc410' },
+            { name: 'None', count: 0, fill: '#202020' },
+        ];
+        matches.forEach((match) => {
+            switch (match['Climb rung']) {
+                case 'Low':
+                    data[0]['count'] += 1;
+                    break;
+                case 'Mid':
+                    data[1]['count'] += 1;
+                    break;
+                case 'High':
+                    data[2]['count'] += 1;
+                    break;
+                case 'Traversal':
+                    data[3]['count'] += 1;
+                    break;
+                case 'None':
+                    data[4]['count'] += 1;
+                    break;
+            }
+        });
+        return (
+            <PieChart width={400} height={400}>
+                <Pie
+                    dataKey={'count'}
+                    isAnimationActive={false}
+                    data={data}
+                    cx={200}
+                    cy={200}
+                    innerRadius={100}
+                    outerRadius={150}
+                    label
+                    paddingAngle={2}
+                />
+                <REToolTip />
+            </PieChart>
+        );
+    };
+    //---
     const renderGraphs = () => {
         return (
             <>
@@ -434,25 +484,36 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                         Climb data:
                     </Text>
                 )}
-                {year === '2022' && <ClimbPieChart matches={matches}/>}
+                {year === '2022' && <ClimbPieChart matches={matches} />}
                 {year === '2023' && (
                     <>
-                    <Text
-                        style={{
-                            fontSize: '40px',
-                            textAlign: 'center',
-                            marginTop: '5vh',
-                            fontWeight: 'bolder',
-                        }}
-                    >
-                        Scoring Heatmap:
-                    </Text>
-                    <HeatMap matches={matches} fields = {
-                        ["Auton Upper Cone", "Auton Upper Cube",  "Auton Mid Cone", "Auton Mid Cube", "Auton Lower Cone", "Auton Lower Cube",
-                    "Teleop Upper Cone", "Teleop Upper Cube",  "Teleop Mid Cone","Teleop Mid Cube", "Teleop Lower Cone", "Teleop Lower Cube"]}
-                    rows = {2}
-                    columns = {6}
-                    />
+                        <Text
+                            style={{
+                                fontSize: '40px',
+                                textAlign: 'center',
+                                marginTop: '5vh',
+                                fontWeight: 'bolder',
+                            }}
+                        >
+                            Scoring Heatmap:
+                        </Text>
+                        <HeatMap
+                            matches={matches}
+                            fields={[
+                                'Auton Upper Cone',
+                                'Auton Upper Cube',
+                                'Auton Mid Cone',
+                                'Auton Mid Cube',
+                                'Auton Lower Shot',
+                                'Teleop Upper Cone',
+                                'Teleop Upper Cube',
+                                'Teleop Mid Cone',
+                                'Teleop Mid Cube',
+                                'Teleop Lower Shot',
+                            ]}
+                            rows={2}
+                            columns={5}
+                        />
                     </>
                 )}
             </>
@@ -499,7 +560,14 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                         width: '100%',
                     }}
                 >
-                    {teamImage!== '' && <img src={teamImage} width="350px"  alt="team" style={{border: '2px',}}/> }
+                    {teamImage !== '' && (
+                        <img
+                            src={teamImage}
+                            width="350px"
+                            alt="team"
+                            style={{ border: '2px' }}
+                        />
+                    )}
                     <Stack alignItems={'center'}>
                         <HStack>
                             <Card
@@ -583,37 +651,120 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 >
                     View {table ? 'Graphs' : 'Table'}
                 </Button>
-                {table ? <DataTable pTemplate={template} pList={matches} base="matchNum"/> : renderGraphs()}
+                {table ? (
+                    <DataTable
+                        pTemplate={template}
+                        pList={matches}
+                        base="matchNum"
+                    />
+                ) : (
+                    renderGraphs()
+                )}
             </div>
         );
     };
 
     const renderDriveteamView = () => {
-        if (year == '2023'){
+        if (year == '2023') {
             // Will turn into one loop later
-            const coneMid = matches.reduce((cones, match) => cones + match["Auton Mid Cone"] + match["Teleop Mid Cone"], 0);
-            const coneHigh = matches.reduce((cones, match) => cones + match["Auton Upper Cone"] + match["Teleop Upper Cone"], 0);
-            const cubeMid = matches.reduce((cubes, match) => cubes + match["Auton Mid Cube"] + match["Teleop Mid Cube"], 0);
-            const cubeHigh = matches.reduce((cubes, match) => cubes + match["Auton Upper Cube"] + match["Teleop Upper Cube"], 0);
-            const lower = matches.reduce((lower, match) => lower + match["Auton Lower Shot"] + match["Teleop Lower Shot"], 0);
-            const cubeMidMissed = matches.reduce((missed, match) => missed + match["Auton Mid Cube Missed"] + match["Teleop Mid Cube Missed"], 0)
-            const cubeHighMissed = matches.reduce((missed, match) => missed + match["Auton Upper Cube Missed"] + match["Teleop Upper Cube Missed"], 0)
-            const coneMidMissed = matches.reduce((missed, match) => missed + match["Auton Mid Cone Missed"] + match["Teleop Mid Cone Missed"], 0)
-            const coneHighMissed = matches.reduce((missed, match) => missed + match["Auton Upper Cone Missed"] + match["Teleop Upper Cone Missed"], 0)
-            
-            const dtType = pitScoutData["DT Type"]
-            const averagePointsPerMatch = avgValues["autonPoints"] + avgValues["endgamePoints"] + avgValues["teleopPoints"]
-            const matchesPlayed = avgValues["matches"]
-            
-            const autonCharge = matches.reduce((charged, match) => charged + match["Auton Did Charge"], 0)
-            const teleopCharge = matches.reduce((charged, match) => charged + match["Endgame Did Charge"], 0)
-            const teleopDocked = matches.reduce((docked, match) => docked + match["Endgame Docked"], 0)
-            const autonDocked = matches.reduce((docked, match) => docked + match["Auton Docked"], 0)
-            const autonEngaged = matches.reduce((engaged, match) => engaged + match["Auton Engaged"], 0)
-            const teleopEngaged = matches.reduce((engaged, match) => engaged + match["Endgame Engaged"], 0)
-            const chargeTime = matches.reduce((time, match) => time + match["Endgame Charge Time"], 0) / teleopCharge
+            const coneMid = matches.reduce(
+                (cones, match) =>
+                    cones + match['Auton Mid Cone'] + match['Teleop Mid Cone'],
+                0,
+            );
+            const coneHigh = matches.reduce(
+                (cones, match) =>
+                    cones +
+                    match['Auton Upper Cone'] +
+                    match['Teleop Upper Cone'],
+                0,
+            );
+            const cubeMid = matches.reduce(
+                (cubes, match) =>
+                    cubes + match['Auton Mid Cube'] + match['Teleop Mid Cube'],
+                0,
+            );
+            const cubeHigh = matches.reduce(
+                (cubes, match) =>
+                    cubes +
+                    match['Auton Upper Cube'] +
+                    match['Teleop Upper Cube'],
+                0,
+            );
+            const lower = matches.reduce(
+                (lower, match) =>
+                    lower +
+                    match['Auton Lower Shot'] +
+                    match['Teleop Lower Shot'],
+                0,
+            );
+            const cubeMidMissed = matches.reduce(
+                (missed, match) =>
+                    missed +
+                    match['Auton Mid Cube Missed'] +
+                    match['Teleop Mid Cube Missed'],
+                0,
+            );
+            const cubeHighMissed = matches.reduce(
+                (missed, match) =>
+                    missed +
+                    match['Auton Upper Cube Missed'] +
+                    match['Teleop Upper Cube Missed'],
+                0,
+            );
+            const coneMidMissed = matches.reduce(
+                (missed, match) =>
+                    missed +
+                    match['Auton Mid Cone Missed'] +
+                    match['Teleop Mid Cone Missed'],
+                0,
+            );
+            const coneHighMissed = matches.reduce(
+                (missed, match) =>
+                    missed +
+                    match['Auton Upper Cone Missed'] +
+                    match['Teleop Upper Cone Missed'],
+                0,
+            );
 
-            if (!matches || !matches.length){
+            const dtType = pitScoutData['DT Type'];
+            const averagePointsPerMatch =
+                avgValues['autonPoints'] +
+                avgValues['endgamePoints'] +
+                avgValues['teleopPoints'];
+            const matchesPlayed = avgValues['matches'];
+
+            const autonCharge = matches.reduce(
+                (charged, match) => charged + match['Auton Did Charge'],
+                0,
+            );
+            const teleopCharge = matches.reduce(
+                (charged, match) => charged + match['Endgame Did Charge'],
+                0,
+            );
+            const teleopDocked = matches.reduce(
+                (docked, match) => docked + match['Endgame Docked'],
+                0,
+            );
+            const autonDocked = matches.reduce(
+                (docked, match) => docked + match['Auton Docked'],
+                0,
+            );
+            const autonEngaged = matches.reduce(
+                (engaged, match) => engaged + match['Auton Engaged'],
+                0,
+            );
+            const teleopEngaged = matches.reduce(
+                (engaged, match) => engaged + match['Endgame Engaged'],
+                0,
+            );
+            const chargeTime =
+                matches.reduce(
+                    (time, match) => time + match['Endgame Charge Time'],
+                    0,
+                ) / teleopCharge;
+
+            if (!matches || !matches.length) {
                 return (
                     <Text
                         style={{
@@ -795,7 +946,10 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                 }
                                 width={'65vw'}
                             >
-                                <Stack alignItems={'center'} marginRight={'15px'}>
+                                <Stack
+                                    alignItems={'center'}
+                                    marginRight={'15px'}
+                                >
                                     <Text
                                         style={{
                                             fontSize: '25px',
@@ -806,10 +960,28 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                     >
                                         Auton Charge:
                                     </Text>
-                                    <GenericPieChart radius={100} valueObject={{"No Attempt" : matchesPlayed - autonCharge, "Failed" : autonCharge-autonDocked, "Docked" : autonDocked - autonEngaged, "Engaged" : autonEngaged}} colors={{"No Attempt" : '1000', "Failed" : '600', "Docked" : '100', "Engaged" : '1'}}></GenericPieChart>
+                                    <GenericPieChart
+                                        radius={100}
+                                        valueObject={{
+                                            'No Attempt':
+                                                matchesPlayed - autonCharge,
+                                            Failed: autonCharge - autonDocked,
+                                            Docked: autonDocked - autonEngaged,
+                                            Engaged: autonEngaged,
+                                        }}
+                                        colors={{
+                                            'No Attempt': '1000',
+                                            Failed: '600',
+                                            Docked: '100',
+                                            Engaged: '1',
+                                        }}
+                                    ></GenericPieChart>
                                 </Stack>
 
-                                <Stack alignItems={'center'} marginLeft={'15px'}>
+                                <Stack
+                                    alignItems={'center'}
+                                    marginLeft={'15px'}
+                                >
                                     <Text
                                         style={{
                                             fontSize: '25px',
@@ -820,9 +992,24 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                     >
                                         Teleop Charge:
                                     </Text>
-                                    <GenericPieChart radius={100} valueObject={{"No Attempt" : matchesPlayed - teleopCharge, "Failed" : teleopCharge-teleopCharge, "Docked" : teleopDocked - teleopEngaged, "Engaged" : teleopEngaged}} colors={{"No Attempt" : '1000', "Failed" : '600', "Docked" : '100', "Engaged" : '1'}}></GenericPieChart>
+                                    <GenericPieChart
+                                        radius={100}
+                                        valueObject={{
+                                            'No Attempt':
+                                                matchesPlayed - teleopCharge,
+                                            Failed: teleopCharge - teleopCharge,
+                                            Docked:
+                                                teleopDocked - teleopEngaged,
+                                            Engaged: teleopEngaged,
+                                        }}
+                                        colors={{
+                                            'No Attempt': '1000',
+                                            Failed: '600',
+                                            Docked: '100',
+                                            Engaged: '1',
+                                        }}
+                                    ></GenericPieChart>
                                 </Stack>
-
                             </Grid>
                         </Stack>
                     </div>
@@ -840,31 +1027,45 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    gap: "5px"
+                    gap: '5px',
                 }}
             >
-                {year === '2023' ?
-                <Button
-                    onClick={() => {
-                        setdtMode(!dtMode);
-                    }}
-                    width={"100%"}
-                >
-                    {dtMode ? "Disable Driveteam Mode" : "Enable Driveteam Mode"}
-                </Button>
-                : <></>}
-                {!dtMode ? 
+                {year === '2023' ? (
+                    <Button
+                        onClick={() => {
+                            setdtMode(!dtMode);
+                        }}
+                        width={'100%'}
+                    >
+                        {dtMode
+                            ? 'Disable Driveteam Mode'
+                            : 'Enable Driveteam Mode'}
+                    </Button>
+                ) : (
+                    <></>
+                )}
+                {!dtMode ? (
                     <Button
                         onClick={() => {
                             setPitScout(!pitScout);
                         }}
                         width={'100%'}
                     >
-                        {pitScout ? 'View Scouting Data' : 'View Pit Scouting data'}
+                        {pitScout
+                            ? 'View Scouting Data'
+                            : 'View Pit Scouting data'}
                     </Button>
-                : <></>}
+                ) : (
+                    <></>
+                )}
             </div>
-            {dtMode ? renderDriveteamView() : pitScout ? <PitScoutData data={pitScoutData} /> : renderScoutingData()}
+            {dtMode ? (
+                renderDriveteamView()
+            ) : pitScout ? (
+                <PitScoutData data={pitScoutData} />
+            ) : (
+                renderScoutingData()
+            )}
         </>
     );
 };
