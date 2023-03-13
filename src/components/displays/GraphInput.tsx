@@ -1,5 +1,14 @@
 import { DeleteIcon } from '@chakra-ui/icons';
-import { HStack, IconButton, Text, Select, Grid, GridItem, useMediaQuery } from '@chakra-ui/react';
+import {
+    HStack,
+    IconButton,
+    Text,
+    Select,
+    Grid,
+    GridItem,
+    useMediaQuery,
+    Flex,
+} from '@chakra-ui/react';
 import React, { FC, useEffect, useState } from 'react';
 
 interface GraphInputProps {
@@ -25,7 +34,9 @@ const GraphInput: FC<GraphInputProps> = ({
     const [yAxis1, setYAxis1] = useState<string>(graphData?.y[0] || keys[1]);
     const [yAxis2, setYAxis2] = useState<string>(graphData?.y[1] || 'none');
     const [yAxis3, setYAxis3] = useState<string>(graphData?.y[2] || 'none');
-    const [sortBy, setSortBy] = useState<string>(graphData?.sortBy || (graphData?.y[0] || 'ccwm'));
+    const [sortBy, setSortBy] = useState<string>(
+        graphData?.sortBy || graphData?.y[0] || 'ccwm',
+    );
     const [type, setType] = useState<
         'Bar' | 'Area' | 'Line' | 'Scatter' | 'Pie'
     >('Bar');
@@ -36,12 +47,12 @@ const GraphInput: FC<GraphInputProps> = ({
             x: xAxis,
             y: [yAxis1, yAxis2, yAxis3],
             type: type,
-            sortBy: sortBy
+            sortBy: sortBy,
         });
     }, [xAxis, yAxis1, yAxis2, yAxis3, type, sortBy]);
 
     return (
-        <Grid templateColumns={isLargerThan800 ? 'repeat(5, 1fr)' : 'repeat(2, 1fr)'} gap={'2%'}>
+        <Flex flexDir={isLargerThan800 ? 'row' : 'column'}>
             <GridItem>
                 <Text>X-Axis:</Text>
                 <Select
@@ -126,7 +137,7 @@ const GraphInput: FC<GraphInputProps> = ({
                     colorScheme={'red'}
                 />
             </GridItem>
-        </Grid>
+        </Flex>
     );
 };
 
