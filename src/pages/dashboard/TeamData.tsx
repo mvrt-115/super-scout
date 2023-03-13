@@ -470,7 +470,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                 (key) =>
                                     typeof matches[0][key] === 'number' ||
                                     Number.parseInt(matches[0][key]) ==
-                                        matches[0][key],
+                                    matches[0][key],
                             )}
                             graphData={graph}
                             onChange={(graphData) => {
@@ -580,7 +580,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                     }
                                     subinfo={
                                         Math.round(oprStat.percentile * 10) /
-                                            10 +
+                                        10 +
                                         '% Percentile'
                                     }
                                 />
@@ -591,7 +591,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                     }
                                     subinfo={
                                         Math.round(dprStat.percentile * 10) /
-                                            10 +
+                                        10 +
                                         '% Percentile'
                                     }
                                 />
@@ -603,7 +603,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                     }
                                     subinfo={
                                         Math.round(ccwmStat.percentile * 10) /
-                                            10 +
+                                        10 +
                                         '% Percentile'
                                     }
                                 />
@@ -713,7 +713,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                     match['Teleop Upper Cube'],
                 0,
             );
-            
+
             const cubeLowMissed = matches.reduce(
                 (missed, match) =>
                     missed +
@@ -843,7 +843,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                                 (cubeHigh +
                                                     cubeMid +
                                                     cubeHighMissed +
-                                                    cubeMidMissed + cubeLow + cubeLowMissed )) *
+                                                    cubeMidMissed + cubeLow + cubeLowMissed)) *
                                             100
                                         ).toFixed(0) +
                                         '%'
@@ -1095,9 +1095,8 @@ const TeamRadarChartWrapper: React.FC<{
     const getToolTip = (stat: string) => {
         return {
             name: stat,
-            value: `${stat}: ${
-                radarData.find((data) => data.stat === stat)?.value
-            }`,
+            value: `${stat}: ${radarData.find((data) => data.stat === stat)?.value
+                }`,
         };
     };
 
