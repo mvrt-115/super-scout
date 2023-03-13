@@ -587,8 +587,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                 <Card
                                     title="DPR"
                                     info={
-                                        Math.round(dprStat.value * 100) / 10 +
-                                        ''
+                                        Math.round(dprStat.value * 10) / 10 + ''
                                     }
                                     subinfo={
                                         Math.round(dprStat.percentile * 10) /
@@ -599,7 +598,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                 <Card
                                     title="CCWM"
                                     info={
-                                        Math.round(ccwmStat.value * 100) / 100 +
+                                        Math.round(ccwmStat.value * 10) / 10 +
                                         ''
                                     }
                                     subinfo={
@@ -615,7 +614,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                     info={
                                         parseFloat(
                                             avgValues.autonPoints + '',
-                                        ).toFixed(3) + ''
+                                        ).toFixed(1) + ''
                                     }
                                 />
                                 <Card
@@ -623,7 +622,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                     info={
                                         parseFloat(
                                             avgValues.teleopPoints + '',
-                                        ).toFixed(3) + ''
+                                        ).toFixed(1) + ''
                                     }
                                 />
                                 <Card
@@ -631,19 +630,19 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                     info={
                                         parseFloat(
                                             avgValues.endgamePoints + '',
-                                        ).toFixed(3) + ''
+                                        ).toFixed(1) + ''
                                     }
                                 />
                             </HStack>
                         </div>
                         <Stack justifyContent={'center'} alignItems={'center'}>
                             {renderHeatmap()}
-                            <TeamRadarChartWrapper
+                            {/* <TeamRadarChartWrapper
                                 team={team}
                                 opr={oprStat}
                                 dpr={dprStat}
                                 ccwm={ccwmStat}
-                            />
+                            /> */}
                         </Stack>
                     </Flex>
                 </Flex>
