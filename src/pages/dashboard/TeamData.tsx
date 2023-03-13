@@ -420,35 +420,65 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                     >
                         <Stack alignItems={'center'}>
                             <Heading size="md">Auton:</Heading>
-                            <HeatMap
-                                matches={matches}
-                                fields={[
-                                    'Auton Upper Cone',
-                                    'Auton Upper Cube',
-                                    'Auton Mid Cone',
-                                    'Auton Mid Cube',
-                                    'Auton Lower Cone',
-                                    'Auton Lower Cube',
-                                ]}
-                                rows={3}
-                                columns={2}
-                            />
+                            <HStack>
+                                <HeatMap
+                                    matches={matches}
+                                    fields={[
+                                        'Auton Upper Cube',
+                                        'Auton Mid Cube',
+                                        'Auton Lower Cube',
+                                    ]}
+                                    rows={3}
+                                    r="85"
+                                    g="5"
+                                    b="117"
+                                    columns={1}
+                                />
+                                <HeatMap
+                                    matches={matches}
+                                    fields={[
+                                        'Auton Upper Cone',
+                                        'Auton Mid Cone',
+                                        'Auton Lower Cone',
+                                    ]}
+                                    rows={3}
+                                    columns={1}
+                                    r="255"
+                                    g="195"
+                                    b="16"
+                                />
+                            </HStack>
                         </Stack>
                         <Stack alignItems={'center'}>
                             <Heading size="md">Teleop:</Heading>
-                            <HeatMap
-                                matches={matches}
-                                fields={[
-                                    'Teleop Upper Cone',
-                                    'Teleop Upper Cube',
-                                    'Teleop Mid Cone',
-                                    'Teleop Mid Cube',
-                                    'Teleop Lower Cone',
-                                    'Teleop Lower Cube',
-                                ]}
-                                rows={3}
-                                columns={2}
-                            />
+                            <HStack>
+                                <HeatMap
+                                    matches={matches}
+                                    fields={[
+                                        'Teleop Upper Cube',
+                                        'Teleop Mid Cube',
+                                        'Teleop Lower Cube',
+                                    ]}
+                                    rows={3}
+                                    r="85"
+                                    g="5"
+                                    b="117"
+                                    columns={1}
+                                />
+                                <HeatMap
+                                    matches={matches}
+                                    fields={[
+                                        'Teleop Upper Cone',
+                                        'Teleop Mid Cone',
+                                        'Teleop Lower Cone',
+                                    ]}
+                                    rows={3}
+                                    columns={1}
+                                    r="255"
+                                    g="195"
+                                    b="16"
+                                />
+                            </HStack>
                         </Stack>
                     </Flex>
                 </Stack>

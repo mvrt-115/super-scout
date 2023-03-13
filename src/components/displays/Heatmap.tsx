@@ -15,9 +15,20 @@ interface HeatmapProps {
     fields: string[];
     columns: number;
     rows: number;
+    r: string;
+    g: string;
+    b: string;
 }
 
-const HeatMap: FC<HeatmapProps> = ({ matches, fields, columns, rows }) => {
+const HeatMap: FC<HeatmapProps> = ({
+    matches,
+    fields,
+    columns,
+    rows,
+    r,
+    g,
+    b,
+}) => {
     interface HeatMapData {
         name: string;
         count: number;
@@ -37,7 +48,7 @@ const HeatMap: FC<HeatmapProps> = ({ matches, fields, columns, rows }) => {
         '#0a0a0a',
         '#0a0a0a',
         '#0a0a0a',
-        '#f7f7f7',
+        '#0a0a0a',
         '#f7f7f7',
     ];
     //Collect/preprocess data
@@ -75,8 +86,8 @@ const HeatMap: FC<HeatmapProps> = ({ matches, fields, columns, rows }) => {
                 textAlign="center"
                 padding={'1rem'}
                 margin=".25rem"
-                bg={`rgba(85, 5, 117, ${(element.count + 1) / 9})`}
-                color={element.count > 3 ? '#f7f7f7' : '#0a0a0a'}
+                bg={`rgba(${r}, ${g}, ${b}, ${(element.count + 1) / 9})`}
+                color={element.count > 5 ? '#f7f7f7' : '#0a0a0a'}
             >
                 <Text>
                     {element.name.substring(6) + ': '}
