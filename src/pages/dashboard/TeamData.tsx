@@ -415,7 +415,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                     </Heading>
                     <Flex
                         flexDir={'row'}
-                        justifyContent="space-between"
+                        justifyContent="space-around"
                         width={'80%'}
                     >
                         <Stack alignItems={'center'}>
@@ -500,7 +500,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                 (key) =>
                                     typeof matches[0][key] === 'number' ||
                                     Number.parseInt(matches[0][key]) ==
-                                    matches[0][key],
+                                        matches[0][key],
                             )}
                             graphData={graph}
                             onChange={(graphData) => {
@@ -610,7 +610,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                     }
                                     subinfo={
                                         Math.round(oprStat.percentile * 10) /
-                                        10 +
+                                            10 +
                                         '% Percentile'
                                     }
                                 />
@@ -621,7 +621,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                     }
                                     subinfo={
                                         Math.round(dprStat.percentile * 10) /
-                                        10 +
+                                            10 +
                                         '% Percentile'
                                     }
                                 />
@@ -633,7 +633,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                     }
                                     subinfo={
                                         Math.round(ccwmStat.percentile * 10) /
-                                        10 +
+                                            10 +
                                         '% Percentile'
                                     }
                                 />
@@ -709,7 +709,9 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
 
             const coneLow = matches.reduce(
                 (cones, match) =>
-                    cones + match['Auton Lower Cone'] + match['Teleop Lower Cone'],
+                    cones +
+                    match['Auton Lower Cone'] +
+                    match['Teleop Lower Cone'],
                 0,
             );
 
@@ -727,7 +729,9 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
             );
             const cubeLow = matches.reduce(
                 (cubes, match) =>
-                    cubes + match['Auton Lower Cube'] + match['Teleop Lower Cube'],
+                    cubes +
+                    match['Auton Lower Cube'] +
+                    match['Teleop Lower Cube'],
                 0,
             );
 
@@ -839,11 +843,23 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
             }
             return (
                 <div>
-                    <Flex flexDir={['column', 'column', 'row', 'row']} justifyContent="flex-start">
-                        <Flex flexDir={'column'} justifyContent="flex-start" p={'5%'}>
+                    <Flex
+                        flexDir={['column', 'column', 'row', 'row']}
+                        justifyContent="flex-start"
+                    >
+                        <Flex
+                            flexDir={'column'}
+                            justifyContent="flex-start"
+                            p={'5%'}
+                        >
                             {renderGeneralInfo()}
                             <Grid
-                                templateColumns={['repeat(2, minmax(150px, 1fr))', 'repeat(2, minmax(150px, 1fr))', 'repeat(3, minmax(150px, 1fr))', 'repeat(3, minmax(150px, 1fr))']}
+                                templateColumns={[
+                                    'repeat(2, minmax(150px, 1fr))',
+                                    'repeat(2, minmax(150px, 1fr))',
+                                    'repeat(3, minmax(150px, 1fr))',
+                                    'repeat(3, minmax(150px, 1fr))',
+                                ]}
                             >
                                 <Card
                                     height="150px"
@@ -871,7 +887,9 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                                 (cubeHigh +
                                                     cubeMid +
                                                     cubeHighMissed +
-                                                    cubeMidMissed + cubeLow + cubeLowMissed)) *
+                                                    cubeMidMissed +
+                                                    cubeLow +
+                                                    cubeLowMissed)) *
                                             100
                                         ).toFixed(0) +
                                         '%'
@@ -896,7 +914,9 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                                 (coneHigh +
                                                     coneMid +
                                                     coneHighMissed +
-                                                    coneMidMissed + coneLow + coneLowMissed)) *
+                                                    coneMidMissed +
+                                                    coneLow +
+                                                    coneLowMissed)) *
                                             100
                                         ).toFixed(0) +
                                         '%'
@@ -953,7 +973,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                         'High Cone': coneHigh,
                                         'High Cube': cubeHigh,
                                         'Mid Cube': cubeMid,
-                                        'Low Cube': cubeLow
+                                        'Low Cube': cubeLow,
                                     }}
                                     colors={{
                                         'Mid Cone': '1000',
@@ -1123,8 +1143,9 @@ const TeamRadarChartWrapper: React.FC<{
     const getToolTip = (stat: string) => {
         return {
             name: stat,
-            value: `${stat}: ${radarData.find((data) => data.stat === stat)?.value
-                }`,
+            value: `${stat}: ${
+                radarData.find((data) => data.stat === stat)?.value
+            }`,
         };
     };
 
