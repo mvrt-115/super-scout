@@ -27,7 +27,7 @@ const RegionalTable: FC<RegionalTableProps> = ({pTemplate, pList, base}) => {
     }
     return (
         <ThemeProvider theme={createTheme()}>
-            <TableContainer component={Paper} style={{ minWidth: "90vw", maxHeight: "90vw" }}>
+            <TableContainer component={Paper} style={{ maxWidth: "95vw", maxHeight: "90vw" }}>
                 <Table stickyHeader sx={{ minWidth: 950, width: '90vw' }}>
                     <TableHead>
                         <TableRow style={{ whiteSpace: "nowrap" }}>
