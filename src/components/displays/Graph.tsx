@@ -34,17 +34,24 @@ const Graph: FC<GraphProps> = ({ graphInfo, data }) => {
             graphInfo.y.forEach((y) => {
                 if (y !== 'none') newData[y] = data[y];
             });
+            newData['sortBy'] = data[graphInfo.sortBy];
             graphingData.push(newData);
         });
         sortData(graphingData);
-        setGraphingData(graphingData);
-    }, [graphInfo.sortBy, graphInfo.x, graphInfo.y, graphInfo.type]);
+        graphingData.forEach((element)=>{
+            delete element['sortBy'];
+        })
+        setGraphingData([...graphingData]);
+    }, [graphInfo.sortBy, graphInfo.x, graphInfo.y[0], graphInfo.y[1], graphInfo.y[2]]);
 
-
+    
     const sortData = (data: any[]) => {
         if (graphInfo.sortBy.length < 2) return;
         data.sort((a, b) => {
-            return parseInt(b[graphInfo.sortBy]) - parseInt(a[graphInfo.sortBy]);
+            if(b['sortBy']===undefined && a['sortBy']===undefined) return parseInt(b["teamNum"])-parseInt(a["teamNum"]);
+            if(b['sortBy']===undefined) return -1;
+            if(a['sortBy']===undefined) return 1;
+            return parseInt(b['sortBy']) - parseInt(a['sortBy']);
         });
     }
 
