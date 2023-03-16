@@ -241,13 +241,13 @@ export const resetData = functions.https.onCall(async (data, context) => {
                         else newData[keys[index]] += value;
                     }
                 });
-                const autonPoints = calcAutonPoints(matchData, 2022);
+                const autonPoints = calcAutonPoints(matchData, year);
                 if(newData['autonPoints']) newData.autonPoints += autonPoints;
                 else newData['autonPoints'] = autonPoints;
-                const teleopPoints = calcTeleopPoints(matchData, 2022);
+                const teleopPoints = calcTeleopPoints(matchData, year);
                 if(newData['teleopPoints']) newData.teleopPoints += teleopPoints;
                 else newData['teleopPoints'] = teleopPoints;
-                const endgamePoints = calcEndgamePoints(matchData, 2022);
+                const endgamePoints = calcEndgamePoints(matchData, year);
                 if(newData['endgamePoints']) newData.endgamePoints += endgamePoints;
                 else newData['endgamePoints'] = endgamePoints;
             });
