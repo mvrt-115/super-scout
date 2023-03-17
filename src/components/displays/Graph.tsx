@@ -51,7 +51,7 @@ const Graph: FC<GraphProps> = ({ graphInfo, data }) => {
             if(b['sortBy']===undefined && a['sortBy']===undefined) return parseInt(b["teamNum"])-parseInt(a["teamNum"]);
             if(b['sortBy']===undefined) return -1;
             if(a['sortBy']===undefined) return 1;
-            return parseInt(b['sortBy']) - parseInt(a['sortBy']);
+            return(parseInt(b['sortBy']) - parseInt(a['sortBy'])) * (graphInfo.sortBy=='matchNum' ? -1 : 1);
         });
     }
 
