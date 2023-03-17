@@ -1136,7 +1136,23 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
 
     if (loading) return <Spinner />;
     return (
+        
         <>
+            <div style={{
+                paddingBottom: "1rem",
+                margin: "none",
+                textAlign: "center",
+                fontWeight: "bold",
+                fontSize: '1.5em',
+                backgroundColor: "white",
+                color: 'black'
+            }}>
+                <Link
+                    to={`../`+regional}
+                >
+                    {regional.toUpperCase()} {year}
+                </Link>
+            </div>
             {dtMode ? (
                 renderDriveteamView()
             ) : pitScout ? (
