@@ -91,7 +91,7 @@ const HeatMap: FC<HeatmapProps> = ({
             >
                 <Text>
                     {element.name.substring(6) + ': '}
-                    {element.count}
+                    {element.count / data.length}
                 </Text>
             </Box>
         );
