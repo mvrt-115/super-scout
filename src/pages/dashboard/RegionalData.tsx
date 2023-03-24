@@ -137,12 +137,17 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                     promiseList.push(path.doc(doc.id).collection("pitScoutData").doc("pitScoutAnswers").get()
                         .then((resp) => {
                             let temp: any = resp.data()!;
-                            delete temp["Team Number"];
+                            console.log(temp);
+                            if(!temp) return;
+                            if(temp["Team Number"])
+                                delete temp["Team Number"];
                             temp["teamNum"] = parseInt(doc.id);
                             data.push(temp);
                         }))
                 }
             });
+            console.log(data);
+            console.log("HI")
             await Promise.all(promiseList);
             setPitScoutData(data);
             let temp: string[] = ["teamNum"];
@@ -153,7 +158,7 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
             }
             setPitTemplate(temp);
         }
-        if (year === '2022' && regional === 'cafr')
+        if (year === '2022' && regional === 'cafr' || parseInt(year)>=2023)
             fetchData().then(() => fetchPitScoutData().then(() => setLoading(false)));
         else fetchData().then(() => setLoading(false));
     }, [regional, year]);
