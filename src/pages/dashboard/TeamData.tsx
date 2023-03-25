@@ -404,7 +404,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                         width={'80%'}
                     >
                         <Stack alignItems={'center'}>
-                            <Heading size="md">Auton:</Heading>
+                            <Heading size="md">Average Auton:</Heading>
                             <HStack>
                                 <HeatMap
                                     matches={matches}
@@ -435,7 +435,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                             </HStack>
                         </Stack>
                         <Stack alignItems={'center'}>
-                            <Heading size="md">Teleop:</Heading>
+                            <Heading size="md">Average Teleop:</Heading>
                             <HStack>
                                 <HeatMap
                                     matches={matches}
