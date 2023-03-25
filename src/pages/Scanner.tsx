@@ -182,7 +182,6 @@ const Scanner: FC<ScannerProps> = () => {
                                         );
                                         setData(newData);
                                     }}
-                                    isFullWidth
                                 />
                                 <Table>
                                     <Tbody>
