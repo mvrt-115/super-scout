@@ -1,5 +1,14 @@
 /* eslint-disable no-loop-func */
-import { Link, Checkbox, Select, Box, Flex, Spinner, textDecoration, transition } from '@chakra-ui/react';
+import {
+    Link,
+    Checkbox,
+    Select,
+    Box,
+    Flex,
+    Spinner,
+    textDecoration,
+    transition,
+} from '@chakra-ui/react';
 import { FC, SyntheticEvent, useEffect, useState, useRef } from 'react';
 import { IoEaselSharp } from 'react-icons/io5';
 import { LineChart } from 'recharts';
@@ -7,7 +16,7 @@ import { transform } from 'typescript';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../firebase';
 
-interface PicklistProps { }
+interface PicklistProps {}
 
 const Picklist: FC<PicklistProps> = () => {
     const year = new Date().getFullYear();
@@ -22,7 +31,6 @@ const Picklist: FC<PicklistProps> = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const dragItem = useRef<number | null>();
     const dragNode = useRef<EventTarget | null>();
-
 
     useEffect(() => {
         if (offensePicklist.length > 0 && regional.length > 2) {
@@ -53,7 +61,7 @@ const Picklist: FC<PicklistProps> = () => {
     }, [year, defensePicklist]);
 
     useEffect(() => {
-        fetchRegionals()
+        fetchRegionals();
         fetchPicklist(regional, 'offense');
         fetchPicklist(regional, 'defense');
         fetchOffenseTeams(regional);
@@ -66,7 +74,7 @@ const Picklist: FC<PicklistProps> = () => {
         fetchPicklist(regional, 'defense');
         fetchOffenseTeams(regional);
         fetchDefenseTeams(regional);
-    }, [regional])
+    }, [regional]);
 
     const fetchRegionals = async () => {
         db.collection('years')
@@ -83,14 +91,13 @@ const Picklist: FC<PicklistProps> = () => {
     };
 
     const addToPicklist = (team: string, picklistType: string) => {
-        if(picklistType === 'offense'){
+        if (picklistType === 'offense') {
             let newArray = [...offensePicklist];
             offensePicklist.includes(team)
                 ? newArray.splice(offensePicklist.indexOf(team), 1)
                 : newArray.push(team);
             setOffensePicklist(newArray);
-        }
-        else if(picklistType === 'defense'){
+        } else if (picklistType === 'defense') {
             let newArray = [...defensePicklist];
             defensePicklist.includes(team)
                 ? newArray.splice(defensePicklist.indexOf(team), 1)
@@ -136,7 +143,10 @@ const Picklist: FC<PicklistProps> = () => {
             });
     };
 
-    const fetchPicklist = async (regionalChoice: string, picklistType: string) => {
+    const fetchPicklist = async (
+        regionalChoice: string,
+        picklistType: string,
+    ) => {
         setOffensePicklist([]);
         setDefensePicklist([]);
         db.collection('years')
@@ -146,14 +156,17 @@ const Picklist: FC<PicklistProps> = () => {
             .collection('picklist')
             .get()
             .then((fields) => {
-                if(picklistType === 'offense'){
+                if (picklistType === 'offense') {
                     if (fields.docs[0]?.data().offensePicklist?.length > 0)
-                        setOffensePicklist(fields.docs[0].data().offensePicklist);
+                        setOffensePicklist(
+                            fields.docs[0].data().offensePicklist,
+                        );
                     else setOffensePicklist([]);
-                }
-                else if(picklistType === 'defense'){
+                } else if (picklistType === 'defense') {
                     if (fields.docs[0]?.data().defensePicklist?.length > 0)
-                        setDefensePicklist(fields.docs[0].data().defensePicklist);
+                        setDefensePicklist(
+                            fields.docs[0].data().defensePicklist,
+                        );
                     else setDefensePicklist([]);
                 }
             });
@@ -165,9 +178,13 @@ const Picklist: FC<PicklistProps> = () => {
         dragNode.current.addEventListener('dragend', dragEnd);
     };
 
-    const handleDragEnter = (e: SyntheticEvent, index: number, picklistType: string) => {
+    const handleDragEnter = (
+        e: SyntheticEvent,
+        index: number,
+        picklistType: string,
+    ) => {
         if (e.target !== dragNode.current) {
-            if(picklistType === 'offense'){
+            if (picklistType === 'offense') {
                 setOffensePicklist((oldPicklist) => {
                     let newPicklist = JSON.parse(JSON.stringify(oldPicklist));
                     newPicklist.splice(
@@ -177,8 +194,7 @@ const Picklist: FC<PicklistProps> = () => {
                     );
                     return newPicklist;
                 });
-            }
-            else if(picklistType === 'defense'){
+            } else if (picklistType === 'defense') {
                 setDefensePicklist((oldPicklist) => {
                     let newPicklist = JSON.parse(JSON.stringify(oldPicklist));
                     newPicklist.splice(
@@ -210,7 +226,7 @@ const Picklist: FC<PicklistProps> = () => {
             >
                 <Spinner />
             </div>
-        )
+        );
     }
     return (
         <>
@@ -231,7 +247,11 @@ const Picklist: FC<PicklistProps> = () => {
                         textAlign={'center'}
                     >
                         {regionals?.map((regional) => {
-                            return <option value={regional}>{regional.toUpperCase()}</option>;
+                            return (
+                                <option value={regional}>
+                                    {regional.toUpperCase()}
+                                </option>
+                            );
                         })}
                     </Select>
                 </Box>
@@ -255,7 +275,7 @@ const Picklist: FC<PicklistProps> = () => {
                             marginBottom: '0.35rem',
                             marginTop: '8px',
                             fontWeight: 'bolder',
-                            fontSize: '20px'
+                            fontSize: '20px',
                         }}
                     >
                         Current Offense Picklist:
@@ -279,10 +299,10 @@ const Picklist: FC<PicklistProps> = () => {
                                     <Link
                                         href={`./Dashboard/${year}/${regional}/${teamNum}`}
                                         color={'white'}
-                                        styles={{
-                                            position: 'relative',
-                                            textDecoration: 'none'
-                                        }}
+                                        // styles={{
+                                        //     position: 'relative',
+                                        //     textDecoration: 'none'
+                                        // }}
                                         isExternal
                                     >
                                         <h2
@@ -299,7 +319,7 @@ const Picklist: FC<PicklistProps> = () => {
                         })}
                     </Flex>
                 </div>
-            </Box >
+            </Box>
             <Box bg={'mv-purple.200'}>
                 <div
                     style={{
@@ -319,7 +339,7 @@ const Picklist: FC<PicklistProps> = () => {
                             marginBottom: '0.35rem',
                             marginTop: '8px',
                             fontWeight: 'bolder',
-                            fontSize: '20px'
+                            fontSize: '20px',
                         }}
                     >
                         Current Defense Picklist:
@@ -343,10 +363,10 @@ const Picklist: FC<PicklistProps> = () => {
                                     <Link
                                         href={`./Dashboard/${year}/${regional}/${teamNum}`}
                                         color={'white'}
-                                        styles={{
-                                            position: 'relative',
-                                            textDecoration: 'none'
-                                        }}
+                                        // styles={{
+                                        //     position: 'relative',
+                                        //     textDecoration: 'none',
+                                        // }}
                                         isExternal
                                     >
                                         <h2
@@ -363,7 +383,7 @@ const Picklist: FC<PicklistProps> = () => {
                         })}
                     </Flex>
                 </div>
-            </Box >
+            </Box>
             <div style={{ display: 'flex' }}>
                 <div
                     style={{
@@ -374,11 +394,12 @@ const Picklist: FC<PicklistProps> = () => {
                         marginTop: '1.0vh',
                     }}
                 >
-                    <h3 style={{
-                        fontWeight: 'bolder',
-                        fontSize: '1.75rem',
-                        textAlign: 'center'
-                    }}
+                    <h3
+                        style={{
+                            fontWeight: 'bolder',
+                            fontSize: '1.75rem',
+                            textAlign: 'center',
+                        }}
                     >
                         Offense Picklist:
                     </h3>
@@ -390,7 +411,7 @@ const Picklist: FC<PicklistProps> = () => {
                                     flexDirection: 'row',
                                     alignItems: 'center',
                                     justifyContent: 'flex-start',
-                                    marginLeft: '20vw'
+                                    marginLeft: '20vw',
                                 }}
                             >
                                 <Checkbox
@@ -426,7 +447,7 @@ const Picklist: FC<PicklistProps> = () => {
                         alignItems: 'center',
                         justifyContent: 'center',
                         verticalAlign: 'middle',
-                        marginTop: '1vh'
+                        marginTop: '1vh',
                     }}
                 >
                     <h3
@@ -434,7 +455,7 @@ const Picklist: FC<PicklistProps> = () => {
                             fontWeight: 'bolder',
                             fontSize: '1.75rem',
                             marginRight: '2.',
-                            textAlign: 'center'
+                            textAlign: 'center',
                         }}
                     >
                         Defense Picklist:
@@ -447,7 +468,7 @@ const Picklist: FC<PicklistProps> = () => {
                                     flexDirection: 'row',
                                     alignItems: 'center',
                                     justifyContent: 'flex-start',
-                                    marginLeft: '20vw'
+                                    marginLeft: '20vw',
                                 }}
                             >
                                 <Checkbox
