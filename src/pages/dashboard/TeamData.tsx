@@ -390,50 +390,6 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 setGraphs(temp);
             });
     };
-    const renderClimbData = () => {
-        const data: any = [
-            { name: 'Low', count: 0, fill: '#260235' },
-            { name: 'Mid', count: 0, fill: '#550575' },
-            { name: 'High', count: 0, fill: '#dab0ec' },
-            { name: 'Traversal', count: 0, fill: '#ffc410' },
-            { name: 'None', count: 0, fill: '#202020' },
-        ];
-        matches.forEach((match) => {
-            switch (match['Climb rung']) {
-                case 'Low':
-                    data[0]['count'] += 1;
-                    break;
-                case 'Mid':
-                    data[1]['count'] += 1;
-                    break;
-                case 'High':
-                    data[2]['count'] += 1;
-                    break;
-                case 'Traversal':
-                    data[3]['count'] += 1;
-                    break;
-                case 'None':
-                    data[4]['count'] += 1;
-                    break;
-            }
-        });
-        return (
-            <PieChart width={400} height={400}>
-                <Pie
-                    dataKey={'count'}
-                    isAnimationActive={false}
-                    data={data}
-                    cx={200}
-                    cy={200}
-                    innerRadius={100}
-                    outerRadius={150}
-                    label
-                    paddingAngle={2}
-                />
-                <REToolTip />
-            </PieChart>
-        );
-    };
 
     const renderHeatmap = () => {
         if (year === '2023')
@@ -763,7 +719,6 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                     match['Teleop Lower Cube'],
                 0,
             );
-
             const cubeMid = matches.reduce(
                 (cubes, match) =>
                     cubes + match['Auton Mid Cube'] + match['Teleop Mid Cube'],
@@ -827,7 +782,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 avgValues['autonPoints'] +
                 avgValues['endgamePoints'] +
                 avgValues['teleopPoints'];
-            const matchesPlayed = avgValues['matches'];
+            const matchesPlayed = matches.length;
 
             const autonCharge = matches.reduce(
                 (charged, match) => charged + match['Auton Did Charge'],
@@ -853,11 +808,16 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 (engaged, match) => engaged + match['Endgame Engaged'],
                 0,
             );
+            console.log('' +
+            (
+                (cubeLow + cubeHigh + cubeMid) /
+                matchesPlayed
+            ).toFixed(2)+" "+matchesPlayed)
             const chargeTime =
                 matches.reduce(
-                    (time, match) => time + match['Endgame Charge Time'],
+                    (time, match) => time + match['Auton Charge Time'],
                     0,
-                ) / teleopCharge;
+                ) / autonCharge;
 
             if (!matches || !matches.length) {
                 return (
