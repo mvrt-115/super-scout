@@ -93,7 +93,6 @@ const GenericPieChart: FC<valuesArray | valuesObject> = ({
             });
         });
     }
-    console.log(data);
 
     return (
         <PieChart width={width || 400} height={height || 400}>

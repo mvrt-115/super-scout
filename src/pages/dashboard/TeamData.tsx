@@ -4,6 +4,7 @@ import {
     Center,
     Flex,
     Grid,
+    GridItem,
     Heading,
     HStack,
     IconButton,
@@ -75,23 +76,23 @@ const calcAutonPoints = (matchData: any, year: number | string) => {
             ? 5
             : 0;
     } else if (year == '2022') {
-        let autonPoints : number = 0;
+        let autonPoints: number = 0;
         autonPoints += (2 * matchData['Auton Bottom']) + (4 * matchData['Auton Upper']);
-        if(matchData['Left Tarmac'] === undefined) 
+        if (matchData['Left Tarmac'] === undefined)
             autonPoints += (2 * +matchData['Leave Tarmac']);
         else autonPoints += (2 * +matchData['Left Tarmac'])
         return autonPoints;
     }
-    else if(year=='2023'){
-        let autonPoints: number = 6*(matchData['Auton Upper Cone']+matchData['Auton Upper Cube'])+4*(matchData['Auton Mid Cone']+matchData['Auton Mid Cube'])+3*(matchData['Auton Lower Cube']+matchData['Auton Lower Cone'])
-        if(matchData['Auton Engaged']){
-            autonPoints+=12;
+    else if (year == '2023') {
+        let autonPoints: number = 6 * (matchData['Auton Upper Cone'] + matchData['Auton Upper Cube']) + 4 * (matchData['Auton Mid Cone'] + matchData['Auton Mid Cube']) + 3 * (matchData['Auton Lower Cube'] + matchData['Auton Lower Cone'])
+        if (matchData['Auton Engaged']) {
+            autonPoints += 12;
         }
-        else if(matchData['Auton Docked']){
-            autonPoints+=8;
+        else if (matchData['Auton Docked']) {
+            autonPoints += 8;
         }
-        if(matchData["Mobility"]){
-            autonPoints+=3;
+        if (matchData["Mobility"]) {
+            autonPoints += 3;
         }
         return autonPoints;
     }
@@ -108,8 +109,8 @@ const calcTeleopPoints = (matchData: any, year: number | string) => {
     } else if (year == '2022') {
         return matchData['Teleop Bottom'] + matchData['Teleop Upper'] * 2;
     }
-    else if(year=='2023'){
-        return 5*(matchData['Teleop Upper Cone']+matchData['Teleop Upper Cube'])+3*(matchData['Teleop Mid Cone']+matchData['Teleop Mid Cube'])+2*(matchData['Teleop Lower Cone']+matchData['Teleop Lower Cube']);
+    else if (year == '2023') {
+        return 5 * (matchData['Teleop Upper Cone'] + matchData['Teleop Upper Cube']) + 3 * (matchData['Teleop Mid Cone'] + matchData['Teleop Mid Cube']) + 2 * (matchData['Teleop Lower Cone'] + matchData['Teleop Lower Cube']);
     }
     return -1;
 };
@@ -140,16 +141,16 @@ const calcEndgamePoints = (matchData: any, year: number | string) => {
         }
         return climbScore;
     }
-    else if(year='2023'){
+    else if (year = '2023') {
         let endgamePoints: number = 0;
-        if(matchData['Endgame Engaged']){
-            endgamePoints+=10;
+        if (matchData['Endgame Engaged']) {
+            endgamePoints += 10;
         }
-        else if(matchData['Endgame Docked']){
-            endgamePoints+=6;
+        else if (matchData['Endgame Docked']) {
+            endgamePoints += 6;
         }
-        if(matchData['Parked']){
-            endgamePoints+=2;
+        if (matchData['Parked']) {
+            endgamePoints += 2;
         }
         return endgamePoints;
     }
@@ -192,6 +193,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
     const [pitScout, setPitScout] = useState<boolean>(false);
     const [teamImage, setTeamImage] = useState('');
     const [dtMode, setdtMode] = useState<boolean>(false);
+    const [comments, setComments] = useState<any[]>([]);
 
     useEffect(() => {
         const teamDisplay = localStorage.getItem('teamDisplay' + year);
@@ -323,7 +325,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                             index = i;
                     }
                     setRanking(`${index + 1}`);
-                    console.log(avgValues);
+                    // console.log(avgValues);
                 }
             };
             fetchData();
@@ -352,12 +354,33 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 .child(`robotImages/${year}/${regional}/${team}`)
                 .getDownloadURL()
                 .then((result) => {
-                    console.log(result);
+                    // console.log(result);
                     setTeamImage(result);
                 })
                 .catch((err) => console.log(err));
         };
-        fetchQuantitativeData().then(fetchQualitativeData).then(fetchTeamImage);
+
+        const fetchComments = async () => {
+            try {
+                const matchesSnapshot = await db
+                    .collection('years')
+                    .doc(year)
+                    .collection('regionals')
+                    .doc(regional)
+                    .collection('teams')
+                    .doc(team)
+                    .collection('matches')
+                    .get();
+                const comments = matchesSnapshot.docs.map((match, index: number) => match.data() ? {
+                    match: match.data().matchNum,
+                    comments: match.data().Comments
+                } : [{}]);
+                setComments(comments);
+            } catch (e) {
+                console.log(e);
+            }
+        }
+        fetchQuantitativeData().then(fetchQualitativeData).then(fetchTeamImage).then(fetchComments);
     }, [year, regional, team]);
 
     const setPresetGraphs = async () => {
@@ -485,7 +508,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                 (key) =>
                                     typeof matches[0][key] === 'number' ||
                                     Number.parseInt(matches[0][key]) ==
-                                        matches[0][key],
+                                    matches[0][key],
                             )}
                             graphData={graph}
                             onChange={(graphData) => {
@@ -595,7 +618,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                     }
                                     subinfo={
                                         Math.round(oprStat.percentile * 10) /
-                                            10 +
+                                        10 +
                                         '% Percentile'
                                     }
                                 />
@@ -606,7 +629,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                     }
                                     subinfo={
                                         Math.round(dprStat.percentile * 10) /
-                                            10 +
+                                        10 +
                                         '% Percentile'
                                     }
                                 />
@@ -618,7 +641,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                     }
                                     subinfo={
                                         Math.round(ccwmStat.percentile * 10) /
-                                            10 +
+                                        10 +
                                         '% Percentile'
                                     }
                                 />
@@ -712,7 +735,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                     match['Teleop Upper Cone'],
                 0,
             );
-            const cubeLow = matches.reduce(
+            const cubeLow: number = matches.reduce(
                 (cubes, match) =>
                     cubes +
                     match['Auton Lower Cube'] +
@@ -809,10 +832,10 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 0,
             );
             console.log('' +
-            (
-                (cubeLow + cubeHigh + cubeMid) /
-                matchesPlayed
-            ).toFixed(2)+" "+matchesPlayed)
+                (
+                    (cubeLow + cubeHigh + cubeMid) /
+                    matchesPlayed
+                ).toFixed(2) + " " + matchesPlayed)
             const chargeTime =
                 matches.reduce(
                     (time, match) => time + match['Auton Charge Time'],
@@ -830,6 +853,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                     </Text>
                 );
             }
+            console.log(comments);
             return (
                 <div>
                     <Flex
@@ -862,11 +886,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                     width="150px"
                                     title={'Average Cubes'}
                                     info={
-                                        '' +
-                                        (
-                                            (cubeLow + cubeHigh + cubeMid) /
-                                            matchesPlayed
-                                        ).toFixed(2)
+                                        '' + Math.round(((cubeLow + cubeHigh + cubeMid) / matches.length) * 100) / 100
                                     }
                                     colorTheme={200}
                                     subinfo={
@@ -892,7 +912,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                         '' +
                                         (
                                             (coneHigh + coneMid + coneLow) /
-                                            matchesPlayed
+                                            matches.length
                                         ).toFixed(2)
                                     }
                                     colorTheme={200}
@@ -923,12 +943,11 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                     width="150px"
                                     title={'Average Points Per Match'}
                                     info={averagePointsPerMatch.toFixed(2)}
-                                    subinfo={'Matches Played: ' + matchesPlayed}
+                                    subinfo={'Matches Played: ' + matches.length}
                                     colorTheme={200}
                                 ></Card>
                             </Grid>
                         </Flex>
-
                         <Stack direction={['column', 'column', 'row', 'row']}>
                             <Stack>
                                 <Heading textAlign="center" size={'md'}>
@@ -1018,17 +1037,24 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                             </Stack>
                         </Stack>
                     </Flex>
-
-                    <div>
-                        <Stack alignItems={'center'}>
-                            <Grid
-                                templateColumns={
-                                    'repeat(auto-fit, minmax(150px, 1fr))'
-                                }
-                                width={'65vw'}
-                            ></Grid>
-                        </Stack>
-                    </div>
+                    <Heading textAlign='center'>Comments</Heading>
+                    <Grid
+                        templateColumns={[
+                            'repeat(2, minmax(150px, 1fr))',
+                            'repeat(2, minmax(150px, 1fr))',
+                            'repeat(3, minmax(150px, 1fr))',
+                            'repeat(3, minmax(150px, 1fr))',
+                        ]}
+                    >
+                        {comments.map((matchComment: any, index: number) => {
+                            return (
+                                <GridItem>
+                                    <Heading fontSize='2xl'>{`Match # ${matchComment.match}`}</Heading>
+                                    <Text>{matchComment.comments}</Text>
+                                </GridItem>
+                            );
+                        })}
+                    </Grid>
                 </div>
             );
         }
@@ -1096,7 +1122,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
 
     if (loading) return <Spinner />;
     return (
-        
+
         <>
             <div style={{
                 paddingBottom: "1rem",
@@ -1108,7 +1134,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 color: 'black'
             }}>
                 <Link
-                    to={`../`+regional}
+                    to={`../` + regional}
                 >
                     {regional.toUpperCase()} {year}
                 </Link>
@@ -1148,9 +1174,8 @@ const TeamRadarChartWrapper: React.FC<{
     const getToolTip = (stat: string) => {
         return {
             name: stat,
-            value: `${stat}: ${
-                radarData.find((data) => data.stat === stat)?.value
-            }`,
+            value: `${stat}: ${radarData.find((data) => data.stat === stat)?.value
+                }`,
         };
     };
 
