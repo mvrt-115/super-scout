@@ -41,8 +41,55 @@ export const matchUpdate = functions.firestore
                 .collection('matches')
                 .get()
         ).docs.length;
-        newTeamData["teamNum"] = context.params.team;
+        newTeamData['teamNum'] = context.params.team;
         functions.logger.info(teamData);
+        if (context.params.year == '2023') {
+            matchData['Auton Cubes'] =
+                matchData['Auton Upper Cube'] +
+                matchData['Auton Mid Cube'] +
+                matchData['Auton Lower Cube'];
+            matchData['Teleop Cubes'] =
+                matchData['Teleop Upper Cube'] +
+                matchData['Teleop Mid Cube'] +
+                matchData['Teleop Lower Cube'];
+
+            matchData['Auton Cones'] =
+                matchData['Auton Upper Cone'] +
+                matchData['Auton Mid Cone'] +
+                matchData['Auton Lower Cone'];
+            matchData['Teleop Cones'] =
+                matchData['Teleop Upper Cone'] +
+                matchData['Teleop Mid Cone'] +
+                matchData['Teleop Lower Cone'];
+
+            matchData['Total Cycles'] =
+                matchData['Teleop Cones'] + matchData['Teleop Cubes'];
+
+            matchData['Auton Upper'] =
+                matchData['Auton Upper Cube'] + matchData['Auton Upper Cone'];
+            matchData['Teleop Upper'] =
+                matchData['Teleop Upper Cube'] + matchData['Teleop Upper Cone'];
+
+            matchData['Auton Mid'] =
+                matchData['Auton Mid Cube'] + matchData['Auton Mid Cone'];
+            matchData['Teleop Mid'] =
+                matchData['Teleop Mid Cube'] + matchData['Teleop Mid Cone'];
+
+            matchData['Auton Lower'] =
+                matchData['Auton Lower Cube'] + matchData['Auton Lower Cone'];
+            matchData['Teleop Lower'] =
+                matchData['Teleop Lower Cube'] + matchData['Teleop Lower Cone'];
+        }
+
+        db.collection('years')
+            .doc(context.params.year)
+            .collection('regionals')
+            .doc(context.params.regional)
+            .collection('teams')
+            .doc(context.params.team)
+            .collection('matches')
+            .doc(snap.id)
+            .set(matchData);
         Object.keys(matchData).forEach((key) => {
             if (
                 key !== 'matchNum' &&
@@ -89,8 +136,11 @@ export const matchUpdate = functions.firestore
             }
         });
         newTeamData.matches = matches;
-        if(!teamData["Suggest To Picklist"] && matchData["Suggest To Picklist"]){
-            newTeamData["Suggest To Picklist"] = true;
+        if (
+            !teamData['Suggest To Picklist'] &&
+            matchData['Suggest To Picklist']
+        ) {
+            newTeamData['Suggest To Picklist'] = true;
         }
         // functions.logger.info(newTeamData);
         db.collection('years')
@@ -111,23 +161,27 @@ const calcAutonPoints = (matchData: any, year: number | string) => {
             ? 5
             : 0;
     } else if (year == '2022') {
-        let autonPoints : number = 0;
-        autonPoints += (2 * matchData['Auton Bottom']) + (4 * matchData['Auton Upper']);
-        if(matchData['Left Tarmac'] === undefined) 
-            autonPoints += (2 * +matchData['Leave Tarmac']);
-        else autonPoints += (2 * +matchData['Left Tarmac'])
+        let autonPoints: number = 0;
+        autonPoints +=
+            2 * matchData['Auton Bottom'] + 4 * matchData['Auton Upper'];
+        if (matchData['Left Tarmac'] === undefined)
+            autonPoints += 2 * +matchData['Leave Tarmac'];
+        else autonPoints += 2 * +matchData['Left Tarmac'];
         return autonPoints;
-    }
-    else if(year=='2023'){
-        let autonPoints: number = 6*(matchData['Auton Upper Cone']+matchData['Auton Upper Cube'])+4*(matchData['Auton Mid Cone']+matchData['Auton Mid Cube'])+3*(matchData['Auton Lower Cube']+matchData['Auton Lower Cone'])
-        if(matchData['Auton Engaged']){
-            autonPoints+=12;
+    } else if (year == '2023') {
+        let autonPoints: number =
+            6 *
+                (matchData['Auton Upper Cone'] +
+                    matchData['Auton Upper Cube']) +
+            4 * (matchData['Auton Mid Cone'] + matchData['Auton Mid Cube']) +
+            3 * (matchData['Auton Lower Cube'] + matchData['Auton Lower Cone']);
+        if (matchData['Auton Engaged']) {
+            autonPoints += 12;
+        } else if (matchData['Auton Docked']) {
+            autonPoints += 8;
         }
-        else if(matchData['Auton Docked']){
-            autonPoints+=8;
-        }
-        if(matchData["Mobility"]){
-            autonPoints+=3;
+        if (matchData['Mobility']) {
+            autonPoints += 3;
         }
         return autonPoints;
     }
@@ -143,9 +197,16 @@ const calcTeleopPoints = (matchData: any, year: number | string) => {
         );
     } else if (year == '2022') {
         return matchData['Teleop Bottom'] + matchData['Teleop Upper'] * 2;
-    }
-    else if(year=='2023'){
-        return 5*(matchData['Teleop Upper Cone']+matchData['Teleop Upper Cube'])+3*(matchData['Teleop Mid Cone']+matchData['Teleop Mid Cube'])+2*(matchData['Teleop Lower Cone']+matchData['Teleop Lower Cube']);
+    } else if (year == '2023') {
+        return (
+            5 *
+                (matchData['Teleop Upper Cone'] +
+                    matchData['Teleop Upper Cube']) +
+            3 * (matchData['Teleop Mid Cone'] + matchData['Teleop Mid Cube']) +
+            2 *
+                (matchData['Teleop Lower Cone'] +
+                    matchData['Teleop Lower Cube'])
+        );
     }
     return -1;
 };
@@ -175,17 +236,15 @@ const calcEndgamePoints = (matchData: any, year: number | string) => {
                 climbScore = 0;
         }
         return climbScore;
-    }
-    else if(year='2023'){
+    } else if ((year = '2023')) {
         let endgamePoints: number = 0;
-        if(matchData['Endgame Engaged']){
-            endgamePoints+=10;
+        if (matchData['Endgame Engaged']) {
+            endgamePoints += 10;
+        } else if (matchData['Endgame Docked']) {
+            endgamePoints += 6;
         }
-        else if(matchData['Endgame Docked']){
-            endgamePoints+=6;
-        }
-        if(matchData['Parked']){
-            endgamePoints+=2;
+        if (matchData['Parked']) {
+            endgamePoints += 2;
         }
         return endgamePoints;
     }
@@ -221,7 +280,7 @@ export const resetData = functions.https.onCall(async (data, context) => {
     const { year, regional, team } = data;
     let matchCount: number = 0;
     let newData: any = {};
-    await (db
+    await db
         .collection('years')
         .doc(year)
         .collection('regionals')
@@ -235,24 +294,36 @@ export const resetData = functions.https.onCall(async (data, context) => {
             data.docs.forEach((match) => {
                 const matchData = match.data();
                 const keys = Object.keys(matchData || {});
-                Object.values(matchData || {}).forEach((value: string | number | boolean, index: number) => {
-                    if (typeof value === 'number' && keys[index] !== 'matchNum') {
-                        if (newData[keys[index]] === undefined) newData[keys[index]] = value;
-                        else newData[keys[index]] += value;
-                    }
-                });
+                Object.values(matchData || {}).forEach(
+                    (value: string | number | boolean, index: number) => {
+                        if (
+                            typeof value === 'number' &&
+                            keys[index] !== 'matchNum'
+                        ) {
+                            if (newData[keys[index]] === undefined)
+                                newData[keys[index]] = value;
+                            else newData[keys[index]] += value;
+                        }
+                    },
+                );
                 const autonPoints = calcAutonPoints(matchData, year);
-                if(newData['autonPoints']) newData.autonPoints += autonPoints;
+                if (newData['autonPoints']) newData.autonPoints += autonPoints;
                 else newData['autonPoints'] = autonPoints;
                 const teleopPoints = calcTeleopPoints(matchData, year);
-                if(newData['teleopPoints']) newData.teleopPoints += teleopPoints;
+                if (newData['teleopPoints'])
+                    newData.teleopPoints += teleopPoints;
                 else newData['teleopPoints'] = teleopPoints;
                 const endgamePoints = calcEndgamePoints(matchData, year);
-                if(newData['endgamePoints']) newData.endgamePoints += endgamePoints;
+                if (newData['endgamePoints'])
+                    newData.endgamePoints += endgamePoints;
                 else newData['endgamePoints'] = endgamePoints;
             });
-        }));
-    Object.keys(newData).forEach((key: string) => newData[key] = (Math.floor((newData[key] / matchCount) * 1000)) / 1000);
+        });
+    Object.keys(newData).forEach(
+        (key: string) =>
+            (newData[key] =
+                Math.floor((newData[key] / matchCount) * 1000) / 1000),
+    );
     newData.teamNum = team;
     return newData;
 });
