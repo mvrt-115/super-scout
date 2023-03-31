@@ -70,7 +70,7 @@ const Teams: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 rankingsRes.json(),
             ]);
 
-            console.log(oprsJson, rankingsJson);
+            // console.log(oprsJson, rankingsJson);
 
             if (!oprsJson || !rankingsJson) {
                 setLoading(false);
@@ -141,7 +141,7 @@ const Teams: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                     obj.teams.push(temp);
                 }),
             );
-            console.log(obj);
+            // console.log(obj);
             const fileName = `${year}${regional}Data`;
             const json = JSON.stringify(obj);
             const blob = new Blob([json], { type: 'application/json' });

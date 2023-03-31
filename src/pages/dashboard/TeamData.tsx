@@ -196,12 +196,14 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
     const [comments, setComments] = useState<any[]>([]);
 
     useEffect(() => {
+        console.log('how many times is the re-render on year effect being called?');
         const teamDisplay = localStorage.getItem('teamDisplay' + year);
         if (teamDisplay) setGraphs(JSON.parse(teamDisplay));
         else setPresetGraphs();
     }, [year]);
 
     useEffect(() => {
+        console.log('how many times is the component did mount being called?');
         const fetchQuantitativeData = async () => {
             let matches: any[] = [];
             const fetchData = async () => {
@@ -585,6 +587,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
     };
     //--
     const renderScoutingData = () => {
+        console.log(`average values: ${JSON.stringify(avgValues)}`);
         if (!matches || !matches.length)
             return (
                 <Text
@@ -806,6 +809,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 avgValues['endgamePoints'] +
                 avgValues['teleopPoints'];
             const matchesPlayed = matches.length;
+            const totalCycles = avgValues['Total Cycles']
 
             const autonCharge = matches.reduce(
                 (charged, match) => charged + match['Auton Did Charge'],
@@ -943,6 +947,14 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                     width="150px"
                                     title={'Average Points Per Match'}
                                     info={averagePointsPerMatch.toFixed(2)}
+                                    subinfo={'Matches Played: ' + matches.length}
+                                    colorTheme={200}
+                                ></Card>
+                                <Card
+                                    height="150px"
+                                    width="150px"
+                                    title={'Total Cycles'}
+                                    info={totalCycles.toFixed(2)}
                                     subinfo={'Matches Played: ' + matches.length}
                                     colorTheme={200}
                                 ></Card>
