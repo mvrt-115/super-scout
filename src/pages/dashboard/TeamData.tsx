@@ -1012,9 +1012,8 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                     height={275}
                                     width={450}
                                     valueObject={{
-                                        'No Attempt':
+                                        'No Attempt/Failed':
                                             matchesPlayed - autonCharge,
-                                        Failed: autonCharge - autonDocked,
                                         Docked: autonDocked - autonEngaged,
                                         Engaged: autonEngaged,
                                     }}
