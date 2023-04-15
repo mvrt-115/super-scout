@@ -432,7 +432,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                             <Heading size="md">Average Auton:</Heading>
                             <HStack>
                                 <HeatMap
-                                    matches={matches}
+                                    data={avgValues}
                                     fields={[
                                         'Auton Upper Cube',
                                         'Auton Mid Cube',
@@ -445,7 +445,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                     columns={1}
                                 />
                                 <HeatMap
-                                    matches={matches}
+                                    data={avgValues}
                                     fields={[
                                         'Auton Upper Cone',
                                         'Auton Mid Cone',
@@ -463,7 +463,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                             <Heading size="md">Average Teleop:</Heading>
                             <HStack>
                                 <HeatMap
-                                    matches={matches}
+                                    data={avgValues}
                                     fields={[
                                         'Teleop Upper Cube',
                                         'Teleop Mid Cube',
@@ -476,7 +476,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                     columns={1}
                                 />
                                 <HeatMap
-                                    matches={matches}
+                                    data={avgValues}
                                     fields={[
                                         'Teleop Upper Cone',
                                         'Teleop Mid Cone',

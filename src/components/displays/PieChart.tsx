@@ -61,6 +61,10 @@ const GenericPieChart: FC<valuesArray | valuesObject> = ({
 
     const [data, setData] = useState<any>([]);
 
+
+    useEffect(() =>{
+        console.log(data);
+    }, [data]);
     const findName = (name: any) => {
         for (let i = 0; i < data.length; i++) {
             if (data[i]['name'] == name) return i;

@@ -11,7 +11,7 @@ import {
 import React, { FC, useEffect, useState } from 'react';
 
 interface HeatmapProps {
-    matches: any[];
+    data: any;
     fields: string[];
     columns: number;
     rows: number;
@@ -21,7 +21,7 @@ interface HeatmapProps {
 }
 
 const HeatMap: FC<HeatmapProps> = ({
-    matches,
+    data,
     fields,
     columns,
     rows,
@@ -52,19 +52,14 @@ const HeatMap: FC<HeatmapProps> = ({
         '#f7f7f7',
     ];
     //Collect/preprocess data
-    let data: any[] = [];
-    fields.forEach((n) => {
-        data.push({ name: n, count: 0, fill: '', textfill: '' });
-    });
-    matches.forEach((match) => {
-        data.forEach((d: HeatMapData) => {
-            d.count += match[d.name];
-        });
+    let renderData: any[] = [];
+    fields.forEach((n: string) => {
+        renderData.push({ name: n, count: data[n], fill: '', textfill: '' });
     });
 
     //determine fill/colors based on count
-    const max_count = Math.max(...data.map((d: HeatMapData) => d.count));
-    data.forEach((option: HeatMapData) => {
+    const max_count = Math.max(...renderData.map((d: HeatMapData) => d.count));
+    renderData.forEach((option: HeatMapData) => {
         for (var i = 0; i < colors.length; i++) {
             if (option.count <= ((1 + i) / colors.length) * max_count) {
                 // option.fill = colors[i];
@@ -91,7 +86,7 @@ const HeatMap: FC<HeatmapProps> = ({
             >
                 <Text>
                     {element.name.substring(6) + ': '}
-                    {Math.round((element.count / data.length) * 100) / 100}
+                    {Math.round(element.count * 100) / 100}
                 </Text>
             </Box>
         );
@@ -102,7 +97,7 @@ const HeatMap: FC<HeatmapProps> = ({
             templateRows={`repeat(${rows}, 1fr)`}
             templateColumns={`repeat(${columns}, 1fr)`}
         >
-            {data.map((e) => rendbox(e))}
+            {renderData.map((e: any) => rendbox(e))}
         </Grid>
     );
 };
