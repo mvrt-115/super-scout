@@ -57,17 +57,7 @@ const HeatMap: FC<HeatmapProps> = ({
         renderData.push({ name: n, count: data[n], fill: '', textfill: '' });
     });
 
-    //determine fill/colors based on count
-    const max_count = Math.max(...renderData.map((d: HeatMapData) => d.count));
-    renderData.forEach((option: HeatMapData) => {
-        for (var i = 0; i < colors.length; i++) {
-            if (option.count <= ((1 + i) / colors.length) * max_count) {
-                // option.fill = colors[i];
-                // option.textfill = textcolors[i];
-                break;
-            }
-        }
-    });
+    
     //heatmap boxes
     const rendbox = (element: HeatMapData) => {
         //kind of arbitrary
