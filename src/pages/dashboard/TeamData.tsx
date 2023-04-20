@@ -148,11 +148,13 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
     const [ranking, setRanking] = useState<string>();
     const [loading, setLoading] = useState<boolean>(true);
     const [table, setTable] = useState<boolean>(false);
+    const [comments, setComments] = useState(false);
     const [template, setTemplate] = useState<string[]>(['']);
     const [avgValues, setAvgValues] = useState<any>();
     const [pitScoutData, setPitScoutData] = useState<any>({});
     const [pitScout, setPitScout] = useState<boolean>(false);
     const [teamImage, setTeamImage] = useState("");
+    const [teamComments, setTeamComments] = useState<Array<any>>([{}]);
 
     useEffect(() => {
         const teamDisplay = localStorage.getItem('teamDisplay' + year);
@@ -305,6 +307,28 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                     setPitScoutData(data.data() || {});
                 });
         };
+        const getComments = async () => {
+            const temp: Array<any> = [];
+            const querySnapshot = db
+                .collection('years')
+                .doc(year)
+                .collection('regionals')
+                .doc(regional)
+                .collection('teams')
+                .doc(team)
+                .collection('comments').get();
+
+            (await querySnapshot).forEach((doc) => {
+                const data = doc.data();
+                temp.push({match: data.match, comment: data.comment});
+            })
+            setTeamComments(temp);
+        };
+
+        const fetchQualitativeData2 = async () => {
+            await fetchQualitativeData();
+            await getComments();
+        }
 
         const fetchTeamImage = async () => {
             console.log(regional);  
@@ -319,7 +343,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
             setTeamImage(url);
  //           console.log(url[0]);
         }
-        fetchQuantitativeData().then(fetchQualitativeData).then(loadImages);
+        fetchQuantitativeData().then(fetchQualitativeData2).then(loadImages);
     } , [year, regional, team]);
 
     const setPresetGraphs = async () => {
@@ -626,6 +650,22 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                     dpr={dprStat}
                     ccwm={ccwmStat}
                 />
+                <Button
+                    variant="outline"
+                    aria-label="Table"
+                    onClick={() => {
+                        setComments(!comments);
+                    }}
+                    width={'100%'}
+                    marginTop={4}
+                    marginBottom={4}
+                    colorScheme={'mv-purple'}
+                >
+                    {comments ? "Hide comments" : "View Comments"}
+                </Button>
+                {comments && teamComments.map((comment)=>{ return(
+                    <Text> {comment.comment} </Text>)
+                })}
                 <Button
                     variant="outline"
                     aria-label="Table"
