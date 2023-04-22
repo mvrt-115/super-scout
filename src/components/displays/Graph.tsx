@@ -51,8 +51,10 @@ const Graph: FC<GraphProps> = ({ graphInfo, data }) => {
             if(b['sortBy']===undefined && a['sortBy']===undefined) return parseInt(b["teamNum"])-parseInt(a["teamNum"]);
             if(b['sortBy']===undefined) return -1;
             if(a['sortBy']===undefined) return 1;
-            return(parseInt(b['sortBy']) - parseInt(a['sortBy'])) * (graphInfo.sortBy=='matchNum' ? -1 : 1);
+            return(parseFloat(b['sortBy']) - parseFloat(a['sortBy'])) * (graphInfo.sortBy=='matchNum' ? -1 : 1);
         });
+        console.log("DATAAAA");
+        console.log(data);
     }
 
     const getTickCount = () => {
