@@ -21,11 +21,11 @@ interface PicklistProps {}
 const Picklist: FC<PicklistProps> = () => {
     const year = new Date().getFullYear();
     const { currentUser } = useAuth();
-    const [regional, setRegional] = useState<string>('cafr');
+    const [regional, setRegional] = useState<string>('casf');
     const [regionals, setRegionals] = useState<string[]>([]);
     const [suggestedTeams, setSuggestedTeams] = useState<string[]>([]);
-    const [offenseTeams, setOffenseTeams] = useState<string[]>([]);
-    const [defenseTeams, setDefenseTeams] = useState<string[]>([]);
+    const [firstPickTeams, setFirstPickTeams] = useState<string[]>([]);
+    const [secondPickTeams, setSecondPickTeams] = useState<string[]>([]);
     const [offensePicklist, setOffensePicklist] = useState<string[]>([]);
     const [defensePicklist, setDefensePicklist] = useState<string[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
@@ -64,16 +64,16 @@ const Picklist: FC<PicklistProps> = () => {
         fetchRegionals();
         fetchPicklist(regional, 'offense');
         fetchPicklist(regional, 'defense');
-        fetchOffenseTeams(regional);
-        fetchDefenseTeams(regional);
+        fetchFirstPickTeams(regional);
+        fetchSecondPickTeams(regional);
     }, []);
 
     useEffect(() => {
         setLoading(true);
         fetchPicklist(regional, 'offense');
         fetchPicklist(regional, 'defense');
-        fetchOffenseTeams(regional);
-        fetchDefenseTeams(regional);
+        fetchFirstPickTeams(regional);
+        fetchSecondPickTeams(regional);
     }, [regional]);
 
     const fetchRegionals = async () => {
@@ -106,27 +106,29 @@ const Picklist: FC<PicklistProps> = () => {
         }
     };
 
-    const fetchOffenseTeams = async (regionalChoice: string) => {
-        if (offenseTeams.length > 1) setOffenseTeams([]);
+    const fetchFirstPickTeams = async (regionalChoice: string) => {
+        console.log(regionalChoice)
+        if (firstPickTeams.length > 1) setFirstPickTeams([]);
         if (regionalChoice.length < 3) return;
         //setRegional(regionalChoice);
         db.collection('years')
             .doc(year + '')
             .collection('regionals')
             .doc(regionalChoice)
-            .collection('teams')
+            .collection('teams') 
             .get()
             .then((data) => {
+                // console.log(data);
                 let teams = data.docs.map((doc) => {
                     return doc.id;
                 });
-                setOffenseTeams(teams);
+                setFirstPickTeams(teams);
             });
         setLoading(false);
     };
 
-    const fetchDefenseTeams = async (regionalChoice: string) => {
-        if (defenseTeams.length > 1) setDefenseTeams([]);
+    const fetchSecondPickTeams = async (regionalChoice: string) => {
+        if (secondPickTeams.length > 1) setSecondPickTeams([]);
         if (regionalChoice.length < 3) return;
         //setRegional(regionalChoice);
         db.collection('years')
@@ -139,7 +141,7 @@ const Picklist: FC<PicklistProps> = () => {
                 let teams = data.docs.map((doc) => {
                     return doc.id;
                 });
-                setDefenseTeams(teams);
+                setSecondPickTeams(teams);
             });
     };
 
@@ -157,7 +159,7 @@ const Picklist: FC<PicklistProps> = () => {
             .get()
             .then((fields) => {
                 if (picklistType === 'offense') {
-                    if (fields.docs[0]?.data().offensePicklist?.length > 0)
+                    if (fields.docs[0]?.data().offensePicklist?.length > 0) 
                         setOffensePicklist(
                             fields.docs[0].data().offensePicklist,
                         );
@@ -236,8 +238,8 @@ const Picklist: FC<PicklistProps> = () => {
                         isDisabled={!currentUser}
                         onChange={(e) => {
                             setRegional(e.target.value);
-                            fetchOffenseTeams(e.target.value);
-                            fetchDefenseTeams(e.target.value);
+                            fetchFirstPickTeams(e.target.value);
+                            fetchSecondPickTeams(e.target.value);
                             fetchPicklist(e.target.value, 'offense');
                             fetchPicklist(e.target.value, 'defense');
                         }}
@@ -248,7 +250,7 @@ const Picklist: FC<PicklistProps> = () => {
                     >
                         {regionals?.map((regional) => {
                             return (
-                                <option value={regional}>
+                                <option value={regional} >
                                     {regional.toUpperCase()}
                                 </option>
                             );
@@ -278,9 +280,13 @@ const Picklist: FC<PicklistProps> = () => {
                             fontSize: '20px',
                         }}
                     >
-                        Current Offense Picklist:
+                        Current First Pick List:
                     </h3>
-                    <Flex align="center" justify="center">
+                    <Flex align="center" justify="center" style={
+                        {
+                            flexWrap: 'wrap',
+                        }
+                    }>
                         {offensePicklist?.map((teamNum, index) => {
                             return (
                                 <div
@@ -342,9 +348,13 @@ const Picklist: FC<PicklistProps> = () => {
                             fontSize: '20px',
                         }}
                     >
-                        Current Defense Picklist:
+                        Current Second Pick List:
                     </h3>
-                    <Flex align="center" justify="center">
+                    <Flex align="center" justify="center" style={
+                        {
+                            flexWrap: 'wrap',
+                        }
+                    }>
                         {defensePicklist?.map((teamNum, index) => {
                             return (
                                 <div
@@ -401,9 +411,9 @@ const Picklist: FC<PicklistProps> = () => {
                             textAlign: 'center',
                         }}
                     >
-                        Offense Picklist:
+                        First Pick List:
                     </h3>
-                    {offenseTeams?.map((team) => {
+                    {firstPickTeams?.map((team) => {
                         return (
                             <div
                                 style={{
@@ -458,9 +468,9 @@ const Picklist: FC<PicklistProps> = () => {
                             textAlign: 'center',
                         }}
                     >
-                        Defense Picklist:
+                        Second Pick List:
                     </h3>
-                    {defenseTeams?.map((team) => {
+                    {secondPickTeams?.map((team) => {
                         return (
                             <div
                                 style={{
