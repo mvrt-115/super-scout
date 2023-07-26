@@ -12,6 +12,146 @@ interface RouteParams {
     year: string;
     regional: string;
 }
+const calcAutonPoints = (matchData: any, year: number | string) => {
+    if (year == '2019') {
+        return matchData.autonBottom * 2 +
+            matchData.autonUpper * 4 +
+            matchData.autonInner * 6 +
+            matchData.crossedInitLine
+            ? 5
+            : 0;
+    } else if (year == '2022') {
+        let autonPoints: number = 0;
+        autonPoints += (2 * matchData['Auton Bottom']) + (4 * matchData['Auton Upper']);
+        if (matchData['Left Tarmac'] === undefined)
+            autonPoints += (2 * +matchData['Leave Tarmac']);
+        else autonPoints += (2 * +matchData['Left Tarmac'])
+        return autonPoints;
+    }
+    else if (year == '2023') {
+        let autonPoints: number = 6 * (matchData['Auton Upper Cone'] + matchData['Auton Upper Cube']) + 4 * (matchData['Auton Mid Cone'] + matchData['Auton Mid Cube']) + 3 * (matchData['Auton Lower Cube'] + matchData['Auton Lower Cone'])
+        if (matchData['Auton Engaged']) {
+            autonPoints += 12;
+        }
+        else if (matchData['Auton Docked']) {
+            autonPoints += 8;
+        }
+        if (matchData["Mobility"]) {
+            autonPoints += 3;
+        }
+        return autonPoints;
+    }
+    return -1;
+};
+
+const calcTeleopPoints = (matchData: any, year: number | string) => {
+    if (year == '2019') {
+        return (
+            matchData.teleopBottom +
+            matchData.teleopUpper * 2 +
+            matchData.teleopInner * 4
+        );
+    } else if (year == '2022') {
+        return matchData['Teleop Bottom'] + matchData['Teleop Upper'] * 2;
+    }
+    else if (year == '2023') {
+        return 5 * (matchData['Teleop Upper Cone'] + matchData['Teleop Upper Cube']) + 3 * (matchData['Teleop Mid Cone'] + matchData['Teleop Mid Cube']) + 2 * (matchData['Teleop Lower Cone'] + matchData['Teleop Lower Cube']);
+    }
+    return -1;
+};
+
+const calcEndgamePoints = (matchData: any, year: number | string) => {
+    if (year == '2019') {
+        let endgamePoints = 5;
+        if (!matchData.hangFail) endgamePoints += 20;
+        if (!matchData.levelFail) endgamePoints += 15;
+        return endgamePoints;
+    } else if (year == '2022') {
+        let climbScore: number = 0;
+        switch (matchData['Climb rung']) {
+            case 'Low':
+                climbScore = 4;
+                break;
+            case 'Mid':
+                climbScore = 6;
+                break;
+            case 'High':
+                climbScore = 10;
+                break;
+            case 'Traversal':
+                climbScore = 15;
+                break;
+            default:
+                climbScore = 0;
+        }
+        return climbScore;
+    }
+    else if (year = '2023') {
+        let endgamePoints: number = 0;
+        if (matchData['Endgame Engaged']) {
+            endgamePoints += 10;
+        }
+        else if (matchData['Endgame Docked']) {
+            endgamePoints += 6;
+        }
+        if (matchData['Parked']) {
+            endgamePoints += 2;
+        }
+        return endgamePoints;
+    }
+    return -1;
+};
+const resetData = async (data: any) => {
+    const { year, regional, team } = data;
+    let matchCount: number = 0;
+    let newData: any = {};
+    await db
+        .collection('years')
+        .doc(year)
+        .collection('regionals')
+        .doc(regional)
+        .collection('teams')
+        .doc(team)
+        .collection('matches')
+        .get()
+        .then((data) => {
+            matchCount = data.docs.length;
+            data.docs.forEach((match) => {
+                const matchData = match.data();
+                const keys = Object.keys(matchData || {});
+                Object.values(matchData || {}).forEach(
+                    (value: string | number | boolean, index: number) => {
+                        if (
+                            typeof value === 'number' &&
+                            keys[index] !== 'matchNum'
+                        ) {
+                            if (newData[keys[index]] === undefined)
+                                newData[keys[index]] = value;
+                            else newData[keys[index]] += value;
+                        }
+                    },
+                );
+                const autonPoints = calcAutonPoints(matchData, year);
+                if (newData['autonPoints']) newData.autonPoints += autonPoints;
+                else newData['autonPoints'] = autonPoints;
+                const teleopPoints = calcTeleopPoints(matchData, year);
+                if (newData['teleopPoints'])
+                    newData.teleopPoints += teleopPoints;
+                else newData['teleopPoints'] = teleopPoints;
+                const endgamePoints = calcEndgamePoints(matchData, year);
+                if (newData['endgamePoints'])
+                    newData.endgamePoints += endgamePoints;
+                else newData['endgamePoints'] = endgamePoints;
+            });
+        });
+    Object.keys(newData).forEach(
+        (key: string) =>
+            (newData[key] =
+                Math.floor((newData[key] / matchCount) * 1000) / 1000),
+    );
+    newData.teamNum = team;
+    return newData;
+};
 
 const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
     const [teams, setTeams] = useState<any[]>([]);
@@ -62,6 +202,7 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 setGraphs(temp);
             });
     }
+    
     useEffect(() => {
         console.clear();
         const fetchData = async () => {
@@ -370,7 +511,6 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
             {isLoggedIn && < Button
                 onClick={() => {
                     console.clear();
-                    const resetData = functions.httpsCallable('resetData');
                     const teamsRef = db
                         .collection('years')
                         .doc(year)
