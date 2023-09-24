@@ -103,6 +103,27 @@ const Scanner: FC<ScannerProps> = () => {
         setData([]);
     };
 
+    const downloadStorageData = () => {
+        // Get all data from local storage
+        const localStorageData = { ...localStorage }; // Convert to an object for easier manipulation
+        
+        // Create a Blob containing the JSON data
+        const jsonData = JSON.stringify(localStorageData, null, 2); // Use null and 2 for pretty formatting
+        const blob = new Blob([jsonData], { type: 'application/json' });
+      
+        // Create a download link and trigger the download
+        const downloadLink = document.createElement('a');
+        downloadLink.href = URL.createObjectURL(blob);
+        downloadLink.download = 'ScannerDataDownload.json';
+        downloadLink.style.display = 'none';
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+      
+        // Clear local storage
+        localStorage.clear();
+      };
+
     if (!currentUser) return <NeedAccount />;
     return (
         <div
@@ -153,6 +174,15 @@ const Scanner: FC<ScannerProps> = () => {
                     disabled={!data.length}
                 >
                     Upload Matches
+                </Button>
+                <Button
+                    onClick={downloadStorageData}
+                    colorScheme="green"
+                    size="md"
+                    width={'100%'}
+                    marginTop="1"
+                >
+                    Download Data - (Delete Matches After)
                 </Button>
                 <Spacer />
                 <Accordion allowMultiple width="100%">
