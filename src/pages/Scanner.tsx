@@ -104,12 +104,16 @@ const Scanner: FC<ScannerProps> = () => {
     };
 
     const downloadStorageData = () => {
-        // Get all data from local storage
-        const localStorageData = { ...localStorage }; // Convert to an object for easier manipulation
-        
+        // Get the "matches" data from local storage
+        const matchesData = localStorage.getItem("matches");
+      
+        if (!matchesData) {
+          alert("No data to download.");
+          return;
+        }
+      
         // Create a Blob containing the JSON data
-        const jsonData = JSON.stringify(localStorageData, null, 2); // Use null and 2 for pretty formatting
-        const blob = new Blob([jsonData], { type: 'application/json' });
+        const blob = new Blob([matchesData], { type: 'application/json' });
       
         // Create a download link and trigger the download
         const downloadLink = document.createElement('a');
@@ -120,9 +124,10 @@ const Scanner: FC<ScannerProps> = () => {
         downloadLink.click();
         document.body.removeChild(downloadLink);
       
-        // Clear local storage
-        localStorage.clear();
+        // Clear the "matches" data from local storage
+        localStorage.removeItem("matches");
       };
+      
 
     if (!currentUser) return <NeedAccount />;
     return (
