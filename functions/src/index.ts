@@ -80,7 +80,11 @@ export const matchUpdate = functions.firestore
             matchData['Teleop Lower'] =
                 matchData['Teleop Lower Cube'] + matchData['Teleop Lower Cone'];
         }
-
+        if (context.params.year == '2024'){
+            matchData['Teleop Cycles'] = matchData['Teleop Speaker Scored'] + matchData['Teleop Amp Scored']
+            matchData['Auton Cycles'] = matchData['Auton Speaker Scored'] + matchData['Auton Amp Scored']
+            matchData["Total Cycles"] = matchData['Auton Cycles'] + matchData['Teleop Cycles']
+        }
         db.collection('years')
             .doc(context.params.year)
             .collection('regionals')
@@ -185,6 +189,13 @@ const calcAutonPoints = (matchData: any, year: number | string) => {
         }
         return autonPoints;
     }
+    else if(year == '2024'){
+        let autonPoints: number = 5 * matchData['Auton Speaker Scored'] + 2 * matchData['Auton Amp Scored'];
+        if(matchData['Mobility']){
+            autonPoints+=2;
+        }
+        return autonPoints;
+    }
     return -1;
 };
 
@@ -207,6 +218,11 @@ const calcTeleopPoints = (matchData: any, year: number | string) => {
                 (matchData['Teleop Lower Cone'] +
                     matchData['Teleop Lower Cube'])
         );
+    }
+    else if(year == '2024'){
+        return (
+            2 * matchData['Teleop Speaker Scored'] + matchData['Teleop Amp Scored']//DOES NOT ACCOUNT FOR AMP
+        )
     }
     return -1;
 };
@@ -236,15 +252,30 @@ const calcEndgamePoints = (matchData: any, year: number | string) => {
                 climbScore = 0;
         }
         return climbScore;
-    } else if ((year = '2023')) {
+    } else if (year == '2023') {
         let endgamePoints: number = 0;
         if (matchData['Endgame Engaged']) {
             endgamePoints += 10;
         } else if (matchData['Endgame Docked']) {
             endgamePoints += 6;
         }
-        if (matchData['Parked']) {
+        if (matchData['Park']) {
             endgamePoints += 2;
+        }
+        return endgamePoints;
+    } else if(year == '2024'){
+        let endgamePoints: number = 0;
+        if(matchData['Climb Level'] == 'Solo'){
+            endgamePoints+=3;
+        }
+        if(matchData['Climb Level'] == 'Harmony'){
+            endgamePoints+=4;
+        }
+        if(matchData['Park']){
+            endgamePoints+=1;
+        }
+        if(matchData['Trap']){
+            endgamePoints+=5;
         }
         return endgamePoints;
     }

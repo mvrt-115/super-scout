@@ -44,7 +44,39 @@ const DashboardHome: FC<DashboardHomeProps> = () => {
         };
         fetchData();
     }, []);
+    const moveData = async () => {
+        let tempList: any[] = []
+        const teamsList = await db.collection('years').doc('2024').collection("regionals").doc('cave').collection("teams").get().then((teams)=>{
+            const temp = teams.docs;
+            temp.forEach((team)=>{
+                tempList.push(team.id)
+            })
+        });
+        tempList.forEach((team)=>{
+            db.collection("years").doc("2024").collection("regionals").doc("cave").collection("teams").doc(team).collection("matches").get().then((ids)=>{
+                const matchList = ids.docs;
+                matchList.forEach((match)=>{
+                    const id = match.id;
+                    db.collection("years").doc('2024').collection("regionals").doc("cave").collection("teams").doc(team).collection("matches").doc(id).get().then((data)=>{
+                        let temp2:any = data.data();
+                        if(temp2==undefined){
+                            console.log(id+" "+team)
+                        }
+                        let temp3:any = temp2["Auton Speaker Missed"];
+                        temp2["Auton Speaker Missed"] = temp2["Auton Speaker Scored"]
+                        temp2["Auton Speaker Scored"] = temp3;
+                        temp2["Auton Cycles"]+=temp2["Auton Speaker Scored"];
+                        temp2["Total Cycles"]+=temp2["Auton Speaker Scored"];
+                        if(team=="115"){
+                            console.log(temp2);}
+                        db.collection("years").doc("2024").collection("regionals").doc("cave").collection("teams").doc(team).collection("matches").doc(id).set(temp2);
+                    })
+                })
+            })
+        })
+        //console.log(tempList)
 
+    }
     if (loading) return <Spinner />;
 
     return (
