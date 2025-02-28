@@ -21,7 +21,7 @@ interface valuesObject extends GenericPieChartProps {
 
 // for example if you wanted to use last years matches to generate a pie chart of the different climbs
 // from the 2022 game, you could call the following:
-// <GenericPieChart values={matches.map((match) => match['Climb level'])} colors = {{'Low' : '1000', 'Mid' : '500', 'High' : '200', 'Traversal' : '1', 'None' : '1000'}}/>
+// <GenericPieChart values={matches.map((match) => match['Climb rung'])} colors = {{'Low' : '1000', 'Mid' : '500', 'High' : '200', 'Traversal' : '1', 'None' : '1000'}}/>
 // Alternatively leaving colors blank or passing in an empty array will automatically assign the colors
 const GenericPieChart: FC<valuesArray | valuesObject> = ({
     valueArray,

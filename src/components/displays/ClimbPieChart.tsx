@@ -19,7 +19,7 @@ const ClimbPieChart: FC<ClimbPieChartProps> = ({matches}) => {
         { name: 'None', count: 0, fill: '#202020' },
     ]);
     matches.forEach((match) => {
-        switch (match['Climb level']) {
+        switch (match['Climb rung']) {
             // case 'Low':
             //     data[0]['count'] += 1;
             //     break;
@@ -36,13 +36,13 @@ const ClimbPieChart: FC<ClimbPieChartProps> = ({matches}) => {
             //     data[4]['count'] += 1;
             //     break;
             case 'Shallow':
-                data[0]['count'] += 1; //fix value
+                data[0]['count'] += 1;
                 break;
             case 'Deep':
-                data[1]['count'] += 1; ////fix value
+                data[1]['count'] += 1;
                 break;
             case 'None':
-                data[2]['count'] += 1; ////fix value
+                data[2]['count'] += 1;
                 break;
         }
     });

@@ -80,9 +80,24 @@ export const matchUpdate = functions.firestore
             matchData['Teleop Lower'] =
                 matchData['Teleop Lower Cube'] + matchData['Teleop Lower Cone'];
         }
-        if (context.params.year == '2024'){
-            matchData['Teleop Cycles'] = matchData['Teleop Speaker Scored'] + matchData['Teleop Amp Scored']
-            matchData['Auton Cycles'] = matchData['Auton Speaker Scored'] + matchData['Auton Amp Scored']
+        // if (context.params.year == '2024'){
+        //     matchData['Teleop Cycles'] = matchData['Teleop Speaker Scored'] + matchData['Teleop Amp Scored']
+        //     matchData['Auton Cycles'] = matchData['Auton Speaker Scored'] + matchData['Auton Amp Scored']
+        //     matchData["Total Cycles"] = matchData['Auton Cycles'] + matchData['Teleop Cycles']
+        // }
+        if (context.params.year == '2025'){
+            matchData['Teleop Cycles'] = matchData['Teleop Coral Level 1 Scored'] 
+                + matchData['Teleop Coral Level 2 Scored'] 
+                + matchData['Teleop Coral Level 3 Scored']
+                + matchData['Teleop Coral Level 4 Scored']
+                + matchData['Teleop Algae Processor Scored']
+                + matchData['Teleop Algae Net Scored']
+            matchData['Auton Cycles'] = matchData['Auton Coral Level 1 Scored'] 
+                + matchData['Auton Coral Level 2 Scored'] 
+                + matchData['Auton Coral Level 3 Scored']
+                + matchData['Auton Coral Level 4 Scored']
+                + matchData['Auton Algae Processor Scored']
+                + matchData['Auton Algae Net Scored']
             matchData["Total Cycles"] = matchData['Auton Cycles'] + matchData['Teleop Cycles']
         }
         db.collection('years')
@@ -196,6 +211,18 @@ const calcAutonPoints = (matchData: any, year: number | string) => {
         }
         return autonPoints;
     }
+    else if(year == '2025'){
+        let autonPoints: number = 3*matchData['Auton Coral Level 1 Scored'] 
+            + 4*matchData['Auton Coral Level 2 Scored']
+            + 6*matchData['Auton Coral Level 3 Scored']
+            + 7*matchData['Auton Coral Level 4 Scored']
+            + 6*matchData['Auton Algae Processor Scored']
+            + 4*matchData['Auton Algae Net Scored']
+        if(matchData['Mobility']){
+            autonPoints+=3;
+        }
+        return autonPoints;
+    }
     return -1;
 };
 
@@ -224,6 +251,15 @@ const calcTeleopPoints = (matchData: any, year: number | string) => {
             2 * matchData['Teleop Speaker Scored'] + matchData['Teleop Amp Scored']//DOES NOT ACCOUNT FOR AMP
         )
     }
+    else if(year == '2025'){
+        let teleopPoints: number = 2*matchData['Teleop Coral Level 1 Scored'] 
+            + 3*matchData['Teleop Coral Level 2 Scored']
+            + 4*matchData['Teleop Coral Level 3 Scored']
+            + 5*matchData['Teleop Coral Level 4 Scored']
+            + 6*matchData['Teleop Algae Processor Scored']
+            + 4*matchData['Teleop Algae Net Scored']
+        return teleopPoints;
+    }
     return -1;
 };
 
@@ -235,7 +271,7 @@ const calcEndgamePoints = (matchData: any, year: number | string) => {
         return endgamePoints;
     } else if (year == '2022') {
         let climbScore: number = 0;
-        switch (matchData['Climb level']) {
+        switch (matchData['Climb rung']) {
             case 'Low':
                 climbScore = 4;
                 break;
@@ -277,6 +313,21 @@ const calcEndgamePoints = (matchData: any, year: number | string) => {
         if(matchData['Trap']){
             endgamePoints+=5;
         }
+        return endgamePoints;
+    } else if(year == '2025'){
+        let endgamePoints: number = 0;
+        if(matchData['Climb Level'] == 'Shallow'){
+            endgamePoints+=6;
+        }
+        if(matchData['Climb Level'] == 'Deep'){
+            endgamePoints+=12;
+        }
+        if(matchData['Park']){
+            endgamePoints+=2;
+        }
+        // if(matchData['Trap']){
+        //     endgamePoints+=5;
+        // }
         return endgamePoints;
     }
     return -1;
