@@ -10,28 +10,39 @@ interface ClimbPieChartProps {
 
 const ClimbPieChart: FC<ClimbPieChartProps> = ({matches}) => {
     const [data, setData] = useState<any>([
-        { name: 'Low', count: 0, fill: '#260235' },
-        { name: 'Mid', count: 0, fill: '#550575' },
-        { name: 'High', count: 0, fill: '#dab0ec' },
-        { name: 'Traversal', count: 0, fill: '#ffc410' },
+        // { name: 'Low', count: 0, fill: '#260235' },
+        // { name: 'Mid', count: 0, fill: '#550575' },
+        // { name: 'High', count: 0, fill: '#dab0ec' },
+        // { name: 'Traversal', count: 0, fill: '#ffc410' },
+        { name: 'Shallow', count: 0, fill: '#dab0ec' },
+        { name: 'Deep', count: 0, fill: '#ffc410' },
         { name: 'None', count: 0, fill: '#202020' },
     ]);
     matches.forEach((match) => {
-        switch (match['Climb rung']) {
-            case 'Low':
-                data[0]['count'] += 1;
+        switch (match['Climb level']) {
+            // case 'Low':
+            //     data[0]['count'] += 1;
+            //     break;
+            // case 'Mid':
+            //     data[1]['count'] += 1;
+            //     break;
+            // case 'High':
+            //     data[2]['count'] += 1;
+            //     break;
+            // case 'Traversal':
+            //     data[3]['count'] += 1;
+            //     break;
+            // case 'None':
+            //     data[4]['count'] += 1;
+            //     break;
+            case 'Shallow':
+                data[0]['count'] += 1; //fix value
                 break;
-            case 'Mid':
-                data[1]['count'] += 1;
-                break;
-            case 'High':
-                data[2]['count'] += 1;
-                break;
-            case 'Traversal':
-                data[3]['count'] += 1;
+            case 'Deep':
+                data[1]['count'] += 1; ////fix value
                 break;
             case 'None':
-                data[4]['count'] += 1;
+                data[2]['count'] += 1; ////fix value
                 break;
         }
     });

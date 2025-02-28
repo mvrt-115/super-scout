@@ -235,7 +235,7 @@ const calcEndgamePoints = (matchData: any, year: number | string) => {
         return endgamePoints;
     } else if (year == '2022') {
         let climbScore: number = 0;
-        switch (matchData['Climb rung']) {
+        switch (matchData['Climb level']) {
             case 'Low':
                 climbScore = 4;
                 break;
