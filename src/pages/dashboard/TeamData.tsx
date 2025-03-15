@@ -256,18 +256,18 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 });
         };
 
-        const fetchTeamImage = async () => {
-            await firebase
-                .storage()
-                .ref()
-                .child(`robotImages/${year}/${regional}/${team}`)
-                .getDownloadURL()
-                .then((result) => {
-                    // console.log(result);
-                    setTeamImage(result);
-                })
-                .catch((err) => console.log(err));
-        };
+        // const fetchTeamImage = async () => {
+        //     await firebase
+        //         .storage()
+        //         .ref()
+        //         .child(`robotImages/${year}/${regional}/${team}`)
+        //         .getDownloadURL()
+        //         .then((result) => {
+        //             // console.log(result);
+        //             setTeamImage(result);
+        //         })
+        //         .catch((err) => console.log(err));
+        // };
 
         const fetchComments = async () => {
             try {
@@ -289,7 +289,8 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 console.log(e);
             }
         }
-        fetchQuantitativeData().then(fetchQualitativeData).then(fetchTeamImage).then(fetchComments);
+        fetchQuantitativeData().then(fetchQualitativeData).then(fetchComments);
+        //fetchQuantitativeData().then(fetchQualitativeData).then(fetchTeamImage).then(fetchComments);
     }, [year, regional, team]);
 
     const setPresetGraphs = async () => {
@@ -612,8 +613,9 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
         );
     };
 
+    //start for drive dashboard
     const renderDriveteamView = () => {
-        if (year == '2023') {
+        if (year == '2025') {
             // Will turn into one loop later
 
             const coneLow = matches.reduce(
@@ -779,14 +781,14 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                 <Card
                                     height="150px"
                                     width="150px"
-                                    title={'Drivetrain'}
+                                    title={'Average Total Coral Scored'}
                                     info={dtType}
                                     colorTheme={200}
                                 />
                                 <Card
                                     height="150px"
                                     width="150px"
-                                    title={'Average Cubes'}
+                                    title={'Average L1 coral attempted + % accuracy'}
                                     info={
                                         '' + Math.round(((cubeLow + cubeHigh + cubeMid) / matches.length) * 100) / 100
                                     }
@@ -809,7 +811,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                 <Card
                                     height="150px"
                                     width="150px"
-                                    title={'Average Cones'}
+                                    title={'Average L2 coral attempted + % accuracy'}
                                     info={
                                         '' +
                                         (
@@ -836,14 +838,14 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                 <Card
                                     height="150px"
                                     width="150px"
-                                    title={'Charge Time'}
+                                    title={'Average L3 coral attempted + % accuracy'}
                                     info={chargeTime.toFixed(2) + ' s'}
                                     colorTheme={200}
                                 ></Card>
                                 <Card
                                     height="150px"
                                     width="150px"
-                                    title={'Average Points Per Match'}
+                                    title={'Average L4 coral attempted + % accuracy'}
                                     info={averagePointsPerMatch.toFixed(2)}
                                     subinfo={'Matches Played: ' + matches.length}
                                     colorTheme={200}
@@ -851,7 +853,23 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                 <Card
                                     height="150px"
                                     width="150px"
-                                    title={'Total Cycles'}
+                                    title={'Average algae processor + % accuracy'}
+                                    info={totalCycles.toFixed(2)}
+                                    subinfo={'Matches Played: ' + matches.length}
+                                    colorTheme={200}
+                                ></Card>
+                                <Card
+                                    height="150px"
+                                    width="150px"
+                                    title={'Average net processor + % accuracy'}
+                                    info={totalCycles.toFixed(2)}
+                                    subinfo={'Matches Played: ' + matches.length}
+                                    colorTheme={200}
+                                ></Card>
+                                <Card
+                                    height="150px"
+                                    width="150px"
+                                    title={'Remove algae'}
                                     info={totalCycles.toFixed(2)}
                                     subinfo={'Matches Played: ' + matches.length}
                                     colorTheme={200}
@@ -968,6 +986,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
             );
         }
     };
+    //end for drive dashboard
 
     const renderGeneralInfo = () => {
         return (
@@ -997,7 +1016,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                     >
                         Rank # {ranking}
                     </Heading>
-                    {year === '2023' ? (
+                    {year === '2025' ? (
                         <Button
                             size={'sm'}
                             onClick={() => {
@@ -1029,7 +1048,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
         );
     };
 
-    if (loading) return <Spinner />;
+    if (loading) return <Spinner/>;
     return (
 
         <>
