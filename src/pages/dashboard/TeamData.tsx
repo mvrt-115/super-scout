@@ -618,92 +618,187 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
         if (year == '2025') {
             // Will turn into one loop later
 
-            const coneLow = matches.reduce(
-                (cones, match) =>
-                    cones +
-                    match['Auton Lower Cone'] +
-                    match['Teleop Lower Cone'],
+            const totalCoralScoredL1: number = matches.reduce(
+                (coral, match) =>
+                    coral +
+                    match['Auton Coral Level 1 Scored'] +
+                    match['Teleop Coral Level 1 Scored'],
+                0,
+            );
+            
+            const totalCoralScoredL2: number = matches.reduce(
+                (coral, match) =>
+                    coral +
+                    match['Auton Coral Level 2 Scored'] +
+                    match['Teleop Coral Level 2 Scored'],
                 0,
             );
 
-            const coneMid = matches.reduce(
-                (cones, match) =>
-                    cones + match['Auton Mid Cone'] + match['Teleop Mid Cone'],
+            const totalCoralScoredL3: number = matches.reduce(
+                (coral, match) =>
+                    coral +
+                    match['Auton Coral Level 3 Scored'] +
+                    match['Teleop Coral Level 3 Scored'],
                 0,
             );
-            const coneHigh = matches.reduce(
-                (cones, match) =>
-                    cones +
-                    match['Auton Upper Cone'] +
-                    match['Teleop Upper Cone'],
-                0,
-            );
-            const cubeLow: number = matches.reduce(
-                (cubes, match) =>
-                    cubes +
-                    match['Auton Lower Cube'] +
-                    match['Teleop Lower Cube'],
-                0,
-            );
-            const cubeMid = matches.reduce(
-                (cubes, match) =>
-                    cubes + match['Auton Mid Cube'] + match['Teleop Mid Cube'],
-                0,
-            );
-            const cubeHigh = matches.reduce(
-                (cubes, match) =>
-                    cubes +
-                    match['Auton Upper Cube'] +
-                    match['Teleop Upper Cube'],
+            const totalCoralScoredL4: number = matches.reduce(
+                (coral, match) =>
+                    coral +
+                    match['Auton Coral Level 4 Scored'] +
+                    match['Teleop Coral Level 4 Scored'],
                 0,
             );
 
-            const cubeLowMissed = matches.reduce(
-                (missed, match) =>
-                    missed +
-                    match['Auton Lower Cube Missed'] +
-                    match['Teleop Lower Cube Missed'],
+            const totalCoralMissedL1: number = matches.reduce(
+                (coral, match) =>
+                    coral +
+                    match['Auton Coral Level 1 Missed'] +
+                    match['Teleop Coral Level 1 Missed'],
                 0,
             );
 
-            const cubeMidMissed = matches.reduce(
-                (missed, match) =>
-                    missed +
-                    match['Auton Mid Cube Missed'] +
-                    match['Teleop Mid Cube Missed'],
-                0,
-            );
-            const cubeHighMissed = matches.reduce(
-                (missed, match) =>
-                    missed +
-                    match['Auton Upper Cube Missed'] +
-                    match['Teleop Upper Cube Missed'],
-                0,
-            );
-            const coneLowMissed = matches.reduce(
-                (missed, match) =>
-                    missed +
-                    match['Auton Lower Cone Missed'] +
-                    match['Teleop Lower Cone Missed'],
+            const totalCoralMissedL2: number = matches.reduce(
+                (coral, match) =>
+                    coral +
+                    match['Auton Coral Level 2 Missed'] +
+                    match['Teleop Coral Level 2 Missed'],
                 0,
             );
 
-            const coneMidMissed = matches.reduce(
-                (missed, match) =>
-                    missed +
-                    match['Auton Mid Cone Missed'] +
-                    match['Teleop Mid Cone Missed'],
-                0,
-            );
-            const coneHighMissed = matches.reduce(
-                (missed, match) =>
-                    missed +
-                    match['Auton Upper Cone Missed'] +
-                    match['Teleop Upper Cone Missed'],
+            const totalCoralMissedL3: number = matches.reduce(
+                (coral, match) =>
+                    coral +
+                    match['Auton Coral Level 3 Missed'] +
+                    match['Teleop Coral Level 3 Missed'],
                 0,
             );
 
-            const dtType = pitScoutData['DT Type'];
+            const totalCoralMissedL4: number = matches.reduce(
+                (coral, match) =>
+                    coral +
+                    match['Auton Coral Level 4 Missed'] +
+                    match['Teleop Coral Level 4 Missed'],
+                0,
+            );
+
+            const totalAlgaeProcessorScored: number = matches.reduce(
+                (coral, match) =>
+                    coral +
+                    match['Auton Algae Processor Scored'] +
+                    match['Teleop Algae Processor Scored'],
+                0,
+            );
+
+            const totalAlgaeProcessorMissed: number = matches.reduce(
+                (coral, match) =>
+                    coral +
+                    match['Auton Algae Processor Missed'] +
+                    match['Teleop Algae Processor Missed'],
+                0,
+            );
+
+            const totalAlgaeNetScored: number = matches.reduce(
+                (coral, match) =>
+                    coral +
+                    match['Auton Algae Net Scored'] +
+                    match['Teleop Algae Net Scored'],
+                0,
+            );
+
+            const totalAlgaeNetMissed: number = matches.reduce(
+                (coral, match) =>
+                    coral +
+                    match['Auton Algae Net Missed'] +
+                    match['Teleop Algae Net Missed'],
+                0,
+            );
+
+            // const coneLow = matches.reduce(
+            //     (cones, match) =>
+            //         cones +
+            //         match['Auton Lower Cone'] +
+            //         match['Teleop Lower Cone'],
+            //     0,
+            // );
+
+            // const coneMid = matches.reduce(
+            //     (cones, match) =>
+            //         cones + match['Auton Mid Cone'] + match['Teleop Mid Cone'],
+            //     0,
+            // );
+            // const coneHigh = matches.reduce(
+            //     (cones, match) =>
+            //         cones +
+            //         match['Auton Upper Cone'] +
+            //         match['Teleop Upper Cone'],
+            //     0,
+            // );
+            // const cubeLow: number = matches.reduce(
+            //     (cubes, match) =>
+            //         cubes +
+            //         match['Auton Lower Cube'] +
+            //         match['Teleop Lower Cube'],
+            //     0,
+            // );
+            // const cubeMid = matches.reduce(
+            //     (cubes, match) =>
+            //         cubes + match['Auton Mid Cube'] + match['Teleop Mid Cube'],
+            //     0,
+            // );
+            // const cubeHigh = matches.reduce(
+            //     (cubes, match) =>
+            //         cubes +
+            //         match['Auton Upper Cube'] +
+            //         match['Teleop Upper Cube'],
+            //     0,
+            // );
+
+            // const cubeLowMissed = matches.reduce(
+            //     (missed, match) =>
+            //         missed +
+            //         match['Auton Lower Cube Missed'] +
+            //         match['Teleop Lower Cube Missed'],
+            //     0,
+            // );
+
+            // const cubeMidMissed = matches.reduce(
+            //     (missed, match) =>
+            //         missed +
+            //         match['Auton Mid Cube Missed'] +
+            //         match['Teleop Mid Cube Missed'],
+            //     0,
+            // );
+            // const cubeHighMissed = matches.reduce(
+            //     (missed, match) =>
+            //         missed +
+            //         match['Auton Upper Cube Missed'] +
+            //         match['Teleop Upper Cube Missed'],
+            //     0,
+            // );
+            // const coneLowMissed = matches.reduce(
+            //     (missed, match) =>
+            //         missed +
+            //         match['Auton Lower Cone Missed'] +
+            //         match['Teleop Lower Cone Missed'],
+            //     0,
+            // );
+
+            // const coneMidMissed = matches.reduce(
+            //     (missed, match) =>
+            //         missed +
+            //         match['Auton Mid Cone Missed'] +
+            //         match['Teleop Mid Cone Missed'],
+            //     0,
+            // );
+            // const coneHighMissed = matches.reduce(
+            //     (missed, match) =>
+            //         missed +
+            //         match['Auton Upper Cone Missed'] +
+            //         match['Teleop Upper Cone Missed'],
+            //     0,
+            // );
+            //const dtType = pitScoutData['DT Type'];
+            const removeAlgaeType = pitScoutData['Remove algae'];
             const averagePointsPerMatch =
                 avgValues['autonPoints'] +
                 avgValues['endgamePoints'] +
@@ -711,40 +806,40 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
             const matchesPlayed = matches.length;
             const totalCycles = avgValues['Total Cycles']
 
-            const autonCharge = matches.reduce(
-                (charged, match) => charged + match['Auton Did Charge'],
-                0,
-            );
-            const teleopCharge = matches.reduce(
-                (charged, match) => charged + match['Endgame Did Charge'],
-                0,
-            );
-            const teleopDocked = matches.reduce(
-                (docked, match) => docked + match['Endgame Docked'],
-                0,
-            );
-            const autonDocked = matches.reduce(
-                (docked, match) => docked + match['Auton Docked'],
-                0,
-            );
-            const autonEngaged = matches.reduce(
-                (engaged, match) => engaged + match['Auton Engaged'],
-                0,
-            );
-            const teleopEngaged = matches.reduce(
-                (engaged, match) => engaged + match['Endgame Engaged'],
-                0,
-            );
-            console.log('' +
-                (
-                    (cubeLow + cubeHigh + cubeMid) /
-                    matchesPlayed
-                ).toFixed(2) + " " + matchesPlayed)
-            const chargeTime =
-                matches.reduce(
-                    (time, match) => time + match['Auton Charge Time'],
-                    0,
-                ) / autonCharge;
+            // const autonCharge = matches.reduce(
+            //     (charged, match) => charged + match['Auton Did Charge'],
+            //     0,
+            // );
+            // const teleopCharge = matches.reduce(
+            //     (charged, match) => charged + match['Endgame Did Charge'],
+            //     0,
+            // );
+            // const teleopDocked = matches.reduce(
+            //     (docked, match) => docked + match['Endgame Docked'],
+            //     0,
+            // );
+            // const autonDocked = matches.reduce(
+            //     (docked, match) => docked + match['Auton Docked'],
+            //     0,
+            // );
+            // const autonEngaged = matches.reduce(
+            //     (engaged, match) => engaged + match['Auton Engaged'],
+            //     0,
+            // );
+            // const teleopEngaged = matches.reduce(
+            //     (engaged, match) => engaged + match['Endgame Engaged'],
+            //     0,
+            // );
+            // console.log('' +
+            //     (
+            //         (cubeLow + cubeHigh + cubeMid) /
+            //         matchesPlayed
+            //     ).toFixed(2) + " " + matchesPlayed)
+            // const chargeTime =
+            //     matches.reduce(
+            //         (time, match) => time + match['Auton Charge Time'],
+            //         0,
+            //     ) / autonCharge;
 
             if (!matches || !matches.length) {
                 return (
@@ -782,7 +877,9 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                     height="150px"
                                     width="150px"
                                     title={'Average Total Coral Scored'}
-                                    info={dtType}
+                                    info={
+                                        '' + Math.round(((totalCoralScoredL1 + totalCoralScoredL2 + totalCoralScoredL3 + totalCoralScoredL4) / matches.length) * 100) / 100
+                                    }
                                     colorTheme={200}
                                 />
                                 <Card
@@ -790,19 +887,14 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                     width="150px"
                                     title={'Average L1 coral attempted + % accuracy'}
                                     info={
-                                        '' + Math.round(((cubeLow + cubeHigh + cubeMid) / matches.length) * 100) / 100
+                                        '' + Math.round(((totalCoralScoredL1 + totalCoralMissedL1) / matches.length) * 100) / 100
                                     }
                                     colorTheme={200}
                                     subinfo={
                                         'Accuracy: ' +
                                         (
-                                            ((cubeHigh + cubeMid + cubeLow) /
-                                                (cubeHigh +
-                                                    cubeMid +
-                                                    cubeHighMissed +
-                                                    cubeMidMissed +
-                                                    cubeLow +
-                                                    cubeLowMissed)) *
+                                            ((totalCoralScoredL1) /
+                                                (totalCoralScoredL1 + totalCoralMissedL1)) *
                                             100
                                         ).toFixed(0) +
                                         '%'
@@ -813,23 +905,14 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                     width="150px"
                                     title={'Average L2 coral attempted + % accuracy'}
                                     info={
-                                        '' +
-                                        (
-                                            (coneHigh + coneMid + coneLow) /
-                                            matches.length
-                                        ).toFixed(2)
+                                        '' + Math.round(((totalCoralScoredL2 + totalCoralMissedL2) / matches.length) * 100) / 100
                                     }
                                     colorTheme={200}
                                     subinfo={
                                         'Accuracy: ' +
                                         (
-                                            ((coneHigh + coneMid + coneLow) /
-                                                (coneHigh +
-                                                    coneMid +
-                                                    coneHighMissed +
-                                                    coneMidMissed +
-                                                    coneLow +
-                                                    coneLowMissed)) *
+                                            ((totalCoralScoredL2) /
+                                                (totalCoralScoredL2 + totalCoralMissedL2)) *
                                             100
                                         ).toFixed(0) +
                                         '%'
@@ -839,39 +922,79 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                     height="150px"
                                     width="150px"
                                     title={'Average L3 coral attempted + % accuracy'}
-                                    info={chargeTime.toFixed(2) + ' s'}
+                                    info={
+                                        '' + Math.round(((totalCoralScoredL3 + totalCoralMissedL3) / matches.length) * 100) / 100
+                                    }
                                     colorTheme={200}
+                                    subinfo={
+                                        'Accuracy: ' +
+                                        (
+                                            ((totalCoralScoredL3) /
+                                                (totalCoralScoredL3 + totalCoralMissedL3)) *
+                                            100
+                                        ).toFixed(0) +
+                                        '%'
+                                    }
                                 ></Card>
                                 <Card
                                     height="150px"
                                     width="150px"
                                     title={'Average L4 coral attempted + % accuracy'}
-                                    info={averagePointsPerMatch.toFixed(2)}
-                                    subinfo={'Matches Played: ' + matches.length}
+                                    info={
+                                        '' + Math.round(((totalCoralScoredL4 + totalCoralMissedL4) / matches.length) * 100) / 100
+                                    }
                                     colorTheme={200}
+                                    subinfo={
+                                        'Accuracy: ' +
+                                        (
+                                            ((totalCoralScoredL4) /
+                                                (totalCoralScoredL4 + totalCoralMissedL4)) *
+                                            100
+                                        ).toFixed(0) +
+                                        '%'
+                                    }
                                 ></Card>
                                 <Card
                                     height="150px"
                                     width="150px"
                                     title={'Average algae processor + % accuracy'}
-                                    info={totalCycles.toFixed(2)}
-                                    subinfo={'Matches Played: ' + matches.length}
+                                    info={
+                                        '' + Math.round(((totalAlgaeProcessorScored + totalAlgaeProcessorMissed) / matches.length) * 100) / 100
+                                    }
                                     colorTheme={200}
+                                    subinfo={
+                                        'Accuracy: ' +
+                                        (
+                                            ((totalAlgaeProcessorScored) /
+                                                (totalAlgaeProcessorScored + totalAlgaeProcessorMissed)) *
+                                            100
+                                        ).toFixed(0) +
+                                        '%'
+                                    }
                                 ></Card>
                                 <Card
                                     height="150px"
                                     width="150px"
                                     title={'Average net processor + % accuracy'}
-                                    info={totalCycles.toFixed(2)}
-                                    subinfo={'Matches Played: ' + matches.length}
+                                    info={
+                                        '' + Math.round(((totalAlgaeNetScored + totalAlgaeNetMissed) / matches.length) * 100) / 100
+                                    }
                                     colorTheme={200}
+                                    subinfo={
+                                        'Accuracy: ' +
+                                        (
+                                            ((totalAlgaeNetScored) /
+                                                (totalAlgaeNetScored + totalAlgaeNetMissed)) *
+                                            100
+                                        ).toFixed(0) +
+                                        '%'
+                                    }
                                 ></Card>
                                 <Card
                                     height="150px"
                                     width="150px"
                                     title={'Remove algae'}
-                                    info={totalCycles.toFixed(2)}
-                                    subinfo={'Matches Played: ' + matches.length}
+                                    info={removeAlgaeType}
                                     colorTheme={200}
                                 ></Card>
                             </Grid>
@@ -879,16 +1002,19 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                         <Stack direction={['column', 'column', 'row', 'row']}>
                             <Stack>
                                 <Heading textAlign="center" size={'md'}>
-                                    Score Distribution:
+                                    Distribution of coral attempted:
                                 </Heading>
                                 <GenericPieChart
                                     radius={100}
                                     height={275}
                                     width={450}
                                     valueObject={{
-                                        Low: coneLow + cubeLow,
-                                        Mid: coneMid + cubeMid,
-                                        High: coneHigh + cubeHigh,
+                                        // Low: coneLow + cubeLow,
+                                        // Mid: coneMid + cubeMid,
+                                        // High: coneHigh + cubeHigh,
+                                        Low: 0,
+                                        Mid: 0,
+                                        High: 0,
                                     }}
                                     colors={{
                                         Low: '800',
@@ -897,19 +1023,25 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                     }}
                                 ></GenericPieChart>
                                 <Heading textAlign="center" size={'md'}>
-                                    Cone/Cube Distribution:
+                                    Climb accuracy shallow:
                                 </Heading>
                                 <GenericPieChart
                                     height={275}
                                     width={450}
                                     radius={100}
                                     valueObject={{
-                                        'Low Cone': coneLow,
-                                        'Mid Cone': coneMid,
-                                        'High Cone': coneHigh,
-                                        'High Cube': cubeHigh,
-                                        'Mid Cube': cubeMid,
-                                        'Low Cube': cubeLow,
+                                        // 'Low Cone': coneLow,
+                                        // 'Mid Cone': coneMid,
+                                        // 'High Cone': coneHigh,
+                                        // 'High Cube': cubeHigh,
+                                        // 'Mid Cube': cubeMid,
+                                        // 'Low Cube': cubeLow,
+                                        'Low Cone': 0,
+                                        'Mid Cone': 0,
+                                        'High Cone': 0,
+                                        'High Cube': 0,
+                                        'Mid Cube': 0,
+                                        'Low Cube': 0,
                                     }}
                                     colors={{
                                         'Mid Cone': '1000',
@@ -921,17 +1053,21 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                             </Stack>
                             <Stack alignItems={'center'} marginRight={'15px'}>
                                 <Heading textAlign="center" size={'md'}>
-                                    Auton Charge:
+                                    Climb accuracy deep:
                                 </Heading>
                                 <GenericPieChart
                                     radius={100}
                                     height={275}
                                     width={450}
                                     valueObject={{
+                                        // 'No Attempt/Failed':
+                                        //     matchesPlayed - autonCharge,
+                                        // Docked: autonDocked - autonEngaged,
+                                        // Engaged: autonEngaged,
                                         'No Attempt/Failed':
-                                            matchesPlayed - autonCharge,
-                                        Docked: autonDocked - autonEngaged,
-                                        Engaged: autonEngaged,
+                                            matchesPlayed - 0,
+                                        Docked: 0 - 0,
+                                        Engaged: 0,
                                     }}
                                     colors={{
                                         'No Attempt': '1000',
@@ -940,7 +1076,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                         Engaged: '1',
                                     }}
                                 ></GenericPieChart>
-                                <Heading textAlign="center" size={'md'}>
+                                {/* <Heading textAlign="center" size={'md'}>
                                     Teleop Charge:
                                 </Heading>
                                 <GenericPieChart
@@ -960,7 +1096,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                         Docked: '100',
                                         Engaged: '1',
                                     }}
-                                ></GenericPieChart>
+                                ></GenericPieChart> */}
                             </Stack>
                         </Stack>
                     </Flex>
