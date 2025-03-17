@@ -313,7 +313,16 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                     <TableContainer component={Paper} style={{ minWidth: '90vw', minHeight: '90vh' }}>
                         <TableHead>
                             <TableRow style={{ whiteSpace: 'nowrap' }}>
-                                <TableCell key="teamNum">
+                                <TableCell 
+                                    key="teamNum"
+                                    style={{
+                                        position: "sticky",
+                                        left: 0,
+                                        background: "white",
+                                        zIndex: 1000, // Ensures it stays above other cells
+                                        fontWeight: "bold",
+                                    }}
+                                    >
                                     Team Number
                                 </TableCell>
                                 {pitTemplate.map((field: any, index: number) => {
@@ -330,7 +339,10 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                             {pitScoutData.map((teamData: any, index: number) => {
                                 return (
                                     <TableRow key={teamData['teamNum']}>
-                                        <TableCell key={teamData['teamNum'] + 'teamNum'}>{teamData['teamNum']}</TableCell>
+                                        <TableCell 
+                                            key={teamData['teamNum'] + 'teamNum'}
+                                            style={{ position: "sticky", left: 0, background: "white", zIndex: 999 }}
+                                        >{teamData['teamNum']}</TableCell>
                                         {pitTemplate.map((key: any, index: number) => {
                                             return (
                                                 teamData[key] !== undefined && key !== 'teamNum'
