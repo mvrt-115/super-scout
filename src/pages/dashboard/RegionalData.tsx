@@ -310,60 +310,84 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                     This is the pitscout page!
                 </Text>
                 <ThemeProvider theme={createTheme()}>
-                    <TableContainer component={Paper} style={{ minWidth: '90vw', minHeight: '90vh' }}>
-                        <TableHead>
-                            <TableRow style={{ whiteSpace: 'nowrap' }}>
-                                <TableCell 
-                                    key="teamNum"
-                                    style={{
-                                        position: "sticky",
-                                        left: 0,
-                                        background: "white",
-                                        zIndex: 1000, // Ensures it stays above other cells
-                                        fontWeight: "bold",
-                                    }}
+                    <TableContainer 
+                        component={Paper} 
+                        style={{ 
+                            minWidth: '90vw', 
+                            maxHeight: '80vh', 
+                            overflowY: 'auto',
+                        }}
+                    >
+                        <Table stickyHeader>
+                            <TableHead>
+                                <TableRow style={{ whiteSpace: 'nowrap' }}>
+                                    <TableCell
+                                        key="teamNum"
+                                        style={{
+                                            position: "sticky",
+                                            top: 0,
+                                            left: 0,
+                                            background: "white",
+                                            zIndex: 1000,
+                                            fontWeight: "bold",
+                                        }}
                                     >
-                                    Team Number
-                                </TableCell>
-                                {pitTemplate.map((field: any, index: number) => {
-                                    if (field !== "teamNum")
-                                        return (
-                                            <TableCell key={field}>
-                                                {field}
-                                            </TableCell>
-                                        );
-                                })}
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {pitScoutData.map((teamData: any, index: number) => {
-                                return (
-                                    <TableRow key={teamData['teamNum']}>
-                                        <TableCell 
-                                            key={teamData['teamNum'] + 'teamNum'}
-                                            style={{ position: "sticky", left: 0, background: "white", zIndex: 999 }}
-                                        >{teamData['teamNum']}</TableCell>
-                                        {pitTemplate.map((key: any, index: number) => {
+                                        Team Number
+                                    </TableCell>
+                                    {pitTemplate.map((field: any, index: number) => {
+                                        if (field !== "teamNum")
                                             return (
-                                                teamData[key] !== undefined && key !== 'teamNum'
-                                                && <TableCell key={teamData['teamNum'] + key}>
-                                                    {JSON.stringify(teamData[key]).length > 5 ?
-                                                        JSON.stringify(teamData[key]) ://.substring(0, 5) + "..." :
-                                                        JSON.stringify(teamData[key])
-                                                    }
+                                                <TableCell
+                                                    key={field}
+                                                    style={{
+                                                        position: "sticky",
+                                                        top: 0,
+                                                        background: "white",
+                                                        zIndex: 999
+                                                    }}
+                                                >
+                                                    {field}
                                                 </TableCell>
                                             );
-                                        })}
-                                    </TableRow>
-                                );
-                            })}
-                        </TableBody>
+                                    })}
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {pitScoutData.map((teamData: any, index: number) => {
+                                    return (
+                                        <TableRow key={teamData['teamNum']}>
+                                            <TableCell 
+                                                key={teamData['teamNum'] + 'teamNum'}
+                                                style={{ 
+                                                    position: "sticky", 
+                                                    left: 0, 
+                                                    background: "white", 
+                                                    zIndex: 999
+                                                }}
+                                            >
+                                                {teamData['teamNum']}
+                                            </TableCell>
+                                            {pitTemplate.map((key: any, index: number) => {
+                                                return (
+                                                    teamData[key] !== undefined && key !== 'teamNum'
+                                                    && <TableCell key={teamData['teamNum'] + key}>
+                                                        {JSON.stringify(teamData[key]).length > 5 ?
+                                                            JSON.stringify(teamData[key]) : 
+                                                            JSON.stringify(teamData[key])
+                                                        }
+                                                    </TableCell>
+                                                );
+                                            })}
+                                        </TableRow>
+                                    );
+                                })}
+                            </TableBody>
+                        </Table>
                     </TableContainer>
                 </ThemeProvider>
             </>
         );
     }
-
     const renderQualitativeData = () => {
         if (!teams || !teams.length)
             return (
