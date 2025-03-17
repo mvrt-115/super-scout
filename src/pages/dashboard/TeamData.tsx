@@ -156,14 +156,63 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 setLoading(false);
                 setMatches(matches);
 
-                if (match && matches[0] && matches[1])
-                    if (matches.length > 0)
+                if (match && matches[0] && matches[1]) {
+                    
+                        let column_headers: string[] = Object.keys(matches[0]).length >
+                        Object.keys(matches[1]).length
+                        ? Object.keys(matches[0]) 
+                        : Object.keys(matches[1]);
+                        if (year == "2025") {
+                            column_headers = [
+                            "matchNum",
+                            "Auton Coral Level 1 Scored",
+                            "Auton Coral Level 1 Missed",
+                            "Auton Coral Level 2 Scored",
+                            "Auton Coral Level 2 Missed",
+                            "Auton Coral Level 3 Scored",
+                            "Auton Coral Level 3 Missed",
+                            "Auton Coral Level 4 Scored",
+                            "Auton Coral Level 4 Missed",
+                            "Teleop Coral Level 1 Scored",
+                            "Teleop Coral Level 1 Missed",
+                            "Teleop Coral Level 2 Scored",
+                            "Teleop Coral Level 2 Missed",
+                            "Teleop Coral Level 3 Scored",
+                            "Teleop Coral Level 3 Missed",
+                            "Teleop Coral Level 4 Scored",
+                            "Teleop Coral Level 4 Missed",
+                            "Auton Algae Net Scored",
+                            "Auton Algae Net Missed",
+                            "Auton Algae Processor Scored",
+                            "Auton Algae Processor Missed",
+                            "Teleop Algae Net Scored",
+                            "Teleop Algae Net Missed",
+                            "Teleop Algae Processor Scored",
+                            "Teleop Algae Processor Missed",
+                            "Did Climb",
+                            "Climb Level",
+                            "Climb Time",
+                            "Played Defense",
+                            
+                            "Received Barge RP",
+                            
+                            "Received Auton RP",
+                            
+                            "Received Coral RP",
+                            
+                            "Received Coopertition RP",
+                            "Mobility",
+                            "autonPoints",
+                            "teleopPoints",
+                            "endgamePoints", 
+                            "Teleop Cycles",
+                            "Auton Cycles",
+                            "Total Cycles"];
+                        }
                         setTemplate(
-                            Object.keys(matches[0]).length >
-                                Object.keys(matches[1]).length
-                                ? Object.keys(matches[0])
-                                : Object.keys(matches[1]),
+                            column_headers
                         );
+                }
                 const regionalKey = year + regional;
 
                 const [rankingsRes, oprsRes] = await Promise.all([
@@ -496,6 +545,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
     //--
     const renderScoutingData = () => {
         console.log(`average values: ${JSON.stringify(avgValues)}`);
+        
         if (!matches || !matches.length)
             return (
                 <Text
@@ -600,6 +650,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 >
                     View {table ? 'Graphs' : 'Table'}
                 </Button>
+                
                 {table ? (
                     <DataTable
                         pTemplate={template}

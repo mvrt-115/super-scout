@@ -174,7 +174,61 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 });
                 teams[index] = { ...teams[index], ...doc.data() };
             });
-            setTemplate(Object.keys(teams[0]).length > Object.keys(teams[1]).length ? Object.keys(teams[0]) : Object.keys(teams[1]));
+            //console.log("lisa test " + Object.keys(teams[0]));
+            //console.log("lisa test " + Object.keys(teams[0]));
+
+            let column_headers: string[] = Object.keys(teams[0]).length > Object.keys(teams[1]).length ? Object.keys(teams[0]) : Object.keys(teams[1]);
+            if (year == "2025") {
+                column_headers = [
+                    "teamNum",
+                    "Auton Coral Level 1 Scored",
+                    "Auton Coral Level 1 Missed",
+                    "Auton Coral Level 2 Scored",
+                    "Auton Coral Level 2 Missed",
+                    "Auton Coral Level 3 Scored",
+                    "Auton Coral Level 3 Missed",
+                    "Auton Coral Level 4 Scored",
+                    "Auton Coral Level 4 Missed",
+                    "Teleop Coral Level 1 Scored",
+                    "Teleop Coral Level 1 Missed",
+                    "Teleop Coral Level 2 Scored",
+                    "Teleop Coral Level 2 Missed",
+                    "Teleop Coral Level 3 Scored",
+                    "Teleop Coral Level 3 Missed",
+                    "Teleop Coral Level 4 Scored",
+                    "Teleop Coral Level 4 Missed",
+                    "Auton Algae Net Scored",
+                    "Auton Algae Net Missed",
+                    "Auton Algae Processor Scored",
+                    "Auton Algae Processor Missed",
+                    "Teleop Algae Net Scored",
+                    "Teleop Algae Net Missed",
+                    "Teleop Algae Processor Scored",
+                    "Teleop Algae Processor Missed",
+                    "Climb Time",
+
+                    "Received Auton RP",
+
+                    "autonPoints",
+                    "teleopPoints",
+                    "endgamePoints",
+                    "Teleop Cycles",
+                    "Auton Cycles",
+                    "Total Cycles",
+                    "opr",
+                    "dpr",
+                    "ccwm",
+                    "ranking",
+                    
+                    "testing",
+                    
+                    "matches",
+                    
+                ]
+                
+            }
+
+            setTemplate(column_headers);
             setTeams(teams);
         };
 
