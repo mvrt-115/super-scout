@@ -33,11 +33,12 @@ const PitScoutData: FC<PitScoutProps> = ({data}) => {
             {Object.keys(data).map((field: any) => {
                 return (
                     <Text
+                        key={field}
                         style={{
                             marginTop: '1rem',
                         }}
                     >
-                        {`${field}: ${data[field]}`}
+                        <span style={{ fontWeight: 'bold' }}>{`${field}: `}</span>{data[field]}
                     </Text>
                 );
             })}
