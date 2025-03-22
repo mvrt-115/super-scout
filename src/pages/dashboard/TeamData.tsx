@@ -189,7 +189,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                             "Teleop Algae Net Missed",
                             "Teleop Algae Processor Scored",
                             "Teleop Algae Processor Missed",
-                            "Did Climb",
+                            "Climb Information (toggle this)",
                             "Climb Level",
                             "Climb Time",
                             "Played Defense",
@@ -764,6 +764,48 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 0,
             );
 
+            const climbShallowNoAttempt: number = matches.reduce(
+                (climb, match) =>
+                    climb +
+                    match['None'],
+                0,
+            );
+
+            const climbShallowFailed: number = matches.reduce(
+                (climb, match) =>
+                    climb +
+                    match['Shallow Failed'],
+                0,
+            );
+
+            const climbShallowSucess: number = matches.reduce(
+                (climb, match) =>
+                    climb +
+                    match['Shallow Success'],
+                0,
+            );
+
+            const climbDeepNoAttempt: number = matches.reduce(
+                (climb, match) =>
+                    climb +
+                    match['None'],
+                0,
+            );
+
+            const climbDeepFailed: number = matches.reduce(
+                (climb, match) =>
+                    climb +
+                    match['Deep Failed'],
+                0,
+            );
+
+            const climbDeepSucess: number = matches.reduce(
+                (climb, match) =>
+                    climb +
+                    match['Deep Success'],
+                0,
+            );
+
             // const coneLow = matches.reduce(
             //     (cones, match) =>
             //         cones +
@@ -1063,14 +1105,16 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                         // Low: coneLow + cubeLow,
                                         // Mid: coneMid + cubeMid,
                                         // High: coneHigh + cubeHigh,
-                                        Low: 0,
-                                        Mid: 0,
-                                        High: 0,
+                                        // 'L1': totalCoralScoredL1 + totalCoralMissedL1,
+                                        // 'L2': totalCoralScoredL2 + totalCoralMissedL2,
+                                        // 'L3': totalCoralScoredL3 + totalCoralMissedL3,
+                                        // 'L4': totalCoralScoredL4 + totalCoralMissedL4,
                                     }}
                                     colors={{
-                                        Low: '800',
-                                        Mid: '200',
-                                        High: '1',
+                                        // 'L1': '800',
+                                        // 'L2': '200',
+                                        // 'L3': '100',
+                                        // 'L4': '1',
                                     }}
                                 ></GenericPieChart>
                                 <Heading textAlign="center" size={'md'}>
@@ -1115,16 +1159,18 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                         //     matchesPlayed - autonCharge,
                                         // Docked: autonDocked - autonEngaged,
                                         // Engaged: autonEngaged,
-                                        'No Attempt/Failed':
-                                            matchesPlayed - 0,
-                                        Docked: 0 - 0,
-                                        Engaged: 0,
+                                        'Not Attempted': climbDeepNoAttempt + 1,
+                                        'Failed': climbDeepFailed + 1,
+                                        'Success': climbDeepSucess + 1,
                                     }}
                                     colors={{
-                                        'No Attempt': '1000',
-                                        Failed: '600',
-                                        Docked: '100',
-                                        Engaged: '1',
+                                        // 'No Attempt': '1000',
+                                        // Failed: '600',
+                                        // Docked: '100',
+                                        // Engaged: '1',
+                                        'Not Attempted': 1000,
+                                        'Failed': 100,
+                                        'Success': 1,
                                     }}
                                 ></GenericPieChart>
                                 {/* <Heading textAlign="center" size={'md'}>

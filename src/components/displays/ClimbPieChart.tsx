@@ -14,8 +14,10 @@ const ClimbPieChart: FC<ClimbPieChartProps> = ({matches}) => {
         // { name: 'Mid', count: 0, fill: '#550575' },
         // { name: 'High', count: 0, fill: '#dab0ec' },
         // { name: 'Traversal', count: 0, fill: '#ffc410' },
-        { name: 'Shallow', count: 0, fill: '#dab0ec' },
-        { name: 'Deep', count: 0, fill: '#ffc410' },
+        { name: 'Shallow Success', count: 0, fill: '#dab0ec' },
+        { name: 'Shallow Failed', count: 0, fill: '#dab0ec' },
+        { name: 'Deep Success', count: 0, fill: '#ffc410' },
+        { name: 'Deep Failed', count: 0, fill: '#ffc410' },
         { name: 'None', count: 0, fill: '#202020' },
     ]);
     matches.forEach((match) => {
@@ -35,14 +37,20 @@ const ClimbPieChart: FC<ClimbPieChartProps> = ({matches}) => {
             // case 'None':
             //     data[4]['count'] += 1;
             //     break;
-            case 'Shallow':
+            case 'Shallow Success':
                 data[0]['count'] += 1;
                 break;
-            case 'Deep':
+            case 'Shallow Failed':
                 data[1]['count'] += 1;
                 break;
-            case 'None':
+            case 'Deep Success':
                 data[2]['count'] += 1;
+                break;
+            case 'Deep Failed':
+                data[3]['count'] += 1;
+                break;
+            case 'None':
+                data[4]['count'] += 1;
                 break;
         }
     });
