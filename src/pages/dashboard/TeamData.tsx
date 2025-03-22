@@ -193,13 +193,9 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                             "Climb Level",
                             "Climb Time",
                             "Played Defense",
-                            
                             "Received Barge RP",
-                            
                             "Received Auton RP",
-                            
                             "Received Coral RP",
-                            
                             "Received Coopertition RP",
                             "Mobility",
                             "Starts on 1",
@@ -207,6 +203,12 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                             "Starts on 3",
                             "Starts on 4",
                             "Starts on 5",
+                            "Can Score Front", 
+                            "Can Score Front Left", 
+                            "Can Score Front Right", 
+                            "Can Score Back", 
+                            "Can Score Back Left", 
+                            "Can Score Back Right",
                             "autonPoints",
                             "teleopPoints",
                             "endgamePoints", 
