@@ -985,7 +985,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                 <Card
                                     height="150px"
                                     width="150px"
-                                    title={'Average L1 coral attempted + % accuracy'}
+                                    title={'Average L1 coral attempted'}
                                     info={
                                         '' + Math.round(((totalCoralScoredL1 + totalCoralMissedL1) / matches.length) * 100) / 100
                                     }
@@ -1003,7 +1003,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                 <Card
                                     height="150px"
                                     width="150px"
-                                    title={'Average L2 coral attempted + % accuracy'}
+                                    title={'Average L2 coral attempted'}
                                     info={
                                         '' + Math.round(((totalCoralScoredL2 + totalCoralMissedL2) / matches.length) * 100) / 100
                                     }
@@ -1021,7 +1021,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                 <Card
                                     height="150px"
                                     width="150px"
-                                    title={'Average L3 coral attempted + % accuracy'}
+                                    title={'Average L3 coral attempted'}
                                     info={
                                         '' + Math.round(((totalCoralScoredL3 + totalCoralMissedL3) / matches.length) * 100) / 100
                                     }
@@ -1039,7 +1039,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                 <Card
                                     height="150px"
                                     width="150px"
-                                    title={'Average L4 coral attempted + % accuracy'}
+                                    title={'Average L4 coral attempted'}
                                     info={
                                         '' + Math.round(((totalCoralScoredL4 + totalCoralMissedL4) / matches.length) * 100) / 100
                                     }
@@ -1057,7 +1057,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                 <Card
                                     height="150px"
                                     width="150px"
-                                    title={'Average algae processor + % accuracy'}
+                                    title={'Average algae processor'}
                                     info={
                                         '' + Math.round(((totalAlgaeProcessorScored + totalAlgaeProcessorMissed) / matches.length) * 100) / 100
                                     }
@@ -1075,7 +1075,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                 <Card
                                     height="150px"
                                     width="150px"
-                                    title={'Average net processor + % accuracy'}
+                                    title={'Average net processor'}
                                     info={
                                         '' + Math.round(((totalAlgaeNetScored + totalAlgaeNetMissed) / matches.length) * 100) / 100
                                     }
