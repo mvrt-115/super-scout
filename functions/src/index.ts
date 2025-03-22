@@ -316,10 +316,10 @@ const calcEndgamePoints = (matchData: any, year: number | string) => {
         return endgamePoints;
     } else if(year == '2025'){
         let endgamePoints: number = 0;
-        if(matchData['Climb Level'] == 'Shallow'){
+        if(matchData['Climb Level'] == 'Shallow Success'){
             endgamePoints+=6;
         }
-        if(matchData['Climb Level'] == 'Deep'){
+        if(matchData['Climb Level'] == 'Deep Success'){
             endgamePoints+=12;
         }
         if(matchData['Park']){
