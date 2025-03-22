@@ -202,6 +202,11 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                             
                             "Received Coopertition RP",
                             "Mobility",
+                            "Starts on 1",
+                            "Starts on 2",
+                            "Starts on 3",
+                            "Starts on 4",
+                            "Starts on 5",
                             "autonPoints",
                             "teleopPoints",
                             "endgamePoints", 
