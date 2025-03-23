@@ -205,13 +205,37 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                     "Teleop Algae Net Missed",
                     "Teleop Algae Processor Scored",
                     "Teleop Algae Processor Missed",
+                    "Auton Algae Removed Success",
+                    "Auton Algae Removed Failed",
+                    "Teleop Algae Removed Success",
+                    "Teleop Algae Removed Failed",
+                    "Climb Information (toggle this)",
+                    "Climb Level",
                     "Climb Time",
-
+                    "Played Defense",
+                    "Got Defended",
+                    "Received Barge RP",
                     "Received Auton RP",
-
+                    "Received Coral RP",
+                    "Received Coopertition RP",
+                    "Mobility",
+                    "Starts on 1",
+                    "Starts on 2",
+                    "Starts on 3",
+                    "Starts on 4",
+                    "Starts on 5",
+                    "Park",
+                    "Tipped",
+                    "Disabled",
+                    "Can Score Front", 
+                    "Can Score Front Left", 
+                    "Can Score Front Right", 
+                    "Can Score Back", 
+                    "Can Score Back Left", 
+                    "Can Score Back Right",
                     "autonPoints",
                     "teleopPoints",
-                    "endgamePoints",
+                    "endgamePoints", 
                     "Teleop Cycles",
                     "Auton Cycles",
                     "Total Cycles",
@@ -219,11 +243,8 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                     "dpr",
                     "ccwm",
                     "ranking",
-                    
                     "testing",
-                    
                     "matches",
-                    
                 ]
                 
             }
