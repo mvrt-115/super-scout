@@ -165,6 +165,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                         if (year == "2025") {
                             column_headers = [
                             "matchNum",
+                            "Total Coral/Algae Scored",
                             "Auton Coral Level 1 Scored",
                             "Auton Coral Level 1 Missed",
                             "Auton Coral Level 2 Scored",
