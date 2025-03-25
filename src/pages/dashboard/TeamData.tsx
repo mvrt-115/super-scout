@@ -1144,14 +1144,14 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                 <Card
                                     height="150px"
                                     width="150px"
-                                    title={'Climb Failed'}
+                                    title={'Climb Deep Failed'}
                                     info={climbDeepFailed}
                                     colorTheme={200}
                                 ></Card>
                                 <Card
                                     height="150px"
                                     width="150px"
-                                    title={'Climb Success'}
+                                    title={'Climb Deep Success'}
                                     info={climbDeepSuccess}
                                     colorTheme={200}
                                 ></Card>
