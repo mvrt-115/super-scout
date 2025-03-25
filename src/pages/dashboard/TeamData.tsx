@@ -793,7 +793,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 0,
             );
 
-            const climbShallowSucess: number = matches.reduce(
+            const climbShallowSuccess: number = matches.reduce(
                 (climb, match) =>
                     climb +
                     match['Shallow Success'],
@@ -814,7 +814,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 0,
             );
 
-            const climbDeepSucess: number = matches.reduce(
+            const climbDeepSuccess: number = matches.reduce(
                 (climb, match) =>
                     climb +
                     match['Deep Success'],
@@ -907,6 +907,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
             // );
             //const dtType = pitScoutData['DT Type'];
             const removeAlgaeType = pitScoutData['Remove algae'];
+            const climbType = pitScoutData['Climb Level'];
             const averagePointsPerMatch =
                 avgValues['autonPoints'] +
                 avgValues['endgamePoints'] +
@@ -1105,112 +1106,57 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                     info={removeAlgaeType}
                                     colorTheme={200}
                                 ></Card>
+                                <Card
+                                    height="150px"
+                                    width="150px"
+                                    title={'Climb Level'}
+                                    info={climbType}
+                                    colorTheme={200}
+                                ></Card>
+                                <Card
+                                    height="150px"
+                                    width="150px"
+                                    title={'Climb Shallow No Attempt'}
+                                    info={climbShallowNoAttempt}
+                                    colorTheme={200}
+                                ></Card>
+                                <Card
+                                    height="150px"
+                                    width="150px"
+                                    title={'Climb Shallow Failed'}
+                                    info={climbShallowFailed}
+                                    colorTheme={200}
+                                ></Card>
+                                <Card
+                                    height="150px"
+                                    width="150px"
+                                    title={'Climb Shallow Success'}
+                                    info={climbShallowSuccess}
+                                    colorTheme={200}
+                                ></Card>
+                                <Card
+                                    height="150px"
+                                    width="150px"
+                                    title={'Climb Deep No Attempt'}
+                                    info={climbDeepNoAttempt}
+                                    colorTheme={200}
+                                ></Card>
+                                <Card
+                                    height="150px"
+                                    width="150px"
+                                    title={'Climb Failed'}
+                                    info={climbDeepFailed}
+                                    colorTheme={200}
+                                ></Card>
+                                <Card
+                                    height="150px"
+                                    width="150px"
+                                    title={'Climb Success'}
+                                    info={climbDeepSuccess}
+                                    colorTheme={200}
+                                ></Card>
                             </Grid>
                         </Flex>
-                        <Stack direction={['column', 'column', 'row', 'row']}>
-                            <Stack>
-                                <Heading textAlign="center" size={'md'}>
-                                    Distribution of coral attempted:
-                                </Heading>
-                                <GenericPieChart
-                                    radius={100}
-                                    height={275}
-                                    width={450}
-                                    valueObject={{
-                                        // Low: coneLow + cubeLow,
-                                        // Mid: coneMid + cubeMid,
-                                        // High: coneHigh + cubeHigh,
-                                        // 'L1': totalCoralScoredL1 + totalCoralMissedL1,
-                                        // 'L2': totalCoralScoredL2 + totalCoralMissedL2,
-                                        // 'L3': totalCoralScoredL3 + totalCoralMissedL3,
-                                        // 'L4': totalCoralScoredL4 + totalCoralMissedL4,
-                                    }}
-                                    colors={{
-                                        // 'L1': '800',
-                                        // 'L2': '200',
-                                        // 'L3': '100',
-                                        // 'L4': '1',
-                                    }}
-                                ></GenericPieChart>
-                                <Heading textAlign="center" size={'md'}>
-                                    Climb accuracy shallow:
-                                </Heading>
-                                <GenericPieChart
-                                    height={275}
-                                    width={450}
-                                    radius={100}
-                                    valueObject={{
-                                        // 'Low Cone': coneLow,
-                                        // 'Mid Cone': coneMid,
-                                        // 'High Cone': coneHigh,
-                                        // 'High Cube': cubeHigh,
-                                        // 'Mid Cube': cubeMid,
-                                        // 'Low Cube': cubeLow,
-                                        'Low Cone': 0,
-                                        'Mid Cone': 0,
-                                        'High Cone': 0,
-                                        'High Cube': 0,
-                                        'Mid Cube': 0,
-                                        'Low Cube': 0,
-                                    }}
-                                    colors={{
-                                        'Mid Cone': '1000',
-                                        'High Cone': '700',
-                                        'High Cube': '100',
-                                        'Mid Cube': '300',
-                                    }}
-                                ></GenericPieChart>
-                            </Stack>
-                            <Stack alignItems={'center'} marginRight={'15px'}>
-                                <Heading textAlign="center" size={'md'}>
-                                    Climb accuracy deep:
-                                </Heading>
-                                <GenericPieChart
-                                    radius={100}
-                                    height={275}
-                                    width={450}
-                                    valueObject={{
-                                        // 'No Attempt/Failed':
-                                        //     matchesPlayed - autonCharge,
-                                        // Docked: autonDocked - autonEngaged,
-                                        // Engaged: autonEngaged,
-                                        'Not Attempted': climbDeepNoAttempt + 1,
-                                        'Failed': climbDeepFailed + 1,
-                                        'Success': climbDeepSucess + 1,
-                                    }}
-                                    colors={{
-                                        // 'No Attempt': '1000',
-                                        // Failed: '600',
-                                        // Docked: '100',
-                                        // Engaged: '1',
-                                        'Not Attempted': 1000,
-                                        'Failed': 100,
-                                        'Success': 1,
-                                    }}
-                                ></GenericPieChart>
-                                {/* <Heading textAlign="center" size={'md'}>
-                                    Teleop Charge:
-                                </Heading>
-                                <GenericPieChart
-                                    radius={100}
-                                    height={275}
-                                    width={450}
-                                    valueObject={{
-                                        'No Attempt':
-                                            matchesPlayed - teleopCharge,
-                                        Failed: teleopCharge - teleopCharge,
-                                        Docked: teleopDocked - teleopEngaged,
-                                        Engaged: teleopEngaged,
-                                    }}
-                                    colors={{
-                                        'No Attempt': '1000',
-                                        Failed: '600',
-                                        Docked: '100',
-                                        Engaged: '1',
-                                    }}
-                                ></GenericPieChart> */}
-                            </Stack>
-                        </Stack>
                     </Flex>
                     <Heading textAlign='center'>Comments</Heading>
                     <Grid
