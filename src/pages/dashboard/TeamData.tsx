@@ -200,7 +200,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                             "Played Defense",
                             "Got Defended",
                             //"Received Coral RP",
-                            "Scouter Name and Comments",
+                            "Scouter_Name_and_Comments",
                             "Mobility",
                             "Starts on 1",
                             "Starts on 2",
