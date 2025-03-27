@@ -166,34 +166,34 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                             column_headers = [
                             "matchNum",
                             "Total Coral/Algae Scored",
-                            "Auton Coral Level 1 Scored",
-                            "Auton Coral Level 1 Missed",
-                            "Auton Coral Level 2 Scored",
-                            "Auton Coral Level 2 Missed",
-                            "Auton Coral Level 3 Scored",
-                            "Auton Coral Level 3 Missed",
-                            "Auton Coral Level 4 Scored",
-                            "Auton Coral Level 4 Missed",
-                            "Teleop Coral Level 1 Scored",
-                            "Teleop Coral Level 1 Missed",
-                            "Teleop Coral Level 2 Scored",
-                            "Teleop Coral Level 2 Missed",
-                            "Teleop Coral Level 3 Scored",
-                            "Teleop Coral Level 3 Missed",
-                            "Teleop Coral Level 4 Scored",
-                            "Teleop Coral Level 4 Missed",
-                            "Auton Algae Net Scored",
-                            "Auton Algae Net Missed",
-                            "Auton Algae Processor Scored",
-                            "Auton Algae Processor Missed",
-                            "Teleop Algae Net Scored",
-                            "Teleop Algae Net Missed",
-                            "Teleop Algae Processor Scored",
-                            "Teleop Algae Processor Missed",
-                            "Auton Algae Removed Success",
-                            "Auton Algae Removed Failed",
-                            "Teleop Algae Removed Success",
-                            "Teleop Algae Removed Failed",
+                            "(A) Coral L1 Scored 🪸✅",
+                            "(A) Coral L1 Missed 🪸❌",
+                            "(A) Coral L2 Scored 🪸✅",
+                            "(A) Coral L2 Missed 🪸❌",
+                            "(A) Coral L3 Scored 🪸✅",
+                            "(A) Coral L3 Missed 🪸❌",
+                            "(A) Coral L4 Scored 🪸✅",
+                            "(A) Coral L4 Missed 🪸❌",
+                            "(T) Coral L1 Scored 🪸✅",
+                            "(T) Coral L1 Missed 🪸❌",
+                            "(T) Coral L2 Scored 🪸✅",
+                            "(T) Coral L2 Missed 🪸❌",
+                            "(T) Coral L3 Scored 🪸✅",
+                            "(T) Coral L3 Missed 🪸❌",
+                            "(T) Coral L4 Scored 🪸✅",
+                            "(T) Coral L4 Missed 🪸❌",
+                            "(A) Algae Net Scored 🥅✅",
+                            "(A) Algae Net Missed 🥅❌",
+                            "(A) Algae Processor Scored 🎾✅",
+                            "(A) Algae Processor Missed 🎾❌",
+                            "(T) Algae Net Scored 🥅✅",
+                            "(T) Algae Net Missed 🥅❌",
+                            "(T) Algae Processor Scored 🎾✅",
+                            "(T) Algae Processor Missed 🎾❌",
+                            "(A) Algae Removed Success ✅",
+                            "(A) Algae Removed Failed ❌",
+                            "(T) Algae Removed Success ✅",
+                            "(T) Algae Removed Failed ❌",
                             "Climb Information (toggle this)",
                             "Climb Level",
                             "Climb Time",
@@ -687,95 +687,95 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
             const totalCoralScoredL1: number = matches.reduce(
                 (coral, match) =>
                     coral +
-                    match['Auton Coral Level 1 Scored'] +
-                    match['Teleop Coral Level 1 Scored'],
+                    match['(A) Coral L1 Scored 🪸✅'] +
+                    match['(T) Coral L1 Scored 🪸✅'],
                 0,
             );
             
             const totalCoralScoredL2: number = matches.reduce(
                 (coral, match) =>
                     coral +
-                    match['Auton Coral Level 2 Scored'] +
-                    match['Teleop Coral Level 2 Scored'],
+                    match['(A) Coral L2 Scored 🪸✅'] +
+                    match['(T) Coral L2 Scored 🪸✅'],
                 0,
             );
 
             const totalCoralScoredL3: number = matches.reduce(
                 (coral, match) =>
                     coral +
-                    match['Auton Coral Level 3 Scored'] +
-                    match['Teleop Coral Level 3 Scored'],
+                    match['(A) Coral L3 Scored 🪸✅'] +
+                    match['(T) Coral L3 Scored 🪸✅'],
                 0,
             );
             const totalCoralScoredL4: number = matches.reduce(
                 (coral, match) =>
                     coral +
-                    match['Auton Coral Level 4 Scored'] +
-                    match['Teleop Coral Level 4 Scored'],
+                    match['(A) Coral L4 Scored 🪸✅'] +
+                    match['(T) Coral L4 Scored 🪸✅'],
                 0,
             );
 
             const totalCoralMissedL1: number = matches.reduce(
                 (coral, match) =>
                     coral +
-                    match['Auton Coral Level 1 Missed'] +
-                    match['Teleop Coral Level 1 Missed'],
+                    match['(A) Coral L1 Missed 🪸❌'] +
+                    match['(T) Coral L1 Missed 🪸❌'],
                 0,
             );
 
             const totalCoralMissedL2: number = matches.reduce(
                 (coral, match) =>
                     coral +
-                    match['Auton Coral Level 2 Missed'] +
-                    match['Teleop Coral Level 2 Missed'],
+                    match['(A) Coral L2 Missed 🪸❌'] +
+                    match['(T) Coral L2 Missed 🪸❌'],
                 0,
             );
 
             const totalCoralMissedL3: number = matches.reduce(
                 (coral, match) =>
                     coral +
-                    match['Auton Coral Level 3 Missed'] +
-                    match['Teleop Coral Level 3 Missed'],
+                    match['(A) Coral L3 Missed 🪸❌'] +
+                    match['(T) Coral L3 Missed 🪸❌'],
                 0,
             );
 
             const totalCoralMissedL4: number = matches.reduce(
                 (coral, match) =>
                     coral +
-                    match['Auton Coral Level 4 Missed'] +
-                    match['Teleop Coral Level 4 Missed'],
+                    match['(A) Coral L4 Missed 🪸❌'] +
+                    match['(T) Coral L4 Missed 🪸❌'],
                 0,
             );
 
             const totalAlgaeProcessorScored: number = matches.reduce(
                 (coral, match) =>
                     coral +
-                    match['Auton Algae Processor Scored'] +
-                    match['Teleop Algae Processor Scored'],
+                    match['(A) Algae Processor Scored 🎾✅'] +
+                    match['(T) Algae Processor Scored 🎾✅'],
                 0,
             );
 
             const totalAlgaeProcessorMissed: number = matches.reduce(
                 (coral, match) =>
                     coral +
-                    match['Auton Algae Processor Missed'] +
-                    match['Teleop Algae Processor Missed'],
+                    match['(A) Algae Processor Missed 🎾❌'] +
+                    match['(T) Algae Processor Missed 🎾❌'],
                 0,
             );
 
             const totalAlgaeNetScored: number = matches.reduce(
                 (coral, match) =>
                     coral +
-                    match['Auton Algae Net Scored'] +
-                    match['Teleop Algae Net Scored'],
+                    match['(A) Algae Net Scored 🥅✅'] +
+                    match['(T) Algae Net Scored 🥅✅'],
                 0,
             );
 
             const totalAlgaeNetMissed: number = matches.reduce(
                 (coral, match) =>
                     coral +
-                    match['Auton Algae Net Missed'] +
-                    match['Teleop Algae Net Missed'],
+                    match['(A) Algae Net Missed 🥅❌'] +
+                    match['(T) Algae Net Missed 🥅❌'],
                 0,
             );
 
