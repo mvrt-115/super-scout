@@ -42,118 +42,172 @@ const Teams: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
 
     useEffect(() => {
         const getTeamsInfo = async () => {
-            let teams: Team[] = [
-                { name: '8', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
-                { name: '115', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
-                { name: '192', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
-                { name: '359', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
-                { name: '399', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
-                { name: '687', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
-                { name: '696', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
-                { name: '1148', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
-                { name: '1566', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
-                { name: '1569', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
-                { name: '1891', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
-                { name: '2122', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
-                { name: '2130', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
-                { name: '2594', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
-                { name: '2813', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
-                { name: '3006', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
-                { name: '3045', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
-                { name: '3216', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
-                { name: '3243', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
-                { name: '3245', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
-                { name: '3288', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
-                { name: '3309', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
-                { name: '3669', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
-                { name: '3859', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
-                { name: '4175', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
-                { name: '4598', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
-                { name: '4944', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
-                { name: '5461', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
-                { name: '5871', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
-                { name: '5933', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
-                { name: '6358', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
-                { name: '6364', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
-                { name: '6390', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
-                { name: '6487', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
-                { name: '7634', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
-                { name: '7895', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
-                { name: '8338', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
-                { name: '8546', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
-                { name: '8550', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
-                { name: '8551', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
-                { name: '8756', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
-                { name: '8839', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
-                { name: '8885', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
-                { name: '9044', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
-                { name: '9243', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
-                { name: '9314', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
-                { name: '9449', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
-                { name: '9649', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
-                { name: '9726', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
-                { name: '9737', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
-                { name: '10395', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
-                { name: '10448', opr: 0, dpr: 0, ccwm: 0, rank: 0 }
-              ];
-              
-            // const [rankingsRes, oprsRes] = await Promise.all([
-            //     fetch(
-            //         `https://www.thebluealliance.com/api/v3/event/${year}${regional}/rankings`,
-            //         {
-            //             headers: {
-            //                 'X-TBA-Auth-Key':
-            //                     process.env.REACT_APP_TBA_KEY || '',
-            //             },
-            //         },
-            //     ),
-            //     fetch(
-            //         `https://www.thebluealliance.com/api/v3/event/${year}${regional}/oprs`,
-            //         {
-            //             headers: {
-            //                 'X-TBA-Auth-Key':
-            //                     process.env.REACT_APP_TBA_KEY || '',
-            //             },
-            //         },
-            //     ),
-            // ]);
-
-            // const [oprsJson, rankingsJson]: [any, any] = await Promise.all([
-            //     oprsRes.json(),
-            //     rankingsRes.json(),
-            // ]);
-
-            // // console.log(oprsJson, rankingsJson);
-
-            // if (!oprsJson || !rankingsJson) {
-            //     setLoading(false);
-            //     setNoData(true);
-            //     return;
-            // }
-
-            // for (let i = 0; i < rankingsJson.rankings.length; i++) {
-            //     const key: string = rankingsJson.rankings[i]['team_key'];
-            //     teams.push({
-            //         name: key.substring(3),
-            //         opr: oprsJson.oprs[key] as number,
-            //         dpr: oprsJson.dprs[key] as number,
-            //         ccwm: oprsJson.ccwms[key] as number,
-            //         rank: i + 1,
-            //     });
-            // }
+            let teams: Team[] = [];
             setLoading(true);
-            const rankingsUrl = `https://www.thebluealliance.com/api/v3/event/2025idbo/rankings`;
-            const oprsUrl = `https://www.thebluealliance.com/api/v3/event/2025idbo/oprs`;
-            
-            console.log("Rankings URL:", rankingsUrl);
-            console.log("OPRs URL:", oprsUrl);
+            const [rankingsRes, oprsRes] = await Promise.all([
+                fetch(
+                    `https://www.thebluealliance.com/api/v3/event/${year}${regional}/rankings`,
+                    {
+                        headers: {
+                            'X-TBA-Auth-Key':
+                                process.env.REACT_APP_TBA_KEY || '',
+                        },
+                    },
+                ),
+                fetch(
+                    `https://www.thebluealliance.com/api/v3/event/${year}${regional}/oprs`,
+                    {
+                        headers: {
+                            'X-TBA-Auth-Key':
+                                process.env.REACT_APP_TBA_KEY || '',
+                        },
+                    },
+                ),
+            ]);
 
+            const [oprsJson, rankingsJson]: [any, any] = await Promise.all([
+                oprsRes.json(),
+                rankingsRes.json(),
+            ]);
+
+            // console.log(oprsJson, rankingsJson);
+
+            if (!oprsJson || !rankingsJson) {
+                setLoading(false);
+                setNoData(true);
+                return;
+            }
+
+            for (let i = 0; i < rankingsJson.rankings.length; i++) {
+                const key: string = rankingsJson.rankings[i]['team_key'];
+                teams.push({
+                    name: key.substring(3),
+                    opr: oprsJson.oprs[key] as number,
+                    dpr: oprsJson.dprs[key] as number,
+                    ccwm: oprsJson.ccwms[key] as number,
+                    rank: i + 1,
+                });
+            }
             setLoading(false);
             setTeams(teams);
-            console.log("teams are: ", teams)
         };
         getTeamsInfo();
     }, [year, regional]);
+    // useEffect(() => {
+    //     const getTeamsInfo = async () => {
+    //         let teams: Team[] = [
+    //             { name: '8', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
+    //             { name: '115', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
+    //             { name: '192', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
+    //             { name: '359', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
+    //             { name: '399', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
+    //             { name: '687', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
+    //             { name: '696', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
+    //             { name: '1148', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
+    //             { name: '1566', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
+    //             { name: '1569', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
+    //             { name: '1891', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
+    //             { name: '2122', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
+    //             { name: '2130', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
+    //             { name: '2594', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
+    //             { name: '2813', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
+    //             { name: '3006', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
+    //             { name: '3045', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
+    //             { name: '3216', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
+    //             { name: '3243', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
+    //             { name: '3245', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
+    //             { name: '3288', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
+    //             { name: '3309', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
+    //             { name: '3669', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
+    //             { name: '3859', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
+    //             { name: '4175', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
+    //             { name: '4598', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
+    //             { name: '4944', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
+    //             { name: '5461', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
+    //             { name: '5871', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
+    //             { name: '5933', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
+    //             { name: '6358', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
+    //             { name: '6364', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
+    //             { name: '6390', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
+    //             { name: '6487', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
+    //             { name: '7634', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
+    //             { name: '7895', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
+    //             { name: '8338', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
+    //             { name: '8546', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
+    //             { name: '8550', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
+    //             { name: '8551', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
+    //             { name: '8756', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
+    //             { name: '8839', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
+    //             { name: '8885', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
+    //             { name: '9044', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
+    //             { name: '9243', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
+    //             { name: '9314', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
+    //             { name: '9449', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
+    //             { name: '9649', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
+    //             { name: '9726', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
+    //             { name: '9737', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
+    //             { name: '10395', opr: 0, dpr: 0, ccwm: 0, rank: 0 },
+    //             { name: '10448', opr: 0, dpr: 0, ccwm: 0, rank: 0 }
+    //           ];
+              
+    //         // const [rankingsRes, oprsRes] = await Promise.all([
+    //         //     fetch(
+    //         //         `https://www.thebluealliance.com/api/v3/event/${year}${regional}/rankings`,
+    //         //         {
+    //         //             headers: {
+    //         //                 'X-TBA-Auth-Key':
+    //         //                     process.env.REACT_APP_TBA_KEY || '',
+    //         //             },
+    //         //         },
+    //         //     ),
+    //         //     fetch(
+    //         //         `https://www.thebluealliance.com/api/v3/event/${year}${regional}/oprs`,
+    //         //         {
+    //         //             headers: {
+    //         //                 'X-TBA-Auth-Key':
+    //         //                     process.env.REACT_APP_TBA_KEY || '',
+    //         //             },
+    //         //         },
+    //         //     ),
+    //         // ]);
+
+    //         // const [oprsJson, rankingsJson]: [any, any] = await Promise.all([
+    //         //     oprsRes.json(),
+    //         //     rankingsRes.json(),
+    //         // ]);
+
+    //         // // console.log(oprsJson, rankingsJson);
+
+    //         // if (!oprsJson || !rankingsJson) {
+    //         //     setLoading(false);
+    //         //     setNoData(true);
+    //         //     return;
+    //         // }
+
+    //         // for (let i = 0; i < rankingsJson.rankings.length; i++) {
+    //         //     const key: string = rankingsJson.rankings[i]['team_key'];
+    //         //     teams.push({
+    //         //         name: key.substring(3),
+    //         //         opr: oprsJson.oprs[key] as number,
+    //         //         dpr: oprsJson.dprs[key] as number,
+    //         //         ccwm: oprsJson.ccwms[key] as number,
+    //         //         rank: i + 1,
+    //         //     });
+    //         // }
+    //         setLoading(true);
+    //         const regionalKey = year + regional;
+    //         const rankingsUrl = `https://www.thebluealliance.com/api/v3/event/${regionalKey}/rankings`;
+    //         const oprsUrl = `https://www.thebluealliance.com/api/v3/event/${regionalKey}/oprs`;
+            
+    //         console.log("Rankings URL:", rankingsUrl);
+    //         console.log("OPRs URL:", oprsUrl);
+
+    //         setLoading(false);
+    //         if ((teams.length) > 0) setTeams(teams);
+    //         console.log("teams are: ", teams)
+    //     };
+    //     getTeamsInfo();
+    // }, [year, regional]);
 
     const sortList = (type: string) => {
         setSort(type);

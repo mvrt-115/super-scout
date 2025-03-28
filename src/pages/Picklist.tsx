@@ -21,7 +21,7 @@ interface PicklistProps {}
 const Picklist: FC<PicklistProps> = () => {
     const year = new Date().getFullYear();
     const { currentUser } = useAuth();
-    const [regional, setRegional] = useState<string>('casf');
+    const [regional, setRegional] = useState<string>('idbo');
     const [regionals, setRegionals] = useState<string[]>([]);
     const [suggestedTeams, setSuggestedTeams] = useState<string[]>([]);
     const [firstPickTeams, setFirstPickTeams] = useState<string[]>([]);

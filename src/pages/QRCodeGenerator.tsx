@@ -77,7 +77,7 @@ const QRCodeGenerator: FC<QRCodeGeneratorProps> = () => {
     const loadRegionalData = async () => {
         const regionalKey = year + regional;
         const dataRes = await fetch(
-            `https://www.thebluealliance.com/api/v3/event/2025idbo/matches/simple`,
+            `https://www.thebluealliance.com/api/v3/event/${regionalKey}/matches/simple`,
             {
                 headers: {
                     'X-TBA-Auth-Key': process.env.REACT_APP_TBA_KEY || '',
