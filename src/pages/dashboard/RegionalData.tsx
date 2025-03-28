@@ -130,7 +130,7 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                     .collection('teams')
                     .get(),
                 fetch(
-                    `https://www.thebluealliance.com/api/v3/event/${regionalKey}/oprs`,
+                    `https://www.thebluealliance.com/api/v3/event/2025idbo/oprs`,
                     {
                         headers: {
                             'X-TBA-Auth-Key':
@@ -139,7 +139,7 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                     },
                 ),
                 fetch(
-                    `https://www.thebluealliance.com/api/v3/event/${regionalKey}/rankings`,
+                    `https://www.thebluealliance.com/api/v3/event/2025idbo/rankings`,
                     {
                         headers: {
                             'X-TBA-Auth-Key':

@@ -232,7 +232,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
 
                 const [rankingsRes, oprsRes] = await Promise.all([
                     fetch(
-                        `https://www.thebluealliance.com/api/v3/event/${regionalKey}/rankings`,
+                        `https://www.thebluealliance.com/api/v3/event/2025idbo/rankings`,
                         {
                             headers: {
                                 'X-TBA-Auth-Key':
@@ -241,7 +241,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                         },
                     ),
                     fetch(
-                        `https://www.thebluealliance.com/api/v3/event/${regionalKey}/oprs`,
+                        `https://www.thebluealliance.com/api/v3/event/2025idbo/oprs`,
                         {
                             headers: {
                                 'X-TBA-Auth-Key':
