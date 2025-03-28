@@ -779,47 +779,70 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 0,
             );
 
-            const climbShallowNoAttempt: number = matches.reduce(
-                (climb, match) =>
-                    climb +
-                    match['None'],
-                0,
-            );
+            // const climbShallowNoAttempt: number = matches.reduce(
+            //     (climb, match) =>
+            //         climb +
+            //         match['None'],
+            //     0,
+            // );
 
-            const climbShallowFailed: number = matches.reduce(
-                (climb, match) =>
-                    climb +
-                    match['Shallow Failed'],
-                0,
-            );
+            // const climbShallowFailed: number = matches.reduce(
+            //     (climb, match) =>
+            //         climb +
+            //         match['Shallow Failed'],
+            //     0,
+            // );
 
-            const climbShallowSuccess: number = matches.reduce(
-                (climb, match) =>
-                    climb +
-                    match['Shallow Success'],
-                0,
-            );
+            // const climbShallowSuccess: number = matches.reduce(
+            //     (climb, match) =>
+            //         climb +
+            //         match['Shallow Success'],
+            //     0,
+            // );
 
-            const climbDeepNoAttempt: number = matches.reduce(
-                (climb, match) =>
-                    climb +
-                    match['None'],
-                0,
-            );
+            // const climbDeepNoAttempt: number = matches.reduce(
+            //     (climb, match) =>
+            //         climb +
+            //         match['None'],
+            //     0,
+            // );
 
-            const climbDeepFailed: number = matches.reduce(
-                (climb, match) =>
-                    climb +
-                    match['Deep Failed'],
-                0,
-            );
+            // const climbDeepFailed: number = matches.reduce(
+            //     (climb, match) =>
+            //         climb +
+            //         match['Deep Failed'],
+            //     0,
+            // );
 
-            const climbDeepSuccess: number = matches.reduce(
-                (climb, match) =>
-                    climb +
-                    match['Deep Success'],
-                0,
-            );
+            // const climbDeepSuccess: number = matches.reduce(
+            //     (climb, match) =>
+            //         climb +
+            //         match['Deep Success'],
+            //     0,
+            // );
+            const climbShallowNoAttempt: number = matches.filter(
+                (match) => match['Climb Level'] === 'None'
+            ).length;
+            
+            const climbShallowFailed: number = matches.filter(
+                (match) => match['Climb Level'] === 'Shallow Failed'
+            ).length;
+            
+            const climbShallowSuccess: number = matches.filter(
+                (match) => match['Climb Level'] === 'Shallow Success'
+            ).length;
+            
+            const climbDeepNoAttempt: number = matches.filter(
+                (match) => match['Climb Level'] === 'None'
+            ).length;
+            
+            const climbDeepFailed: number = matches.filter(
+                (match) => match['Climb Level'] === 'Deep Failed'
+            ).length;
+            
+            const climbDeepSuccess: number = matches.filter(
+                (match) => match['Climb Level'] === 'Deep Success'
+            ).length;            
 
             // const coneLow = matches.reduce(
             //     (cones, match) =>
@@ -907,7 +930,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
             // );
             //const dtType = pitScoutData['DT Type'];
             const removeAlgaeType = pitScoutData['Remove algae'];
-            const climbType = pitScoutData['Climb Level'];
+            //const climbType = pitScoutData['Climb Level'];
             const averagePointsPerMatch =
                 avgValues['autonPoints'] +
                 avgValues['endgamePoints'] +
@@ -1106,13 +1129,13 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                                     info={removeAlgaeType}
                                     colorTheme={200}
                                 ></Card>
-                                <Card
+                                {/* <Card
                                     height="150px"
                                     width="150px"
                                     title={'Climb Level'}
                                     info={climbType}
                                     colorTheme={200}
-                                ></Card>
+                                ></Card> */}
                                 <Card
                                     height="150px"
                                     width="150px"
