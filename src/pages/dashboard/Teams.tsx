@@ -44,6 +44,12 @@ const Teams: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
         const getTeamsInfo = async () => {
             let teams: Team[] = [];
             setLoading(true);
+            const rankingsUrl = `https://www.thebluealliance.com/api/v3/event/${year}${regional}/rankings`;
+            const oprsUrl = `https://www.thebluealliance.com/api/v3/event/${year}${regional}/oprs`;
+            
+            console.log("Rankings URL:", rankingsUrl);
+            console.log("OPRs URL:", oprsUrl);
+
             const [rankingsRes, oprsRes] = await Promise.all([
                 fetch(
                     `https://www.thebluealliance.com/api/v3/event/${year}${regional}/rankings`,
