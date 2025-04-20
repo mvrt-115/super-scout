@@ -39,6 +39,8 @@ const Teams: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
     const [loading, setLoading] = useState<boolean>(false);
     const [sort, setSort] = useState<string>('Ranking');
     const [noData, setNoData] = useState<boolean>(false);
+    const [aiLoading, setAiLoading] = useState<boolean>(false);
+    const [aiResponse, setAiResponse] = useState<string>('');
 
     useEffect(() => {
         const getTeamsInfo = async () => {
@@ -221,6 +223,140 @@ const Teams: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
         });
     };
 
+    const fetchCompetitionData = async () => {
+        const teamList = db
+        .collection('years')
+        .doc(year)
+        .collection('regionals')
+        .doc(regional)
+        .collection('teams');
+        const coll = await teamList.get();
+        const obj: any = { teams: [] };
+    
+        await Promise.all(
+        coll.docs.map(async (doc) => {
+            const temp: any = doc.data();
+            temp.matchList = [];
+            const matches = await teamList.doc(doc.id).collection('matches').get();
+            matches.docs.forEach(m => temp.matchList.push(m.data()));
+            const pit = await teamList
+            .doc(doc.id)
+            .collection('pitScoutData')
+            .doc('pitScoutAnswers')
+            .get();
+            if (pit.exists) temp.pitScoutData = pit.data();
+            obj.teams.push(temp);
+        })
+        );
+    
+        return obj;
+    };
+
+    const AI_PROMPT = `You are a helpful robotics competition data analyst. 
+        Given the JSON data for all teams, please use the metrics to tell me 
+        and rank the best 8 teams considering both by how well they have done 
+        so far and their potential for continuing to do well. For each, also 
+        give some brief reasoning of why you picked that team. Here is some 
+        context about the metrics. For the metrics that have the word “missed” 
+        in it, a lower value is better. For the metrics that have the word “scored” 
+        in it, a higher value is better. For the metrics that have the word “Can” 
+        in them, it is better if it is true. A higher total coral/algae scored, 
+        cycles, and points is good. By the way, the file has data for multiples 
+        matches of multiple teams. Different matches could have different results 
+        but you have to use all the matches of a team to get a good general idea 
+        of how good the team is. Here are all the metrics separated by commas 
+        also listed here for your convenience but the actual data is in the 
+        attached file: (A) Algae Net Missed, (A) Algae Net Scored, (A) Algae 
+        Processor Missed, (A) Algae Processor Scored, (A) Algae Removed Failed, 
+        (A) Algae Removed Success, (A) Coral L1 Missed, (A) Coral L1 Scored, 
+        (A) Coral L2 Missed, (A) Coral L2 Scored, (A) Coral L3 Missed, 
+        (A) Coral L3 Scored, (A) Coral L4 Missed, (A) Coral L4 Scored, 
+        (T) Algae Net Missed, (T) Algae Net Scored, (T) Algae Processor Missed, 
+        (T) Algae Processor Scored, (T) Algae Removed Failed, (T) Algae Removed 
+        Success, (T) Coral L1 Missed, (T) Coral L1 Scored, (T) Coral L2 Missed, 
+        (T) Coral L2 Scored, (T) Coral L3 Missed, (T) Coral L3 Scored, (T) Coral L4 Missed, 
+        (T) Coral L4 Scored, Can Deep Climb, Can Score Back, Can Score Back Left, 
+        Can Score Back Right, Can Score Front, Can Score Front Left, 
+        Can Score Front Right, Can Score L1, Can Score L2, Can Score L3, 
+        Can Score L4, Can Score Net, Can Score Processor, Can Shallow Climb, 
+        Mobility, Received Coral RP, Remove algae, Team Number, Total Coral/Algae Scored, 
+        Total Cycles, autonPoints, endgamePoints, matchList, matchNum, matches, 
+        teamNum, teleopPoints. It is important that you do not just use a few metrics, 
+        but that you consider all of them that were listed and consider what I said earlier 
+        about which ones mean that a team is good and which ones mean that a team is not so good. 
+        Also, the Statbotics (https://www.statbotics.io/teams) website has good data about the
+        teams if want to consider it. The data I have you is more important, but I am letting you 
+        know in case it gives you added information. This is important: don't just use a little bit 
+        of data, use ALL of it (as many metrics as possible) because it will give you more accurate 
+        generalizations. Make sure to list out the 8 teams normally (not as a chart or table) 
+        as well as some reasoning. Make the first line of your output says that you are an analyst. 
+        Also tell me if there was a .json file that you recieved from this query.`;
+    //const AI_PROMPT = 'Did you recieve this message?';
+
+    const handleAIMode = async () => {
+        setAiLoading(true);
+        setAiResponse('');
+    
+        try {
+            const dataObj = await fetchCompetitionData();
+            const teams = dataObj.teams;
+            const chunkSize = Math.ceil(teams.length / 3);
+    
+            const chunks = [
+                teams.slice(0, chunkSize),
+                teams.slice(chunkSize, chunkSize * 2),
+                teams.slice(chunkSize * 2),
+            ];
+    
+            const analyzeChunk = async (chunk: any[], label: string): Promise<string> => {
+                const jsonStr = JSON.stringify({ teams: chunk }, null, 2);
+                console.log(`🧠 Chunk #${label} - JSON character count: ${jsonStr.length}`);
+                console.log(`🧠 Chunk #${label} - Estimated token count: ${jsonStr.length / 4}`);
+    
+                const payload = {
+                    model: 'gpt-4o-mini',
+                    messages: [
+                        {
+                            role: 'system',
+                            content: 'You are a helpful FRC robotics data analyst.',
+                        },
+                        {
+                            role: 'user',
+                            content: `${AI_PROMPT}\n\nHere is part #${label} of the competition data:\n\n\`\`\`json\n${jsonStr}\n\`\`\`\n\nStart your response with "Analysis for part #${label}:"`,
+                        },
+                    ],
+                    max_tokens: 4096,
+                };
+    
+                const res = await fetch('https://api.openai.com/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`,
+                    },
+                    body: JSON.stringify(payload),
+                });
+    
+                const json = await res.json();
+                return json.choices?.[0]?.message?.content?.trim() || `No analysis needed/returned for part #${label}.`;
+            };
+    
+            const responses: string[] = [];
+    
+            for (let i = 0; i < 3; i++) {
+                const response = await analyzeChunk(chunks[i], (i + 1).toString());
+                responses.push(response);
+            }
+    
+            setAiResponse(responses.join('\n\n---\n\n'));
+        } catch (err) {
+            console.error(err);
+            setAiResponse('Error fetching AI response.');
+        } finally {
+            setAiLoading(false);
+        }
+    };
+
     const downloadData = async () => {
         const teamList = db
             .collection('years')
@@ -326,7 +462,32 @@ const Teams: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 >
                     Download Data
                 </Button>
+                <Button
+                    onClick={handleAIMode}
+                    colorScheme="mv-purple"
+                    size="lg"
+                    width={'100%'}
+                    marginTop="2"
+                >
+                    AI Analysis
+                </Button>
             </Box>
+            {aiLoading && (
+                <Flex justify="center" my={4}>
+                    <Spinner />
+                </Flex>
+                )}
+                {!!aiResponse && (
+                <Box
+                    whiteSpace="pre-wrap"
+                    p={4}
+                    mt={4}
+                    bg="gray.50"
+                    borderRadius="md"
+                >
+                    {aiResponse}
+                </Box>
+                )}
             <Flex width="100%" justify={'end'}>
                 <Menu>
                     <Tooltip label="Sort By">
