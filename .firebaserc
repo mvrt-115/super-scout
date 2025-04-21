@@ -1,5 +1,7 @@
 {
   "projects": {
     "default": "mvrt115-scout"
-  }
+  },
+  "targets": {},
+  "etags": {}
 }
