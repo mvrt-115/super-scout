@@ -1,14 +1,9 @@
 import {
     Box,
-    Center,
-    Flex,
     Grid,
-    Spacer,
-    Stack,
     Text,
-    Tooltip,
 } from '@chakra-ui/react';
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC } from 'react';
 
 interface HeatmapProps {
     data: any;
@@ -35,22 +30,6 @@ const HeatMap: FC<HeatmapProps> = ({
         fill: string;
         textfill: string;
     }
-    const colors: any = [
-        '#edf8e9',
-        '#c7e9c0',
-        '#a1d99b',
-        '#74c476',
-        '#31a354',
-        '#006d2c',
-    ];
-    const textcolors: any = [
-        '#0a0a0a',
-        '#0a0a0a',
-        '#0a0a0a',
-        '#0a0a0a',
-        '#0a0a0a',
-        '#f7f7f7',
-    ];
     //Collect/preprocess data
     let renderData: any[] = [];
     fields.forEach((n: string) => {

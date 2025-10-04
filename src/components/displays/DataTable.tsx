@@ -1,5 +1,5 @@
 import { Button } from '@chakra-ui/react';
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useState } from 'react';
 import Paper from '@mui/material/Paper';
 import { TableContainer, Table, TableHead, TableRow, TableBody, TableCell, ThemeProvider, createTheme } from '@mui/material';
 
@@ -11,7 +11,7 @@ interface RegionalTableProps {
 
 const RegionalTable: FC<RegionalTableProps> = ({ pTemplate, pList, base }) => {
     const [list, setList] = useState<any[]>([...pList]);
-    const [template, setTemplate] = useState<string[]>(pTemplate);
+    const [template] = useState<string[]>(pTemplate);
 
     const sort = (ascending: boolean, key: string) => {
         let temp = [...list];

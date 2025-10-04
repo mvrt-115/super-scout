@@ -1,7 +1,4 @@
-import { Button } from '@chakra-ui/react';
-import React, { FC, useEffect, useState } from 'react';
-import Paper from '@mui/material/Paper';
-import { TableContainer, Table, TableHead, TableRow, TableBody, TableCell } from '@mui/material';
+import React, { FC } from 'react';
 import { Pie, PieChart, Tooltip as REToolTip } from 'recharts';
 
 interface ClimbPieChartProps {
@@ -9,7 +6,7 @@ interface ClimbPieChartProps {
 }
 
 const ClimbPieChart: FC<ClimbPieChartProps> = ({matches}) => {
-    const [data, setData] = useState<any>([
+    const data = [
         // { name: 'Low', count: 0, fill: '#260235' },
         // { name: 'Mid', count: 0, fill: '#550575' },
         // { name: 'High', count: 0, fill: '#dab0ec' },
@@ -19,7 +16,7 @@ const ClimbPieChart: FC<ClimbPieChartProps> = ({matches}) => {
         { name: 'Deep Success', count: 0, fill: '#ffc410' },
         { name: 'Deep Failed', count: 0, fill: '#ffc410' },
         { name: 'None', count: 0, fill: '#202020' },
-    ]);
+    ];
     matches.forEach((match) => {
         switch (match['Climb rung']) {
             // case 'Low':

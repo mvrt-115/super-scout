@@ -1,13 +1,11 @@
 import { DeleteIcon } from '@chakra-ui/icons';
 import {
-    HStack,
     IconButton,
     Text,
     Select,
     Grid,
     GridItem,
     useMediaQuery,
-    Flex,
 } from '@chakra-ui/react';
 import React, { FC, useEffect, useState } from 'react';
 
