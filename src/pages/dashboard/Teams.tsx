@@ -33,7 +33,6 @@ interface Team {
 
 const Teams: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
     const [teams, setTeams] = useState<Team[]>([]);
-    const [startDate, setStartDate] = useState<number>(Date.now());
     const year = match.params.year;
     const regional = match.params.regional;
     const [loading, setLoading] = useState<boolean>(false);
@@ -41,75 +40,92 @@ const Teams: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
     const [noData, setNoData] = useState<boolean>(false);
 
     useEffect(() => {
+        let cancelled = false;
         const getTeamsInfo = async () => {
-            let teams: Team[] = [];
-            setLoading(true);
+            const safe = (fn: () => void) => {
+                if (!cancelled) fn();
+            };
+
+            safe(() => {
+                setLoading(true);
+                setNoData(false);
+            });
+
             const rankingsUrl = `https://www.thebluealliance.com/api/v3/event/${year}${regional}/rankings`;
             const oprsUrl = `https://www.thebluealliance.com/api/v3/event/${year}${regional}/oprs`;
-            
-            console.log("Rankings URL:", rankingsUrl);
-            console.log("OPRs URL:", oprsUrl);
 
-            const [rankingsRes, oprsRes] = await Promise.all([
-                fetch(
-                    `https://www.thebluealliance.com/api/v3/event/${year}${regional}/rankings`,
-                    {
+            try {
+                const [rankingsRes, oprsRes] = await Promise.all([
+                    fetch(rankingsUrl, {
                         headers: {
-                            'X-TBA-Auth-Key':
-                                process.env.REACT_APP_TBA_KEY || '',
+                            'X-TBA-Auth-Key': process.env.REACT_APP_TBA_KEY || '',
                         },
-                    },
-                ),
-                fetch(
-                    `https://www.thebluealliance.com/api/v3/event/${year}${regional}/oprs`,
-                    {
+                    }),
+                    fetch(oprsUrl, {
                         headers: {
-                            'X-TBA-Auth-Key':
-                                process.env.REACT_APP_TBA_KEY || '',
+                            'X-TBA-Auth-Key': process.env.REACT_APP_TBA_KEY || '',
                         },
-                    },
-                ),
-            ]);
+                    }),
+                ]);
 
-            const [oprsJson, rankingsJson]: [any, any] = await Promise.all([
-                oprsRes.json(),
-                rankingsRes.json(),
-            ]);
+                if (!rankingsRes.ok || !oprsRes.ok) {
+                    throw new Error(
+                        `TBA request failed (rankings ${rankingsRes.status}, oprs ${oprsRes.status})`,
+                    );
+                }
 
-            // console.log(oprsJson, rankingsJson);
+                const [oprsJson, rankingsJson]: [any, any] = await Promise.all([
+                    oprsRes.json().catch(() => null),
+                    rankingsRes.json().catch(() => null),
+                ]);
 
-            if (!oprsJson || !rankingsJson) {
-                setLoading(false);
-                setNoData(true);
-                return;
+                const rankings = Array.isArray(rankingsJson?.rankings)
+                    ? rankingsJson.rankings
+                    : null;
+
+                if (!rankings || !oprsJson?.oprs) {
+                    safe(() => setNoData(true));
+                    return;
+                }
+
+                const nextTeams: Team[] = [];
+                for (let i = 0; i < rankings.length; i++) {
+                    const key: string | undefined = rankings[i]?.team_key;
+                    if (!key) continue;
+
+                    nextTeams.push({
+                        name: key.substring(3),
+                        opr: (oprsJson.oprs?.[key] as number | undefined) ?? 0,
+                        dpr: (oprsJson.dprs?.[key] as number | undefined) ?? 0,
+                        ccwm: (oprsJson.ccwms?.[key] as number | undefined) ?? 0,
+                        rank: i + 1,
+                    });
+                }
+
+                safe(() => setTeams(nextTeams));
+            } catch (e) {
+                console.error(e);
+                safe(() => setNoData(true));
+            } finally {
+                safe(() => setLoading(false));
             }
-
-            for (let i = 0; i < rankingsJson.rankings.length; i++) {
-                const key: string = rankingsJson.rankings[i]['team_key'];
-                teams.push({
-                    name: key.substring(3),
-                    opr: oprsJson.oprs[key] as number,
-                    dpr: oprsJson.dprs[key] as number,
-                    ccwm: oprsJson.ccwms[key] as number,
-                    rank: i + 1,
-                });
-            }
-            setLoading(false);
-            setTeams(teams);
         };
         getTeamsInfo();
+        return () => {
+            cancelled = true;
+        };
     }, [year, regional]);
 
     const sortList = (type: string) => {
         setSort(type);
-        let newTeams = teams;
-        newTeams.sort((a, b) => {
+        const newTeams = [...teams].sort((a, b) => {
             if (type === 'Ranking') return a.rank - b.rank;
             const stat = type.toLowerCase();
             if (stat === 'opr' || stat === 'dpr' || stat === 'ccwm')
                 return b[stat] - a[stat];
             return 0;
         });
+        setTeams(newTeams);
     };
 
     const downloadData = async () => {
