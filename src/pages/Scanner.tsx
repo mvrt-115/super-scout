@@ -16,8 +16,6 @@ import {
     VStack,
 } from '@chakra-ui/react';
 import React, { FC, useEffect, useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
-import NeedAccount from './NeedAccount';
 import QRScanner from '../components/QRScanner';
 import { DeleteIcon } from '@chakra-ui/icons';
 import { db } from '../firebase';
@@ -27,7 +25,6 @@ interface ScannerProps {}
 const Scanner: FC<ScannerProps> = () => {
     const [qrVisible, setQrVisible] = useState<boolean>(false);
     const [data, setData] = useState<any[]>([]);
-    const { currentUser } = useAuth();
     const year = new Date().getFullYear();
 
     useEffect(() => {
@@ -127,9 +124,7 @@ const Scanner: FC<ScannerProps> = () => {
         // Clear the "matches" data from local storage
         localStorage.removeItem("matches");
       };
-      
-
-    if (!currentUser) return <NeedAccount />;
+    
     return (
         <div
             style={{

@@ -92,94 +92,95 @@ const ScoutingInputs: FC<ScoutingInputsProps> = () => {
                 if (role === 'admin') {
                     setDisabled(false);
                 }
-                const [auatonRef, teleopRef, endgameRef] = await Promise.all([
-                    db
-                        .collection('years')
-                        .doc(`${year}`)
-                        .collection('scouting')
-                        .doc('auton')
-                        .get(),
-                    db
-                        .collection('years')
-                        .doc(`${year}`)
-                        .collection('scouting')
-                        .doc('teleop')
-                        .get(),
-                    db
-                        .collection('years')
-                        .doc(`${year}`)
-                        .collection('scouting')
-                        .doc('endgame')
-                        .get(),
-                ]);
-
-                const autonData: any =
-                    Object.keys(auatonRef.data() || {}).length === 0
-                        ? {
-                              key: 'counter',
-                          }
-                        : auatonRef.data();
-                setAutonInputs(
-                    Object.keys(autonData).map((key) => {
-                        if (Array.isArray(autonData[key]))
-                            return {
-                                key,
-                                type: 'dropdown',
-                                choices: autonData[key],
-                            };
-                        return {
-                            key,
-                            type: autonData[key],
-                        };
-                    }),
-                );
-
-                const teleopData: any =
-                    Object.keys(teleopRef.data() || {}).length === 0
-                        ? {
-                              key: 'counter',
-                          }
-                        : teleopRef.data();
-                setTeleopInputs(
-                    Object.keys(teleopData).map((key) => {
-                        if (Array.isArray(teleopData[key]))
-                            return {
-                                key,
-                                type: 'dropdown',
-                                choices: teleopData[key].map((key2: any) => {
-                                    return JSON.stringify(key2);
-                                }),
-                            };
-                        return {
-                            key,
-                            type: teleopData[key],
-                        };
-                    }),
-                );
-
-                const endgameData: any =
-                    Object.keys(endgameRef.data() || {}).length === 0
-                        ? {
-                              key: 'counter',
-                          }
-                        : endgameRef.data();
-                setEndgameInputs(
-                    Object.keys(endgameData).map((key) => {
-                        if (Array.isArray(endgameData[key]))
-                            return {
-                                key,
-                                type: 'dropdown',
-                                choices: endgameData[key].map((key2: any) => {
-                                    return JSON.stringify(key2);
-                                }),
-                            };
-                        return {
-                            key,
-                            type: endgameData[key],
-                        };
-                    }),
-                );
             }
+
+            const [auatonRef, teleopRef, endgameRef] = await Promise.all([
+                db
+                    .collection('years')
+                    .doc(`${year}`)
+                    .collection('scouting')
+                    .doc('auton')
+                    .get(),
+                db
+                    .collection('years')
+                    .doc(`${year}`)
+                    .collection('scouting')
+                    .doc('teleop')
+                    .get(),
+                db
+                    .collection('years')
+                    .doc(`${year}`)
+                    .collection('scouting')
+                    .doc('endgame')
+                    .get(),
+            ]);
+
+            const autonData: any =
+                Object.keys(auatonRef.data() || {}).length === 0
+                    ? {
+                          key: 'counter',
+                      }
+                    : auatonRef.data();
+            setAutonInputs(
+                Object.keys(autonData).map((key) => {
+                    if (Array.isArray(autonData[key]))
+                        return {
+                            key,
+                            type: 'dropdown',
+                            choices: autonData[key],
+                        };
+                    return {
+                        key,
+                        type: autonData[key],
+                    };
+                }),
+            );
+
+            const teleopData: any =
+                Object.keys(teleopRef.data() || {}).length === 0
+                    ? {
+                          key: 'counter',
+                      }
+                    : teleopRef.data();
+            setTeleopInputs(
+                Object.keys(teleopData).map((key) => {
+                    if (Array.isArray(teleopData[key]))
+                        return {
+                            key,
+                            type: 'dropdown',
+                            choices: teleopData[key].map((key2: any) => {
+                                return JSON.stringify(key2);
+                            }),
+                        };
+                    return {
+                        key,
+                        type: teleopData[key],
+                    };
+                }),
+            );
+
+            const endgameData: any =
+                Object.keys(endgameRef.data() || {}).length === 0
+                    ? {
+                          key: 'counter',
+                      }
+                    : endgameRef.data();
+            setEndgameInputs(
+                Object.keys(endgameData).map((key) => {
+                    if (Array.isArray(endgameData[key]))
+                        return {
+                            key,
+                            type: 'dropdown',
+                            choices: endgameData[key].map((key2: any) => {
+                                return JSON.stringify(key2);
+                            }),
+                        };
+                    return {
+                        key,
+                        type: endgameData[key],
+                    };
+                }),
+            );
         };
         fetchData().then(() => setLoading(false));
     }, [currentUser, year]);

@@ -69,53 +69,6 @@ const NavLink = ({ children, href }: { children: ReactNode; href: string }) => (
     </StyledLink>
 );
 
-const ProfileButton = () => {
-    const { logout } = useAuth();
-    return (
-        <Menu>
-            <MenuButton as={Avatar} backgroundColor="mv-purple.500" />
-            <MenuList>
-                <MenuItem onClick={logout}>
-                    <Flex
-                        width="inherit"
-                        justifyContent="center"
-                        alignItems="center"
-                        color={'black'}
-                    >
-                        <Text>Log Out</Text>
-                        <Spacer />
-                        <Icon as={IoExitOutline} height="100%" />
-                    </Flex>
-                </MenuItem>
-            </MenuList>
-        </Menu>
-    );
-};
-
-const AuthButtons = () => {
-    const history = useHistory();
-    return (
-        <>
-            <Button
-                variant={'outline'}
-                _hover={{
-                    backgroundColor: '#765d80',
-                }}
-                onClick={() => history.push('/login')}
-            >
-                Log In
-            </Button>
-            <Button
-                variant={'solid'}
-                colorScheme="purple"
-                onClick={() => history.push('/sign-up')}
-            >
-                Sign Up
-            </Button>
-        </>
-    );
-};
-
 export default function Navbar() {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const { currentUser, logout } = useAuth();
@@ -158,7 +111,7 @@ export default function Navbar() {
                         ))}
                     </HStack>
                     <HStack>
-                        {currentUser ? <ProfileButton /> : <AuthButtons />}
+                        {/* Login/Signup temporarily disabled */}
                     </HStack>
                 </Flex>
 

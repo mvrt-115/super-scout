@@ -235,7 +235,6 @@ const Picklist: FC<PicklistProps> = () => {
             <Flex alignItems={'center'} justifyContent={'center'}>
                 <Box bg={'mv.purple-200'}>
                     <Select
-                        isDisabled={!currentUser}
                         onChange={(e) => {
                             setRegional(e.target.value);
                             fetchFirstPickTeams(e.target.value);
@@ -428,7 +427,6 @@ const Picklist: FC<PicklistProps> = () => {
                                     mr="10px"
                                     size="lg"
                                     isChecked={offensePicklist.includes(team)}
-                                    isDisabled={!currentUser}
                                     spacing="1rem"
                                     onChange={() => {
                                         addToPicklist(team, 'offense');
@@ -485,7 +483,6 @@ const Picklist: FC<PicklistProps> = () => {
                                     mr="10px"
                                     size="lg"
                                     isChecked={defensePicklist.includes(team)}
-                                    isDisabled={!currentUser}
                                     spacing="1rem"
                                     onChange={() => {
                                         addToPicklist(team, 'defense');
