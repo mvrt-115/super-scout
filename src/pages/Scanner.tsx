@@ -31,7 +31,12 @@ const Scanner: FC<ScannerProps> = () => {
     const year = new Date().getFullYear();
 
     useEffect(() => {
-        setData(JSON.parse(localStorage.getItem('matches') || '[]'));
+        try {
+            setData(JSON.parse(localStorage.getItem('matches') || '[]'));
+        } catch (e) {
+            console.error('Failed to parse matches from localStorage', e);
+            setData([]);
+        }
     }, []);
 
     const uploadData = () => {
@@ -151,13 +156,17 @@ const Scanner: FC<ScannerProps> = () => {
                 {qrVisible ? (
                     <QRScanner
                         onFind={(val: any) => {
-                            const matchData = JSON.parse(val);
-                            setQrVisible(false);
-                            setData([...data, matchData]);
-                            localStorage.setItem(
-                                'matches',
-                                JSON.stringify([...data, matchData]),
-                            );
+                            try {
+                                const matchData = JSON.parse(val);
+                                setQrVisible(false);
+                                setData((prevData) => {
+                                    const newData = [...prevData, matchData];
+                                    localStorage.setItem('matches', JSON.stringify(newData));
+                                    return newData;
+                                });
+                            } catch (error) {
+                                console.error('Scanned QR code is not valid JSON Data:', val);
+                            }
                         }}
                     />
                 ) : (

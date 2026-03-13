@@ -19,7 +19,7 @@ import React, { FC, useEffect, useState } from 'react';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import Graph from '../../components/displays/Graph';
 import GraphInput from '../../components/displays/GraphInput';
-import { db, functions } from '../../firebase';
+import { db } from '../../firebase';
 import {
     RadarChart,
     Radar,
@@ -44,7 +44,6 @@ import { ThemeProvider, createTheme } from '@mui/material';
 import { AiOutlineConsoleSql } from 'react-icons/ai';
 import Card from '../../components/Card';
 import DataTable from '../../components/displays/DataTable';
-import { storage } from 'firebase-functions/v1';
 //import firebase from 'firebase';
 import firebase from '../../firebase';
 import ClimbPieChart from '../../components/displays/ClimbPieChart';

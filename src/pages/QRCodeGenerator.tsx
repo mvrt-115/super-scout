@@ -325,10 +325,10 @@ const QRCodeGenerator: FC<QRCodeGeneratorProps> = () => {
             </Box>
             {qrcode && (
                 <Box
-                    bg={'gray.100'}
+                    bg={'white'}
                     borderRadius="lg"
                     p={8}
-                    color={'gray.700'}
+                    color={'black'}
                     shadow="base"
                     width={'fit-content'}
                     marginTop={'3%'}
