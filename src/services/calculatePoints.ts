@@ -50,6 +50,13 @@ export const calcAutonPoints = (matchData: any, year: number | string) => {
         }
         return autonPoints;
     }
+    else if(year === '2026'){
+        let autonPoints: number = 6 * matchData['Auton HP Scored'];
+        if(matchData['Did Climb Level 1']){
+            autonPoints += 3;
+        }
+        return autonPoints;
+    }
     return -1;
 };
 
@@ -85,6 +92,10 @@ export const calcTeleopPoints = (matchData: any, year: number | string) => {
             + 5*matchData['Teleop Coral Level 4 Scored']
             + 6*matchData['Teleop Algae Processor Scored']
             + 4*matchData['Teleop Algae Net Scored']
+        return teleopPoints;
+    }
+    else if(year === '2026'){
+        let teleopPoints: number = 4 * matchData['Teleop HP Scored'];
         return teleopPoints;
     }
     return -1;
@@ -155,6 +166,16 @@ export const calcEndgamePoints = (matchData: any, year: number | string) => {
         // if(matchData['Trap']){
         //     endgamePoints+=5;
         // }
+        return endgamePoints;
+    } else if (year === '2026') {
+        let endgamePoints: number = 0;
+        if (matchData['Climb Level'] === 'Level 1') {
+            endgamePoints += 3;
+        } else if (matchData['Climb Level'] === 'Level 2') {
+            endgamePoints += 6;
+        } else if (matchData['Climb Level'] === 'Level 3') {
+            endgamePoints += 12;
+        }
         return endgamePoints;
     }
     return -1;
