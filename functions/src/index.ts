@@ -100,13 +100,6 @@ export const matchUpdate = functions.firestore
                 + matchData['Auton Algae Net Scored']
             matchData["Total Cycles"] = matchData['Auton Cycles'] + matchData['Teleop Cycles']
         }
-        else if (context.params.year == '2026'){
-            matchData['Teleop Cycles'] = matchData['Teleop HP Scored']
-            matchData['Auton Cycles'] = matchData['Auton HP Scored']
-            matchData["Total Cycles"] = matchData['Auton Cycles'] + matchData['Teleop Cycles']
-            matchData["CanIntakeTeleop"] = matchData['Teleop Ground Intake'] && matchData['Teleop HP Intake'];
-            matchData["CanIntakeAuton"] = matchData['Auton Ground Intake'] && matchData['Auton HP Intake'];
-        }
         db.collection('years')
             .doc(context.params.year)
             .collection('regionals')
@@ -230,13 +223,6 @@ const calcAutonPoints = (matchData: any, year: number | string) => {
         }
         return autonPoints;
     }
-    else if(year == '2026'){
-        let autonPoints: number = 6 * matchData['Auton HP Scored'];
-        if(matchData['Did Climb Level 1']){
-            autonPoints += 3;
-        }
-        return autonPoints;
-    }
     return -1;
 };
 
@@ -272,10 +258,6 @@ const calcTeleopPoints = (matchData: any, year: number | string) => {
             + 5*matchData['Teleop Coral Level 4 Scored']
             + 6*matchData['Teleop Algae Processor Scored']
             + 4*matchData['Teleop Algae Net Scored']
-        return teleopPoints;
-    }
-    else if(year == '2026'){
-        let teleopPoints: number = 4 * matchData['Teleop HP Scored'];
         return teleopPoints;
     }
     return -1;
@@ -346,16 +328,6 @@ const calcEndgamePoints = (matchData: any, year: number | string) => {
         // if(matchData['Trap']){
         //     endgamePoints+=5;
         // }
-        return endgamePoints;
-    } else if (year == '2026') {
-        let endgamePoints: number = 0;
-        if (matchData['Climb Level'] == 'Level 1') {
-            endgamePoints += 3;
-        } else if (matchData['Climb Level'] == 'Level 2') {
-            endgamePoints += 6;
-        } else if (matchData['Climb Level'] == 'Level 3') {
-            endgamePoints += 12;
-        }
         return endgamePoints;
     }
     return -1;
