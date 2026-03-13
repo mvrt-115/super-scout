@@ -44,7 +44,6 @@ import { ThemeProvider, createTheme } from '@mui/material';
 import { AiOutlineConsoleSql } from 'react-icons/ai';
 import Card from '../../components/Card';
 import DataTable from '../../components/displays/DataTable';
-import { storage } from 'firebase-functions/v1';
 //import firebase from 'firebase';
 import firebase from '../../firebase';
 import ClimbPieChart from '../../components/displays/ClimbPieChart';
@@ -223,6 +222,46 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                             "Teleop Cycles",
                             "Auton Cycles",
                             "Total Cycles"];
+                        } else if (year == "2026") {
+                            column_headers = [
+                            "matchNum",
+                            "Auton HP Scored",
+                            "Teleop HP Scored",
+                            "CanIntakeAuton",
+                            "CanIntakeTeleop",
+                            "Auton Ground Intake",
+                            "Auton HP Intake",
+                            "Auton Pass to Own Side",
+                            "Auton Pass to HP",
+                            "Auton Shooting Accuracy",
+                            "Teleop Ground Intake",
+                            "Teleop HP Intake",
+                            "Teleop Pass to Own Side",
+                            "Teleop Pass to HP",
+                            "Transition Shift Shooting Accuracy",
+                            "First Opportunity Shooting Accuracy",
+                            "Second Opportunity Shooting Accuracy",
+                            "Endgame Ground Intake",
+                            "Endgame HP Intake",
+                            "Endgame Passed to Own Side",
+                            "Endgame Passed to HP",
+                            "Endgame Shooting Accuracy",
+                            "Climb Level",
+                            "Climb Time",
+                            "Played Defense",
+                            "Driver Rating",
+                            "Left Starting Line",
+                            "Can Drive Over Bumps",
+                            "Can Drive Under Trench",
+                            "Did Climb Level 1",
+                            "Comments",
+                            "autonPoints",
+                            "teleopPoints",
+                            "endgamePoints",
+                            "Teleop Cycles",
+                            "Auton Cycles",
+                            "Total Cycles",
+                            ];
                         }
                         setTemplate(
                             column_headers
@@ -1201,6 +1240,75 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                     </Grid>
                 </div>
             );
+        } else if (year == '2026') {
+            const totalAutonHPScored: number = matches.reduce(
+                (sum, match) => sum + (match['Auton HP Scored'] || 0),
+                0,
+            );
+            const totalTeleopHPScored: number = matches.reduce(
+                (sum, match) => sum + (match['Teleop HP Scored'] || 0),
+                0,
+            );
+
+            const comments: any[] = matches
+                .filter((match) => match['Comments'])
+                .map((match) => ({
+                    match: match['matchNum'],
+                    comments: match['Comments'],
+                }));
+
+            return (
+                <div style={{ marginTop: '20px' }}>
+                    <Flex
+                        direction={['column', 'column', 'row', 'row']}
+                        alignItems={'flex-start'}
+                        justifyContent={'space-evenly'}
+                        marginTop={2}
+                    >
+                        <Flex direction={'column'} alignItems={'center'}>
+                            <Grid
+                                templateColumns={[
+                                    'repeat(2, minmax(150px, 1fr))',
+                                    'repeat(2, minmax(150px, 1fr))',
+                                    'repeat(2, minmax(150px, 1fr))',
+                                    'repeat(2, minmax(150px, 1fr))',
+                                ]}
+                            >
+                                <Card
+                                    height="150px"
+                                    width="150px"
+                                    title={'Avg Auton HP Scored'}
+                                    info={(totalAutonHPScored / matches.length).toFixed(2)}
+                                ></Card>
+                                <Card
+                                    height="150px"
+                                    width="150px"
+                                    title={'Avg Teleop HP Scored'}
+                                    info={(totalTeleopHPScored / matches.length).toFixed(2)}
+                                ></Card>
+                            </Grid>
+                        </Flex>
+                    </Flex>
+                    <Heading textAlign="center">Comments</Heading>
+                    <Grid
+                        templateColumns={[
+                            'repeat(2, minmax(150px, 1fr))',
+                            'repeat(2, minmax(150px, 1fr))',
+                            'repeat(3, minmax(150px, 1fr))',
+                            'repeat(3, minmax(150px, 1fr))',
+                        ]}
+                    >
+                        {comments.map((matchComment: any, index: number) => {
+                            return (
+                                <GridItem key={index}>
+                                    <Heading fontSize="2xl">{`Match # ${matchComment.match}`}</Heading>
+                                    <Text>{matchComment.comments}</Text>
+                                </GridItem>
+                            );
+                        })}
+                    </Grid>
+                </div>
+            );
         }
     };
     //end for drive dashboard
@@ -1233,7 +1341,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                     >
                         Rank # {ranking}
                     </Heading>
-                    {year === '2025' ? (
+                    {year === '2025' || year === '2026' ? (
                         <Button
                             size={'sm'}
                             onClick={() => {
