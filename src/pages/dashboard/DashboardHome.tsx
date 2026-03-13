@@ -46,18 +46,18 @@ const DashboardHome: FC<DashboardHomeProps> = () => {
     }, []);
     const moveData = async () => {
         let tempList: any[] = []
-        const teamsList = await db.collection('years').doc('2026').collection("regionals").doc('casv').collection("teams").get().then((teams)=>{
+        const teamsList = await db.collection('years').doc('2026').collection("regionals").doc('casnv').collection("teams").get().then((teams)=>{
             const temp = teams.docs;
             temp.forEach((team)=>{
                 tempList.push(team.id)
             })
         });
         tempList.forEach((team)=>{
-            db.collection("years").doc("2026").collection("regionals").doc("casv").collection("teams").doc(team).collection("matches").get().then((ids)=>{
+            db.collection("years").doc("2026").collection("regionals").doc("casnv").collection("teams").doc(team).collection("matches").get().then((ids)=>{
                 const matchList = ids.docs;
                 matchList.forEach((match)=>{
                     const id = match.id;
-                    db.collection("years").doc('2026').collection("regionals").doc("casv").collection("teams").doc(team).collection("matches").doc(id).get().then((data)=>{
+                    db.collection("years").doc('2026').collection("regionals").doc("casnv").collection("teams").doc(team).collection("matches").doc(id).get().then((data)=>{
                         let temp2:any = data.data();
                         if(temp2==undefined){
                             console.log(id+" "+team)
@@ -69,7 +69,7 @@ const DashboardHome: FC<DashboardHomeProps> = () => {
                         temp2["Total Cycles"]+=temp2["Auton Speaker Scored"];
                         if(team=="115"){
                             console.log(temp2);}
-                        db.collection("years").doc("2026").collection("regionals").doc("casv").collection("teams").doc(team).collection("matches").doc(id).set(temp2);
+                        db.collection("years").doc("2026").collection("regionals").doc("casnv").collection("teams").doc(team).collection("matches").doc(id).set(temp2);
                     })
                 })
             })
