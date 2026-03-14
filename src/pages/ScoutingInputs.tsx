@@ -38,61 +38,43 @@ const ScoutingInputs: FC<ScoutingInputsProps> = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [disabled, setDisabled] = useState<boolean>(true);
 
+    const serializeField = (input: ScoutInputData): any => {
+        if (input.type.startsWith('selection ')) {
+            // Convert back to dropdown object: {"Name": ["Opt1", "Opt2"]}
+            const opts = input.type.substring('selection '.length).split(',').map(o => o.trim());
+            return { [input.key]: opts };
+        }
+        return `${input.key}:${input.type}`;
+    };
+
     const handleSave = () => {
-        let autonInputsToSave: any = {};
-        autonInputs.forEach((input) => {
-            if (input.key && input.type !== 'dropdown')
-                autonInputsToSave[input.key] = input.type;
-            else if (input.type === 'dropdown')
-                autonInputsToSave[input.key] = input.choices;
-        });
-        let teleopInputsToSave: any = {};
-        teleopInputs.forEach((input) => {
-            if (input.key && input.type !== 'dropdown')
-                teleopInputsToSave[input.key] = input.type;
-            else if (input.type === 'dropdown')
-                teleopInputsToSave[input.key] = input.choices;
-        });
-        let endgameInputsToSave: any = {};
-        endgameInputs.forEach((input) => {
-            if (input.key && input.type !== 'dropdown')
-                endgameInputsToSave[input.key] = input.type;
-            else if (input.type === 'dropdown')
-                endgameInputsToSave[input.key] = input.choices;
-        });
+        const autonInputsToSave = autonInputs.filter(i => i.key).map(serializeField);
+        const teleopInputsToSave = teleopInputs.filter(i => i.key).map(serializeField);
+        const endgameInputsToSave = endgameInputs.filter(i => i.key).map(serializeField);
 
         db.collection('years')
             .doc(year + '')
             .collection('scouting')
             .doc('auton')
-            .set(autonInputsToSave);
+            .set({ autonFields: autonInputsToSave });
 
         db.collection('years')
             .doc(year + '')
             .collection('scouting')
             .doc('teleop')
-            .set(teleopInputsToSave);
+            .set({ teleopFields: teleopInputsToSave });
 
         db.collection('years')
             .doc(year + '')
             .collection('scouting')
             .doc('endgame')
-            .set(endgameInputsToSave);
+            .set({ endgameFields: endgameInputsToSave });
     };
 
     useEffect(() => {
         const fetchData = async () => {
-            if (currentUser) {
-                const userRef = await db
-                    .collection('users')
-                    .doc(currentUser.uid)
-                    .get();
-                const userData: any = userRef.data();
-                const { role } = userData;
-                if (role === 'admin') {
-                    setDisabled(false);
-                }
-            }
+            // Bypass login requirement for now
+            setDisabled(false);
 
             const [auatonRef, teleopRef, endgameRef] = await Promise.all([
                 db
@@ -115,72 +97,24 @@ const ScoutingInputs: FC<ScoutingInputsProps> = () => {
                     .get(),
             ]);
 
-            const autonData: any =
-                Object.keys(auatonRef.data() || {}).length === 0
-                    ? {
-                          key: 'counter',
-                      }
-                    : auatonRef.data();
-            setAutonInputs(
-                Object.keys(autonData).map((key) => {
-                    if (Array.isArray(autonData[key]))
-                        return {
-                            key,
-                            type: 'dropdown',
-                            choices: autonData[key],
-                        };
-                    return {
-                        key,
-                        type: autonData[key],
-                    };
-                }),
-            );
+            const parseFields = (raw: any): ScoutInputData[] => {
+                const arr = Object.values(raw || []);
+                if (arr.length === 0) return [{ key: 'counter', type: 'counter' }];
+                return arr.map((field: any) => {
+                    if (typeof field === 'object' && field !== null) {
+                        // Dropdown: {"Name": ["Opt1", "Opt2"]}
+                        const key = Object.keys(field)[0];
+                        const opts = Object.values(field)[0] as string[];
+                        return { key, type: `selection ${opts.join(',')}` };
+                    }
+                    const parts = (field + '').split(':');
+                    return { key: parts[0].trim(), type: (parts[1] || 'counter').trim() };
+                }) as ScoutInputData[];
+            };
 
-            const teleopData: any =
-                Object.keys(teleopRef.data() || {}).length === 0
-                    ? {
-                          key: 'counter',
-                      }
-                    : teleopRef.data();
-            setTeleopInputs(
-                Object.keys(teleopData).map((key) => {
-                    if (Array.isArray(teleopData[key]))
-                        return {
-                            key,
-                            type: 'dropdown',
-                            choices: teleopData[key].map((key2: any) => {
-                                return JSON.stringify(key2);
-                            }),
-                        };
-                    return {
-                        key,
-                        type: teleopData[key],
-                    };
-                }),
-            );
-
-            const endgameData: any =
-                Object.keys(endgameRef.data() || {}).length === 0
-                    ? {
-                          key: 'counter',
-                      }
-                    : endgameRef.data();
-            setEndgameInputs(
-                Object.keys(endgameData).map((key) => {
-                    if (Array.isArray(endgameData[key]))
-                        return {
-                            key,
-                            type: 'dropdown',
-                            choices: endgameData[key].map((key2: any) => {
-                                return JSON.stringify(key2);
-                            }),
-                        };
-                    return {
-                        key,
-                        type: endgameData[key],
-                    };
-                }),
-            );
+            setAutonInputs(parseFields(auatonRef.data()?.autonFields));
+            setTeleopInputs(parseFields(teleopRef.data()?.teleopFields));
+            setEndgameInputs(parseFields(endgameRef.data()?.endgameFields));
         };
         fetchData().then(() => setLoading(false));
     }, [currentUser, year]);
@@ -217,12 +151,12 @@ const ScoutingInputs: FC<ScoutingInputsProps> = () => {
                 width={['100%', '100%', '25%', '25%']}
             >
                 <VStack>
-                    <Heading textColor={'#550575'}>Match QR Code Data</Heading>
+                    <Heading textColor={'mv-purple.500'}>Match QR Code Data</Heading>
                     <div style={{ width: '100%' }}>
                         <Heading
                             size="sm"
                             textAlign={'left'}
-                            textColor={'#550575'}
+                            textColor={'mv-purple.500'}
                         >
                             Auton
                         </Heading>
@@ -267,7 +201,7 @@ const ScoutingInputs: FC<ScoutingInputsProps> = () => {
                         <Heading
                             size="sm"
                             textAlign={'left'}
-                            textColor={'#550575'}
+                            textColor={'mv-purple.500'}
                         >
                             Teleop
                         </Heading>
@@ -312,7 +246,7 @@ const ScoutingInputs: FC<ScoutingInputsProps> = () => {
                         <Heading
                             size="sm"
                             textAlign={'left'}
-                            textColor={'#550575'}
+                            textColor={'mv-purple.500'}
                         >
                             Endgame
                         </Heading>

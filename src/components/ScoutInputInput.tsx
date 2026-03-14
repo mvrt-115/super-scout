@@ -55,7 +55,11 @@ const ScoutInputInput: FC<ScoutInputInputProps> = ({
                         <option value="counter">Counter</option>
                         <option value="timer">Timer</option>
                         <option value="text">Text</option>
+                        <option value="short">Short Text</option>
                         <option value="boolean">Boolean</option>
+                        <option value="slider">Slider</option>
+                        <option value="radio">Radio</option>
+                        <option value="selection">Selection</option>
                         <option value="dropdown">Dropdown</option>
                     </Select>
                 </FormControl>

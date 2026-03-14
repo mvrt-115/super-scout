@@ -462,32 +462,7 @@ const Teams: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                 >
                     Download Data
                 </Button>
-                <Button
-                    onClick={handleAIMode}
-                    colorScheme="mv-purple"
-                    size="lg"
-                    width={'100%'}
-                    marginTop="2"
-                >
-                    AI Analysis
-                </Button>
             </Box>
-            {aiLoading && (
-                <Flex justify="center" my={4}>
-                    <Spinner />
-                </Flex>
-                )}
-                {!!aiResponse && (
-                <Box
-                    whiteSpace="pre-wrap"
-                    p={4}
-                    mt={4}
-                    bg="gray.50"
-                    borderRadius="md"
-                >
-                    {aiResponse}
-                </Box>
-                )}
             <Flex width="100%" justify={'end'}>
                 <Menu>
                     <Tooltip label="Sort By">

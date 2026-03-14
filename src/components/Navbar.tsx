@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode } from 'react';
 import {
     Box,
     Flex,
@@ -10,19 +10,16 @@ import {
     Heading,
     Collapse,
     Avatar,
-    Icon,
     Menu,
     MenuButton,
     MenuItem,
     MenuList,
-    Spacer,
     Text,
     Button,
 } from '@chakra-ui/react';
 import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { IoExitOutline } from 'react-icons/io5';
 
 interface LinkType {
     href: string;
@@ -36,31 +33,24 @@ const Links: LinkType[] = [
     },
     {
         href: '/scanner',
-        label: 'Scanner',
-    },
-    {
-        href: '/qr-code-generator',
-        label: 'Match QR Code',
+        label: 'QR Codes & Scanner',
     },
     {
         href: '/scouting-inputs',
         label: 'Scouting Inputs',
     },
-    {
-        href: '/picklist',
-        label: 'Picklist',
-    },
 ];
 
 const NavLink = ({ children, href }: { children: ReactNode; href: string }) => (
     <StyledLink
-        px={2}
+        px={3}
         py={1}
         rounded={'md'}
+        fontWeight={500}
+        fontSize={'sm'}
         _hover={{
             textDecoration: 'none',
-            // backgroundColor: '#dab0ec',
-            fontSize: '110%',
+            bg: 'whiteAlpha.200',
         }}
         as={Link}
         to={href}
@@ -71,37 +61,51 @@ const NavLink = ({ children, href }: { children: ReactNode; href: string }) => (
 
 export default function Navbar() {
     const { isOpen, onOpen, onClose } = useDisclosure();
-    const { currentUser, logout } = useAuth();
-    const [bg, setBg] = useState<string>('#550575');
+    const { currentUser, logout, loggedIn } = useAuth();
+    const history = useHistory();
     const location = useLocation();
 
-    useEffect(() => {
-        if (location.pathname === '/') setBg('');
-        else setBg('#550575');
-    }, [location]);
+    const handleLogout = async () => {
+        try {
+            await logout();
+            history.push('/');
+        } catch {
+            console.error('Failed to log out');
+        }
+    };
 
     return (
         <>
-            <Box bg={bg} px={4} color={'white'}>
+            <Box
+                bg={'mv-purple.800'}
+                px={4}
+                color={'white'}
+                borderBottom="1px solid"
+                borderColor="whiteAlpha.100"
+            >
                 <Flex
-                    h={16}
+                    h={14}
                     alignItems={'center'}
                     justifyContent={'space-between'}
                 >
                     <IconButton
-                        size={'md'}
+                        size={'sm'}
                         icon={isOpen ? <CloseIcon /> : <HamburgerIcon />}
                         aria-label={'Open Menu'}
                         display={{ md: 'none' }}
                         onClick={isOpen ? onClose : onOpen}
-                        bg={'transpernt'}
+                        variant="ghost"
+                        color="white"
+                        _hover={{ bg: 'whiteAlpha.200' }}
                     />
                     <Box as={Link} to="/">
-                        <Heading size="md">MVRT Super Scout</Heading>
+                        <Heading size="sm" letterSpacing="tight">
+                            MVRT Super Scout
+                        </Heading>
                     </Box>
                     <HStack
                         as={'nav'}
-                        spacing={4}
+                        spacing={1}
                         display={{ base: 'none', md: 'flex' }}
                     >
                         {Links.map((link, index) => (
@@ -110,14 +114,15 @@ export default function Navbar() {
                             </NavLink>
                         ))}
                     </HStack>
-                    <HStack>
-                        {/* Login/Signup temporarily disabled */}
+
+                    {/* Profile Avatar / Login removed for now */}
+                    <HStack spacing={3}>
                     </HStack>
                 </Flex>
 
                 <Collapse in={isOpen} animateOpacity>
                     <Box pb={4} display={{ md: 'none' }}>
-                        <Stack as={'nav'} spacing={4}>
+                        <Stack as={'nav'} spacing={2}>
                             {Links.map((link, index) => (
                                 <NavLink key={index} href={link.href}>
                                     {link.label}

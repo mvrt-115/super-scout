@@ -1,0 +1,348 @@
+{
+  "2019": {
+    "auton": {
+      "Upper": "",
+      "Inner": "",
+      "Bottom": ""
+    },
+    "teleop": {},
+    "endgame": {}
+  },
+  "2020": {},
+  "2021": {},
+  "2022": {
+    "auton": {
+      "autonFields": [
+        "Leave Tarmac : boolean",
+        "Auton Missed : counter",
+        "Auton Upper : counter",
+        "Auton Bottom : counter"
+      ]
+    },
+    "teleop": {
+      "teleopFields": [
+        "Teleop Bottom : counter",
+        "Teleop Upper : counter",
+        "Teleop Missed : counter",
+        {
+          "Distance Shot From": [
+            "in tarmac",
+            "between wall and tarmac",
+            "against hub",
+            "none",
+            "against Launchpad"
+          ]
+        },
+        "Played Defense : boolean",
+        "Defense rating : rating"
+      ]
+    },
+    "endgame": {
+      "endgameFields": [
+        "Did Climb : boolean",
+        "Climb time : timer",
+        "Fell off rungs : boolean",
+        {
+          "Climb rung": [
+            "None",
+            "Low",
+            "Mid",
+            "High",
+            "Traversal"
+          ]
+        },
+        "Driver Rating : rating",
+        "Speed Rating : rating",
+        "Comments : text"
+      ]
+    }
+  },
+  "2023": {
+    "auton": {
+      "autonFields": [
+        "Mobility: boolean",
+        "Auton Upper Cone: counter",
+        "Auton Upper Cone Missed: counter",
+        "Auton Mid Cone: counter",
+        "Auton Mid Cone Missed: counter",
+        "Auton Lower Cone: counter",
+        "Auton Lower Cone Missed: counter",
+        "Auton Upper Cube: counter",
+        "Auton Upper Cube Missed: counter",
+        "Auton Mid Cube: counter",
+        "Auton Mid Cube Missed: counter",
+        "Auton Lower Cube: counter",
+        "Auton Lower Cube Missed: counter",
+        "Auton Did Charge: boolean",
+        "Auton Docked: boolean",
+        "Auton Engaged: boolean",
+        "Auton Charge Time: timer"
+      ]
+    },
+    "teleop": {
+      "teleopFields": [
+        "Teleop Upper Cone: counter",
+        "Teleop Upper Cone Missed: counter",
+        "Teleop Mid Cone: counter",
+        "Teleop Mid Cone Missed: counter",
+        "Teleop Lower Cone: counter",
+        "Teleop Lower Cone Missed: counter",
+        "Teleop Upper Cube: counter",
+        "Teleop Upper Cube Missed: counter",
+        "Teleop Mid Cube: counter",
+        "Teleop Mid Cube Missed: counter",
+        "Teleop Lower Cube: counter",
+        "Teleop Lower Cube Missed: counter",
+        "Played Defense: boolean"
+      ]
+    },
+    "endgame": {
+      "endgameFields": [
+        "Parked: boolean",
+        "Endgame Did Charge: boolean",
+        "Endgame Docked: boolean",
+        "Endgame Engaged: boolean",
+        "Tipped: boolean",
+        "Comments: text"
+      ]
+    }
+  },
+  "2024": {
+    "auton": {
+      "autonFields": [
+        "Auton Amp Scored: counter",
+        "Auton Amp Missed: counter",
+        "Auton Speaker Scored: counter",
+        "Auton Speaker Missed: counter",
+        "Mobility: boolean"
+      ]
+    },
+    "teleop": {
+      "teleopFields": [
+        "Teleop Amp Scored: counter",
+        "Teleop Amp Missed: counter",
+        "Teleop Speaker Scored: counter",
+        "Teleop Speaker Missed: counter",
+        "Played Defense: boolean",
+        "Drivetrain Dimensions: text"
+      ]
+    },
+    "endgame": {
+      "endgameFields": [
+        "Did Climb: boolean",
+        "Climb Time: timer",
+        {
+          "Climb Level": [
+            "None",
+            "Solo",
+            "Harmony"
+          ]
+        },
+        "Trap: boolean",
+        "Park: boolean",
+        "Drive Rating: rating",
+        "Comments: text"
+      ]
+    }
+  },
+  "2025": {
+    "auton": {
+      "autonFields": [
+        "(A) Coral L1 Scored 🪸✅: counter",
+        "(A) Coral L1 Missed 🪸❌: counter",
+        "(A) Coral L2 Scored 🪸✅: counter",
+        "(A) Coral L2 Missed 🪸❌: counter",
+        "(A) Coral L3 Scored 🪸✅: counter",
+        "(A) Coral L3 Missed 🪸❌: counter",
+        "(A) Coral L4 Scored 🪸✅: counter",
+        "(A) Coral L4 Missed 🪸❌: counter",
+        "(A) Algae Processor Scored 🎾✅: counter",
+        "(A) Algae Processor Missed 🎾❌: counter",
+        "(A) Algae Net Scored 🥅✅: counter",
+        "(A) Algae Net Missed 🥅❌: counter",
+        "Mobility: boolean",
+        "Starts on 1: boolean",
+        "Starts on 2: boolean",
+        "Starts on 3: boolean",
+        "Starts on 4: boolean",
+        "Starts on 5: boolean",
+        "(A) Algae Removed Success ✅: counter",
+        "(A) Algae Removed Failed ❌: counter"
+      ]
+    },
+    "teleop": {
+      "teleopFields": [
+        "(T) Coral L1 Scored 🪸✅: counter",
+        "(T) Coral L1 Missed 🪸❌: counter",
+        "(T) Coral L2 Scored 🪸✅: counter",
+        "(T) Coral L2 Missed 🪸❌: counter",
+        "(T) Coral L3 Scored 🪸✅: counter",
+        "(T) Coral L3 Missed 🪸❌: counter",
+        "(T) Coral L4 Scored 🪸✅: counter",
+        "(T) Coral L4 Missed 🪸❌: counter",
+        "(T) Algae Processor Scored 🎾✅: counter",
+        "(T) Algae Processor Missed 🎾❌: counter",
+        "(T) Algae Net Scored 🥅✅: counter",
+        "(T) Algae Net Missed 🥅❌: counter",
+        "Played Defense: boolean",
+        "Got Defended: boolean",
+        "(T) Algae Removed Success ✅: counter",
+        "(T) Algae Removed Failed ❌: counter"
+      ]
+    },
+    "endgame": {
+      "endgameFields": [
+        "Climb Information (toggle this): boolean",
+        "Climb Time: timer",
+        {
+          "Climb Level": [
+            "None",
+            "Shallow Success",
+            "Deep Success",
+            "Shallow Failed",
+            "Deep Failed"
+          ]
+        },
+        "Received Coral RP: boolean",
+        "Drive Rating: rating",
+        "Scouter_Name_and_Comments: text",
+        "Park: boolean",
+        "Tipped: boolean",
+        "Can Score Front: boolean",
+        "Can Score Front Left: boolean",
+        "Can Score Front Right: boolean",
+        "Can Score Back: boolean",
+        "Can Score Back Left: boolean",
+        "Can Score Back Right: boolean",
+        "Disabled: boolean",
+        "Total Coral/Algae Scored: text"
+      ]
+    }
+  },
+  "2026": {
+    "auton": {
+      "autonFields": {
+        "0": {
+          "name": "Starting Position",
+          "type": "text"
+        },
+        "1": {
+          "type": "boolean",
+          "name": "Crossed Auto Line"
+        },
+        "2": {
+          "name": "Fuel Preloaded",
+          "type": "counter"
+        },
+        "3": {
+          "name": "Auton Fuel Scored",
+          "type": "text"
+        },
+        "4": {
+          "name": "Auton Fuel Missed",
+          "type": "text"
+        },
+        "5": {
+          "type": "text",
+          "name": "HP Scored Estimate"
+        },
+        "6": {
+          "type": "counter",
+          "name": "Auto Climb Level"
+        }
+      }
+    },
+    "teleop": {
+      "teleopFields": {
+        "0": {
+          "name": "Teleop Fuel Scored",
+          "type": "text"
+        },
+        "1": {
+          "type": "text",
+          "name": "Teleop Fuel Missed"
+        },
+        "2": {
+          "name": "HP Scored Estimate",
+          "type": "text"
+        },
+        "3": {
+          "name": "Cycle Count",
+          "type": "counter"
+        },
+        "4": {
+          "type": "text",
+          "name": "Avg Cycle Time"
+        },
+        "5": {
+          "name": "Played Defense",
+          "type": "boolean"
+        },
+        "6": {
+          "name": "Defense Rating",
+          "type": "text"
+        },
+        "7": {
+          "type": "boolean",
+          "name": "Received Defense"
+        },
+        "8": {
+          "type": "text",
+          "name": "Defense Impact"
+        },
+        "9": {
+          "name": "Primary Intake",
+          "type": "text"
+        },
+        "10": {
+          "name": "Shooting Position",
+          "type": "text"
+        },
+        "11": {
+          "type": "counter",
+          "name": "Fouls Committed"
+        },
+        "12": {
+          "type": "boolean",
+          "name": "Broke Down"
+        },
+        "13": {
+          "type": "boolean",
+          "name": "Tipped Over"
+        },
+        "14": {
+          "type": "text",
+          "name": "Teleop Notes"
+        }
+      }
+    },
+    "endgame": {
+      "endgameFields": {
+        "0": {
+          "type": "text",
+          "name": "Climb Level"
+        },
+        "1": {
+          "type": "boolean",
+          "name": "Parked"
+        },
+        "2": {
+          "name": "Climb Time",
+          "type": "counter"
+        },
+        "3": {
+          "type": "boolean",
+          "name": "Climb Attempted"
+        },
+        "4": {
+          "name": "Endgame Fuel Scored",
+          "type": "text"
+        },
+        "5": {
+          "name": "Comments",
+          "type": "text"
+        }
+      }
+    }
+  }
+}

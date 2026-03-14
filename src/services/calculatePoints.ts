@@ -38,7 +38,7 @@ export const calcAutonPoints = (matchData: any, year: number | string) => {
         }
         return autonPoints;
     }
-    else if(year === '2025'){
+    else if(year === '2026'){
         let autonPoints: number = 3*matchData['Auton Coral Level 1 Scored'] 
             + 4*matchData['Auton Coral Level 2 Scored']
             + 6*matchData['Auton Coral Level 3 Scored']
@@ -78,7 +78,7 @@ export const calcTeleopPoints = (matchData: any, year: number | string) => {
             2 * matchData['Teleop Speaker Scored'] + matchData['Teleop Amp Scored']//DOES NOT ACCOUNT FOR AMP
         )
     }
-    else if(year === '2025'){
+    else if(year === '2026'){
         let teleopPoints: number = 2*matchData['Teleop Coral Level 1 Scored'] 
             + 3*matchData['Teleop Coral Level 2 Scored']
             + 4*matchData['Teleop Coral Level 3 Scored']
@@ -141,7 +141,7 @@ export const calcEndgamePoints = (matchData: any, year: number | string) => {
             endgamePoints+=5;
         }
         return endgamePoints;
-    } else if(year === '2025'){
+    } else if(year === '2026'){
         let endgamePoints: number = 0;
         if(matchData['Climb Level'] === 'Shallow Success'){
             endgamePoints+=6;

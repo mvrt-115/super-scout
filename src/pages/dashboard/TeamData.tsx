@@ -44,7 +44,7 @@ import { ThemeProvider, createTheme } from '@mui/material';
 import { AiOutlineConsoleSql } from 'react-icons/ai';
 import Card from '../../components/Card';
 import DataTable from '../../components/displays/DataTable';
-import { storage } from 'firebase-functions/v1';
+
 //import firebase from 'firebase';
 import firebase from '../../firebase';
 import ClimbPieChart from '../../components/displays/ClimbPieChart';
@@ -162,7 +162,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
                         Object.keys(matches[1]).length
                         ? Object.keys(matches[0]) 
                         : Object.keys(matches[1]);
-                        if (year == "2025") {
+                        if (year == "2026") {
                             column_headers = [
                             "matchNum",
                             "Total Coral/Algae Scored",
@@ -681,7 +681,7 @@ const TeamData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
 
     //start for drive dashboard
     const renderDriveteamView = () => {
-        if (year == '2025') {
+        if (year == '2026') {
             // Will turn into one loop later
 
             const totalCoralScoredL1: number = matches.reduce(

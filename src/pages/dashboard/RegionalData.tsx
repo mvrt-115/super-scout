@@ -178,7 +178,7 @@ const RegionalData: FC<RouteComponentProps<RouteParams>> = ({ match }) => {
             //console.log("lisa test " + Object.keys(teams[0]));
 
             let column_headers: string[] = Object.keys(teams[0]).length > Object.keys(teams[1]).length ? Object.keys(teams[0]) : Object.keys(teams[1]);
-            if (year == "2025") {
+            if (year == "2026") {
                 column_headers = [
                     "teamNum",
                     "Total Coral/Algae Scored",

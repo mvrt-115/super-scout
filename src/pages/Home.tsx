@@ -32,17 +32,19 @@ const Home: FC<HomeProps> = () => {
             <Flex
                 w={'full'}
                 h={'100vh'}
-                backgroundImage={ScoutHome}
+                backgroundImage={ScoutHome as string}
                 backgroundSize={'cover'}
                 backgroundPosition={'center center'}
+                flexDirection="column"
             >
+                <Navbar />
                 <Box
                     w={'full'}
+                    flex="1"
                     px={useBreakpointValue({ base: 4, md: 8 })}
                     bgGradient={'linear(to-r, blackAlpha.600, transparent)'}
                 >
-                    <Navbar />
-                    <VStack justify="center" height={'calc(100vh - 64px)'}>
+                    <VStack justify="center" height={'100%'}>
                         <Stack maxW={'2xl'} align={'flex-start'} spacing={6}>
                             <Text
                                 color={'white'}
@@ -55,7 +57,7 @@ const Home: FC<HomeProps> = () => {
                             >
                                 Scouting at{' '}
                                 <Text
-                                    color="purple.500"
+                                    color="mv-purple.400"
                                     as="span"
                                     fontSize={'4.5rem'}
                                 >
@@ -65,9 +67,10 @@ const Home: FC<HomeProps> = () => {
                             </Text>
                             <Stack direction={'row'}>
                                 <Button
-                                    colorScheme={'purple'}
+                                    bg={'mv-purple.500'}
                                     rounded={'full'}
                                     color={'white'}
+                                    _hover={{ bg: 'mv-purple.400' }}
                                     onClick={() => history.push('/dashboard')}
                                 >Dashboard
                                 </Button>

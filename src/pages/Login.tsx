@@ -1,5 +1,4 @@
 import {
-    useColorModeValue,
     Stack,
     Heading,
     Box,
@@ -20,9 +19,8 @@ import {
 import React, { FC, SyntheticEvent, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import firebase from '../firebase';
 
-export interface LoginProps { }
+export interface LoginProps {}
 
 const Login: FC<LoginProps> = () => {
     const [email, setEmail] = useState('');
@@ -41,14 +39,19 @@ const Login: FC<LoginProps> = () => {
                 setLoading(false);
                 history.push('/');
             })
-            .catch((error: firebase.auth.AuthError) => {
+            .catch((err: any) => {
                 setLoading(false);
-                if (error.code === 'auth/invalid-email')
-                    setError('You did not enter a valid Email');
-                else if (error.code === 'auth/user-not-found')
-                    setError('This user could not be found');
-                else if (error.code === 'auth/wrong-password')
-                    setError('Wrong password');
+                const code = err?.code || '';
+                if (code === 'auth/invalid-email')
+                    setError('You did not enter a valid email address.');
+                else if (code === 'auth/user-not-found')
+                    setError('No account found with this email.');
+                else if (code === 'auth/wrong-password')
+                    setError('Incorrect password. Please try again.');
+                else if (code === 'auth/invalid-credential')
+                    setError('Invalid credentials. Please check your email and password.');
+                else
+                    setError('An unexpected error occurred. Please try again.');
             });
     };
 
@@ -56,11 +59,13 @@ const Login: FC<LoginProps> = () => {
         <VStack
             align={'center'}
             justify={'center'}
-            bg={useColorModeValue('white', 'gray.800')}
+            minH="80vh"
+            bg={'gray.50'}
+            py={12}
         >
             {error && (
-                <Stack align={'center'}>
-                    <Alert status="error" width={'md'} alignItems="center">
+                <Stack align={'center'} mb={4}>
+                    <Alert status="error" width={'md'} alignItems="center" borderRadius="md">
                         <AlertIcon />
                         <AlertTitle mr={2}>Error Signing In!</AlertTitle>
                         <AlertDescription>{error}</AlertDescription>
@@ -74,54 +79,67 @@ const Login: FC<LoginProps> = () => {
                 </Stack>
             )}
             <Container centerContent>
-                <Heading fontSize={'4xl'} textAlign="center">
+                <Heading fontSize={'3xl'} textAlign="center" color="mv-purple.800" mb={2}>
                     Sign in to your account
                 </Heading>
+                <Text color="gray.500" fontSize="sm">
+                    Access scanner, QR codes, and scouting inputs
+                </Text>
             </Container>
-            <Stack align={'center'}>
+            <Stack align={'center'} mt={6}>
                 <Box
-                    rounded={'lg'}
-                    bg={useColorModeValue('white', 'gray.700')}
+                    rounded={'xl'}
+                    bg={'white'}
                     boxShadow={'lg'}
                     p={8}
-                    minWidth="xs"
+                    minWidth="sm"
+                    border="1px solid"
+                    borderColor="gray.100"
                 >
                     <form onSubmit={handleSubmit}>
-                        <Stack spacing={4}>
+                        <Stack spacing={5}>
                             <FormControl id="email">
-                                <FormLabel>Email address</FormLabel>
+                                <FormLabel color="gray.600">Email address</FormLabel>
                                 <Input
                                     type="email"
-                                    bg="inherit"
+                                    bg="gray.50"
+                                    borderColor="gray.200"
+                                    _focus={{ borderColor: 'mv-purple.500', boxShadow: '0 0 0 1px #4F46E5' }}
                                     onChange={(e) => setEmail(e.target.value)}
                                     required
                                 />
                             </FormControl>
                             <FormControl id="password">
-                                <FormLabel>Password</FormLabel>
+                                <FormLabel color="gray.600">Password</FormLabel>
                                 <Input
                                     type="password"
-                                    bg="inherit"
+                                    bg="gray.50"
+                                    borderColor="gray.200"
+                                    _focus={{ borderColor: 'mv-purple.500', boxShadow: '0 0 0 1px #4F46E5' }}
                                     required
                                     onChange={(e) => setPass(e.target.value)}
                                 />
                             </FormControl>
-                            <Stack spacing={10}>
+                            <Stack spacing={4} pt={2}>
                                 <Button
-                                    colorScheme="mv-purple"
+                                    bg="mv-purple.500"
+                                    color="white"
+                                    _hover={{ bg: 'mv-purple.600' }}
                                     type={'submit'}
                                     isLoading={loading}
+                                    size="lg"
                                 >
                                     Sign in
                                 </Button>
                             </Stack>
                             <Stack spacing={10} alignItems="center">
-                                <Text>
+                                <Text fontSize="sm" color="gray.500">
                                     Don't have an account?{' '}
                                     <StyledLink
-                                        color="mv-gold"
+                                        color="mv-purple.500"
+                                        fontWeight={600}
                                         as={Link}
-                                        to="/signup"
+                                        to="/sign-up"
                                     >
                                         Sign Up
                                     </StyledLink>

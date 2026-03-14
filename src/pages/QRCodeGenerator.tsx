@@ -165,7 +165,7 @@ const QRCodeGenerator: FC<QRCodeGeneratorProps> = () => {
 
                 <form onSubmit={handleSubmit}>
                     <VStack spacing={5}>
-                        <Heading textColor={'#550575'}>
+                        <Heading textColor={'mv-purple.500'}>
                             Match QR Code Data
                         </Heading>
                         <FormControl isRequired>
@@ -272,10 +272,10 @@ const QRCodeGenerator: FC<QRCodeGeneratorProps> = () => {
                         </FormControl>
                         <Button
                             colorScheme="blue"
-                            bg="#4b0f6d"
+                            bg="mv-purple.500"
                             color="white"
                             _hover={{
-                                bg: '#2f064b',
+                                bg: 'mv-purple.600',
                             }}
                             isFullWidth
                             onClick={() => {
@@ -300,10 +300,10 @@ const QRCodeGenerator: FC<QRCodeGeneratorProps> = () => {
                         )}
                         <Button
                             colorScheme="blue"
-                            bg="#4b0f6d"
+                            bg="mv-purple.500"
                             color="white"
                             _hover={{
-                                bg: '#2f064b',
+                                bg: 'mv-purple.600',
                             }}
                             isFullWidth
                             type="submit"

@@ -4,20 +4,20 @@ import Fonts from './Fonts';
 const theme = extendTheme({
     colors: {
         'mv-purple': {
-            100: '#9969ac',
-            200: '#88509e',
-            300: '#773791',
-            400: '#661e83',
-            500: '#550575',
-            600: '#4b0f6d',
-            700: '#3e0a5f',
-            800: '#2f064b',
-            900: '#1f0136',
-            1000: '#260235',
+            100: '#E0E7FF',
+            200: '#C7D2FE',
+            300: '#A5B4FC',
+            400: '#818CF8',
+            500: '#4F46E5', // Primary Modern Indigo
+            600: '#4338CA',
+            700: '#3730A3',
+            800: '#312E81',
+            900: '#1E1B4B',
+            1000: '#141233',
         },
-        'mv-gold': '#ffc410',
+        'mv-gold': '#FBBF24',
     },
-    fonts: { heading: 'Roboto', body: 'Roboto', title: 'Pirulen' },
+    fonts: { heading: 'Inter, sans-serif', body: 'Inter, sans-serif', title: 'Pirulen' },
 });
 
 export default theme;
